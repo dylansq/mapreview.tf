@@ -35,6 +35,7 @@ def static_from_root():
 def webhook():
     '''Github Webhook for autoupdating server repo'''
     if request.method == 'POST':
+        print(request)
         repo = git.Repo('./mapreview.tf')
         repo.git.reset('--hard')
         origin = repo.remotes.origin

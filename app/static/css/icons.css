@@ -1,0 +1,74 @@
+
+.icon {
+    background: url('../img/icon-sprites.png') no-repeat
+}
+
+.icon.spy {
+	position: 0 0;
+	width: 48px;
+	height: 64px;
+}
+.icon-soldier {
+	background: url('../img/icon-sprites.png') no-repeat -49px 0;
+	width: 62px;
+	height: 60px;
+}
+.icon-sniper {
+	background: url('../img/icon-sprites.png') no-repeat -112px -1px;
+	width: 60px;
+	height: 60px;
+}
+.icon-scout {
+	background: url('../img/icon-sprites.png') no-repeat -173px 0;
+	width: 61px;
+	height: 57px;
+}
+.icon-pyro {
+	background: url('../img/icon-sprites.png') no-repeat -236px -1px;
+	width: 42px;
+	height: 59px;
+}
+.icon-medic {
+	background: url('../img/icon-sprites.png') no-repeat -280px -2px;
+	width: 54px;
+	height: 54px;
+}
+.icon-heavy {
+	background: url('../img/icon-sprites.png') no-repeat -336px 0;
+	width: 58px;
+	height: 59px;
+}
+.icon-engineer {
+	background: url('../img/icon-sprites.png') no-repeat -395px 0;
+	width: 54px;
+	height: 56px;
+}
+.icon-demo {
+	background: url('../img/icon-sprites.png') no-repeat -451px 0;
+	width: 60px;
+	height: 61px;
+}
+.icon-all {
+	background: url('../img/icon-sprites.png') no-repeat -515px -2px;
+	width: 58px;
+	height: 58px;
+}
+
+.icon.checkbox{
+    background: url('../img/icon-sprites.png') no-repeat;
+    background-position: -699px -1px;
+    width: 60px;
+	height: 60px;
+    margin: 0 0.2em;
+    zoom:0.35;
+    /*  Mozilla support */
+    -moz-transform:scale(0.35);
+    -moz-transform-origin: 0 0;
+    
+}
+.icon.checkbox.checked {
+	background-position: -577px -1px;
+}
+.icon.checkbox.crossed {
+	background-position: -638px -1px;
+}

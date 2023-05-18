@@ -1,0 +1,34 @@
+.projector {
+    position: relative;
+    z-index: 100;
+}
+.projector-body {
+    
+    background-image: url(../img/projector-body.png);
+    margin: auto;
+    position: relative;
+    display: flex;
+    top: -20px;
+    width: 1161px;
+    height: 114px;
+    
+  }
+
+.projector-canvas {
+    
+    background-image: url(../img/projector-canvas.png);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    top: -700px;
+    width: 898px;   
+    height: 842px;
+    transition: transform ease 800ms;
+    z-index: -1
+  }
+  
+.projector-body:hover .projector-canvas {
+    transform: translate(0, 614px);
+  }

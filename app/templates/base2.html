@@ -1,0 +1,63 @@
+<!doctype html>
+<html dir="ltr" lang="en-US" class="no-js">
+
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JXJXJREPGS"></script>
+    <script type="text/javascript">
+    if (document.location.hostname == "mapreview.tf") {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-JXJXJREPGS');
+    }
+    </script>
+    <meta charset="utf-8" />
+
+    {% block title %}{% endblock %}
+    
+    {% block meta %}{% endblock %}
+    
+
+    <meta name="viewport" content="width=device-width">
+
+    <link href="//fonts.googleapis.com/css?family=Inconsolata&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='/img/favicon.ico') }}" sizes="16x16 32x32 64x64 128x128" type="image/png" />
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search-container.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/item_box.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/selectize.bootstrap5.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" media="all">
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='css/projector.css') }}" media="all">-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" media="all">
+    
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7104910338660789"
+     crossorigin="anonymous"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+
+</head>
+
+<body style="margin: 0">
+    <header>
+
+        {%include 'includes/title_container.html'%}
+        {%include 'includes/navbar_container.html'%}
+    </header>
+    <main class="main-containers">
+        
+        {% block content %}{% endblock %}
+        
+    </main>
+
+    <footer>{% block footer %}{% endblock %}</footer>
+
+
+</body>
+{% block script %}{% endblock %}
+</html>

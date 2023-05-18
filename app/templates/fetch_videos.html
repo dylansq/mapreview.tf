@@ -1,0 +1,147 @@
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" media="all">
+
+<table>    
+  
+<th>yt_video_id</th>
+<th>yt_account</th>
+<th>st_creator_name</th>
+<th>mrtf_upload_datetime</th>
+<th>yt_stats_lastupdated</th>
+<th>yt_published_date</th>
+<th>mrtf_upload_ip</th>
+<th>mrtf_display_name</th>
+<th>tf_map_full</th>
+<th>relevant_classes</th>
+<th>tf_match_format</th>
+<th>yt_channel_title</th>
+<th>mrtf_rating_score_a1</th>
+
+{% for video in videos %}
+
+<tr>
+    <td>{{ video.yt_video_id}}</td>
+    <td>{{ video.yt_account}}</td>
+    <td>{{ video.st_creator_name}}</td>
+    <td>{{ video.mrtf_upload_datetime}}</td>
+    <td>{{ video.yt_stats_lastupdated}}</td>
+    <td>{{ video.yt_published_date}}</td>
+    <td>{{ video.mrtf_upload_ip}}</td>
+    <td>{{ video.mrtf_display_name}}</td>
+    <td>{{ video.tf_map_full}}</td>
+
+    <td>{{ video.relevant_classes}}</td>
+    <td>{{ video.tf_match_format}}</td>
+    <td>{{ video.yt_channel_title}}</td>
+
+    <td>{{ video.mrtf_rating_score_a1}}</td>
+</tr>
+{% endfor %}
+
+  <tr><td><input type="text" id="yt_id" name="yt_id"></td>
+  <td><input type="text" id="yt_account" name="yt_account"></td>
+  <td><input type="text" id="st_creator_name" name="st_creator_name"></td>
+  <td><input type="text" id="st_creator_name" name="st_creator_id"></td>
+  <td><input type="text" id="st_presenter_name" name="st_presenter_name"></td>
+  <td><input type="text" id="st_presenter_id" name="st_presenter_id"></td>
+  <td><input type="text" id="yt_date_uploaded" name="yt_date_uploaded"></td>
+  <td><input type="text" id="yt_date_recorded" name="yt_date_recorded"></td>
+  <td><input type="text" id="tf_map_full" name="tf_map_full"></td>
+  <td><input type="text" id="tf_version_full" name="tf_version_full"></td>
+  <td><input type="text" id="relevant_classes" name="relevant_classes"></td>
+  <td><input type="text" id="relevant_role" name="relevant_role"></td>
+  <td><input type="text" id="relevant_league" name="relevant_league"></td>
+  <td><input type="text" id="relevant_level" name="relevant_level"></td>
+  <td><input type="text" id="yt_published_date" name="yt_published_date"></td>
+  <td><input type="text" id="yt_stats_comments" name="yt_stats_comments"></td>
+  <td><input type="text" id="yt_stats_favorites" name="yt_stats_favorites"></td>
+  <td><input type="text" id="yt_stats_likes" name="yt_stats_likes"></td>
+  <td><input type="text" id="yt_stats_views" name="yt_stats_views"></td>
+  <td><input type="text" id="yt_stats_lastupdated" name="yt_stats_lastupdated"></td></tr>
+</table>
+<form id="yt_form">
+    <label for="st_creator_name">st_creator_name: </label><input type="text" id="st_creator_name" name="st_creator_name"><br>
+    <label for="st_creator_id">st_creator_id: </label><input type="text" id="st_creator_id" name="st_creator_id"><br>
+    <label for="st_presenter_name">st_presenter_name: </label><input type="text" id="st_presenter_name" name="st_presenter_name"><br>
+    <label for="st_presenter_id">st_presenter_id: </label><input type="text" id="st_presenter_id" name="st_presenter_id"><br>
+
+    <label for="tf_map_full">tf_map_full: </label><input type="text" id="tf_map_full" name="tf_map_full">
+    <label for="tf_version_full">tf_version_full: </label><input type="text" id="tf_version_full" name="tf_version_full"><br>
+
+    <label for="relevant_classes">relevant_classes: </label><input type="text" id="relevant_classes" name="relevant_classes">
+    <label for="relevant_role">relevant_role: </label><input type="text" id="relevant_role" name="relevant_role"><br>
+
+    <label for="relevant_league">relevant_league: </label><input type="text" id="relevant_league" name="relevant_league"><br>
+    <label for="relevant_level">relevant_level: </label><input type="text" id="relevant_level" name="relevant_level"><br>
+
+    <label for="yt_id">yt_id: </label><input type="text" id="yt_id" name="yt_id"><input type="submit" id="submit" value="Get Video Data"><br>
+    <label for="yt_account">yt_account: </label><input type="text" id="yt_account" name="yt_account"><br>
+    <label for="yt_published_date">yt_published_date: </label><input type="text" id="yt_published_date" name="yt_published_date"><br>
+    <label for="yt_stats_comments">yt_stats_comments: </label><input type="text" id="yt_stats_comments" name="yt_stats_comments"><br>
+    <label for="yt_stats_favorites">yt_stats_favorites: </label><input type="text" id="yt_stats_favorites" name="yt_stats_favorites"><br>
+    <label for="yt_stats_likes">yt_stats_likes: </label><input type="text" id="yt_stats_likes" name="yt_stats_likes"><br>
+    <label for="yt_stats_views">yt_stats_views: </label><input type="text" id="yt_stats_views" name="yt_stats_views"><br>
+    <label for="yt_video_title">yt_video_title: </label><input type="text" id="yt_video_title" name="yt_video_title"><br>
+  </form>
+  <div>
+    <button id="fetch_yt_stats">Fetch Youtube Stats</button> 
+  </div>
+<div id="results"></div>
+
+<script type="text/javascript">
+  $("#yt_form").submit(function(){
+    var form_data = $('#yt_form').serializeArray().reduce(function(obj, item) {obj[item.name] = item.value; return obj;}, {});
+    console.log(form_data)
+    $.post("/populate_yt_stats", {"yt_id": form_data.yt_id}).done(function(data){
+                    var snip = data.items[0].snippet;
+                    var stat = data.items[0].statistics;
+                    
+                    var chann = console.log(data.items[0].snippet.channelTitle);
+                    $('#yt_account').attr("value",snip.channelTitle);
+                    $('#yt_channel_id').attr("value",snip.channelID);
+                    $('#yt_channel_title').attr("value",snip.channelTitle);
+                    //$('#yt_video_description').attr("value",snip.localized.description);
+                    //$('#yt_video_thumbnails').attr("value",snip.thumbnails);
+                    $('#yt_video_title').attr("value",snip.localized.title);
+                    $('#yt_published_date').attr("value",snip.publishedAt);
+                    $('#yt_stats_comments').attr("value",stat.commentCount);
+                    $('#yt_stats_favorites').attr("value",stat.favoriteCount);
+                    $('#yt_stats_likes').attr("value",stat.likeCount);
+                    $('#yt_stats_views').attr("value",stat.viewCount);
+                    $('#yt_account').attr("value",);
+
+                    $('#results').empty();
+                    $('#results').append(`<div>${chann}</div>`);
+                    });
+
+    return false;
+});
+$("#fetch_yt_stats").click(function(){
+    var form_data = $('#yt_form').serializeArray().reduce(function(obj, item) {obj[item.name] = item.value; return obj;}, {});
+    console.log(form_data)
+      $.post("/ext/refresh_yt_stats")
+      
+});
+</script>
+
+<!--
+2020-09-28T05:05:44Z
+test
+
+yt_channel_title
+yt_channel_id
+yt_video_title
+yt_published_date 
+
+yt_stats_lastupdated
+yt_stats_comments
+yt_stats_favorites
+yt_stats_likes
+yt_stats_views
+
+<label for="relevant_level">relevant_level: </label><input type="text" id="relevant_level" name="relevant_level"><br>
+snippet
+
+
+-->

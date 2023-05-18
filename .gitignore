@@ -1,0 +1,6 @@
+*.pyc
+app.cfg
+documents/
+maps/
+database/
+

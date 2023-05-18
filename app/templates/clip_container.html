@@ -1,0 +1,50 @@
+<div class="item-box" id=${video['yt_id']}>
+    <div class="item-box-img"><span class="resource-type-flag" id="${resource_type}">${resource_type_display}</span>
+        <a href="/test"><img class="item-box-logo" src="${video[" yt_channel_image"]}"></img></a>
+        <div class="item-flag-container"><span class="item-flag map-flag" id="tf_map_flag">${tf_map_full}</span></div>
+        <img class="item-box-img-select" data-yt_id=${video['yt_id']}
+            src="https://i.ytimg.com/vi/${video['yt_id']}/${thumbnail_resolution}.jpg"></img>
+    </div>
+    <div class="item-box-caption"><span class="item-box-creator">${video['st_creator_name']}</span><span
+            class="item-box-time">${time_ago}</span><span class="item-box-views">${yt_views} views •</span>
+        <span class="item-box-title" title=${video['yt_video_title']}>${video['yt_video_title']}</span>
+    </div>
+</div>`;
+
+$('#item-boxes-container').append(item
+
+
+<div class="item-box-img"><span class="resource-type-flag" id="${resource_type}">${resource_type_display}</span>
+    <a href="/test"><img class="item-box-logo" src="${video[" yt_channel_image"]}"></img></a>
+    <div class="item-flag-container">
+        <img class="item-box-img-select" data-yt_id=${video['yt_id']}
+            src="https://i.ytimg.com/vi/${video['yt_id']}/${thumbnail_resolution}.jpg"></img>
+    </div><span class="item-box-time">${time_ago}</span><span class="item-box-views">${yt_views} views •</span>
+
+
+
+
+
+    <div class="item-clip" id="yt_clip_test1">
+        <div class="item-clip-caption"><span class="item-box-creator">Marmaloo</span>
+            <span class="item-box-title" title="Snakewater Roamer Rollout">Snakewater Roamer Rollout</span>
+            <div class="item-flag-container">
+                <span class="item-flag map-flag" id="tf_map_flag">Snakewater</span>
+                <span class="item-flag type-flag" id="tf_type_flag">Rollout</span>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="item-clip-container">
+        <div class="item-clip" id="${clip['yt_clip_id']}">
+            <div class="item-clip-caption"><span class="item-box-creator">${clip['yt_channel_title']}</span>
+                <span class="item-box-title" title="${clip['yt_clip_title']}">${clip['yt_clip_title']}</span>
+                <div class="item-clip-flag-container">
+                    <span class="item-flag map-flag">${clip['tf_map_full']}</span>
+                    <span class="item-flag type-flag">${clip['resource_type']}</span>
+                </div>
+            </div>
+        </div>
+    </div>

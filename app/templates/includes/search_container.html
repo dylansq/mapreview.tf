@@ -1,0 +1,66 @@
+<div class="filter-menu-container">
+    <div class="filter-menu-group">
+        <select class="filter-menu-item" id="format" method="GET" action="/" readonly single>
+            <option value=''>Format</option>
+            <!--<option value='sixes'>Sixes</option>
+            <option value='highlander'>Highlander</option>-->
+        </select>
+        <select class="filter-menu-item" id="map" method="GET" action="/" readonly single>
+            <option value=''>Map</option>
+            <!--{% for tf_map_full, tf_map_name in tf_versions%}
+            <option value="{{tf_map_full}}">{{tf_map_name}}</option>"
+            {% endfor %}-->
+        </select>
+
+        
+    </div>
+    <div class="filter-menu-group">
+        <select class="filter-menu-item" id="class" method="GET" action="/" readonly single>
+            <option value=''>Class</option>
+            <!--{% for tf_class_name in relevant_classes %}
+            <option value="{{tf_class_name}}">{{tf_class_name}}</option>"
+            {% endfor %}-->
+        </select>
+        {% if format_sixes %}
+        <select class="filter-menu-item" id="role" method="GET" action="/" readonly single>
+            <option value=''>Role</option>
+            <!--{% for tf_role, tf_role_display in relevant_roles %}
+            <option value="{{tf_role}}">{{tf_role_display}}</option>"
+            {% endfor %}-->
+        </select>
+        {% endif %}
+    
+</div>
+<div class="filter-menu-group">
+    
+    <select class="filter-menu-item" id="type" method="GET" action="/" placeholder="Resource Type" readonly single>
+        <!--<option value=''>Resource Type</option>
+        {% for resource_type in resource_types %}
+        <option count = 0 value="{{resource_type}}">{{resource_type}}</option>"
+        {% endfor %}-->
+    </select>
+
+    <div id="checkbox_show_morefilters" class="icon checkbox"></div>
+    <div class="filter-menu-checkbox-label">More Filters?</div>
+</div>
+</div>
+<div id="more_filters" class="filter-menu-container" style="display:none; z-index: 6;">
+<div class="filter-menu-group">
+    <select class="filter-menu-item" id="creators" method="GET" action="/" readonly single>
+        <option value=''>Creator</option>
+        {% for creator,st_id in yt_creators %}
+        <option value="{{st_id}}">{{creator}}</option>"
+        {% endfor %}
+    </select>
+
+    <select class="filter-menu-item" id="language" method="GET" action="/" style="width:200px" readonly single>
+        <option value=''>Language</option>
+        {% for mrtf_language in mrtf_languages %}
+        <option value="{{mrtf_language}}">{{mrtf_language}}</option>"
+        {% endfor %}
+    </select>
+
+    <div id="checkbox_show_clips" class="icon checkbox checked"></div>   
+    <div class="filter-menu-checkbox-label">Show Clips?</div>
+</div>
+</div>

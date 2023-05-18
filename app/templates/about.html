@@ -1,0 +1,50 @@
+{%extends "base2.html"%}
+{% block title %}
+<title>{{title_text}}</title>
+{% endblock %}
+{% block content %}
+
+<div class="item-container"> 
+    <div class="container-side"></div>
+    <div class="item-section-container">
+    
+        <div class="item-section">
+            <div class="item-section-header">About</div>
+            <div class="item-section-text">
+                Welcome to <span style="font-family:'TF2-Build'">mapreview.tf</span> - a searchable repository of competitive TF2 map reviews, tactics guides, and other resources published by the Team Fortress 2 community. 
+                If you have a new (or old) resource to add, you can <a href="/forms/video">submit a resource</a>.<br><br>
+
+                This site is still in development. If you find any issues please send them to the contact below.
+            </div>
+        </div>
+        <div class="item-section">
+            <div class="item-section-header">Resources</div>
+            <div class="item-section-text">
+                This site currently supports YouTube videos that focus on the TF2 competitive 6s format. 
+            </div>
+        </div>
+        <div class="item-section">
+            <div class="item-section-header">Contact</div>
+            <div class="item-section-text">
+                Please send comments or requests to <a href="mailto:mapreviewtf@gmail.com">mapreviewtf@gmail.com</a>
+            </div>
+        </div>
+        <div class="item-section">
+            <div class="item-section-header">Donate</div>
+            If you find this useful, consider donating to support this project! <br><br>
+            <form action="https://www.paypal.com/donate" method="post" target="_top">
+                <input type="hidden" name="hosted_button_id" value="DUUT474YNCNK4" />
+                <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+                </form>      
+                <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support us on Ko-fi', '#29abe0', 'R6R3JB16I');kofiwidget2.draw();</script> 
+                
+        </div>
+        
+    </div>
+    <div class="container-side rotate-180"></div>
+</div>
+{% endblock %}
+{% block footer %}
+{%include 'includes/footer_container.html'%}
+{% endblock %}  

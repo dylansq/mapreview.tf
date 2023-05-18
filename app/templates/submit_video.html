@@ -1,0 +1,333 @@
+{%extends "base2.html"%}
+{% block title %}
+<title>{{title_text}}</title>
+{% endblock %}
+<style>
+
+.input-sizer {
+  display: inline-block;
+  position: relative;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  min-width: 9em;
+  height: 1.8em;
+  border: solid 1px;
+  padding: 0.25em 0.5em;
+}
+.input-sizer input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font: inherit;
+  padding: inherit;
+  margin: 0;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  border: none;
+}
+#tf_map_format{
+  width: attr(data-value) "em";
+}
+
+.input-sizer::after {
+  content: attr(data-value) " ";
+  visibility: hidden;
+}
+</style>
+{%block content%}
+
+<div class="item-container"> 
+<div class="container-side"></div>
+    <div class="item-section-container">
+        <div class="item-section">        </div>
+        <div class="item-section" style="text-align:left;">        
+
+    
+<div> This form is intended for single video uploads. If you would like to submit a batch of videos, or video links - send an email to <a href="mailto:mapreviewtf@gmail.com">mapreviewtf@gmail.com</a></div><br><br>
+<form id="yt_form" class="submit-form">
+    <label for="yt_video_id">Youtube Video ID: </label><input type="text" id="yt_video_id" name="yt_video_id" placeholder="dQw4w9WgXcQ" required/><button id="lookup_video" value="Lookup Video">Lookup Video</button><br><br>
+    <fieldset><legend>Youtube Data</legend>
+    <label for="yt_account">Published By: </label><input type="text" id="yt_account" name="yt_account" readonly><input type="text" id="yt_channel_id" name="yt_channel_id" readonly><br>
+    <label for="yt_published_date">Published Date: </label><input type="text" id="yt_published_date" name="yt_published_date" readonly><br>
+    <label for="yt_video_title">Title: </label><input type="text" id="yt_video_title" name="yt_video_title" readonly><br>
+    <input type="hidden" id="yt_stats_comments" name="yt_stats_comments" readonly>
+    <input type="hidden" id="yt_stats_favorites" name="yt_stats_favorites" readonly>
+    <input type="hidden" id="yt_stats_likes" name="yt_stats_likes" readonly>
+    <input type="hidden" id="yt_stats_views" name="yt_stats_views" readonly>
+    <input type="hidden" id="yt_channel_image" name="yt_channel_image" readonly>
+    <input type="hidden" id="yt_channel_title" name="yt_channel_title" readonly>
+    <input type="hidden" id="yt_stats_lastupdated" name="yt_stats_lastupdated" readonly>
+
+    </fieldset>
+    <fieldset><legend>Steam Data</legend>
+        <label for="st_creator_name">YouTube Uploader Name: </label><input type="text" id="st_creator_name" name="st_creator_name"><br>
+        <label for="st_creator_id">YouTube Uploader SteamID-64: </label><input type="text" id="st_creator_id" name="st_creator_id" placeholder="76561197960287930">
+        <label><input type="checkbox" name="st_haspresenter" id="st_haspresenter" value=1 onclick="toggle('.other-presenter', this)">Different Presenter?</label>
+        <div class = "other-presenter" style="display:none;">
+          <br><label for="st_presenter_id">Presenter Name: </label><input type="text" id="st_presenter_id" name="st_presenter_id"><br>
+          <label for="st_presenter_name">Presenter SteamID-64: </label><input type="text" id="st_presenter_name" name="st_presenter_name"  placeholder="76561197960287930">
+        </div>
+        <!--d<button id="steamrep_lookup">SteamRep</button><br>-->
+        <div id="steamrep_results" style="display:none;">
+            <img id="steam_avatar" src="">Steam Display Name: <span id="steam_display"></span> Steam Custom Name: <span id="steam_custom"></span>
+        </div>
+    </fieldset>
+
+    <br>
+    <fieldset><legend>Competitive Format</legend>
+      <label><input type="radio" class="yt_form_option" value="sixes" name="tf_match_format" required checked/>Sixes (6v6)</label>
+      <label><input type="radio" class="yt_form_option" value="highlander"  name="tf_match_format"  onclick="toggle('.other-classes', this)"/>Highlander (9v9)</label>
+      <label><input type="radio" class="yt_form_option" value="other"  name="tf_match_format"  />Other</label>
+      
+    </fieldset><br>
+    <label for="tf_map_full">Map: <select id="tf_map_full" name="tf_map_full" onchange="tf_map_options(value);" single required>
+      <option value=""></option>
+      <option value="new">Suggest New Map</option>
+      <option value="none">None</option>
+      
+      {% for tf_map_full, tf_map_name in tf_versions%}
+      <option value="{{tf_map_full}}">{{tf_map_name}}</option>
+      {% endfor %}
+      
+    </select></label>
+    <span id = "suggest_map" style="display:none;">
+      <label class="input-sizer"><input type="text" id ="tf_map_format" onInput="this.parentNode.dataset.value = this.value.length" placeholder="cp"></label>_ 
+      <input type="text" id="tf_map_full_provisional" name="tf_map_full_provisional" size="5"  placeholder="process"> _ 
+      <input type="text" id="tf_version_full_provisional" name="tf_version_full_provisional" size="5"  placeholder="final1">
+    </span>
+    <label id="tf_version_full_label" style="display:none;" for="tf_version_full" required>Version: <select id = "tf_version_full" name="tf_version_full" single>
+      <option class="version-toggle" value="none" tf_map_full="none" selected>None</option>"
+      {% for tf_version in tf_version_full_list%}
+      <option class="version-toggle" value="{{tf_version.tf_map_full}}" tf_map_full="{{tf_version.tf_map_full}}">{{tf_version.tf_version_full}}</option>"
+      {% endfor %}
+    </select></label>
+    
+
+
+    <br><br>
+    <fieldset><legend required>Resource Type</legend><label></label>
+      <b>Reviews: </b>  
+      <label><input required type="radio" class="yt_form_option" id="map_review" value="Map Review" name="tf_resource_type"/>Map Review</label>
+      <label><input type="radio" class="yt_form_option" id="demo_review" value="Demo Review" name="tf_resource_type" data-hover="An analysis of a pre-recorded team match"/>Demo Review</label>
+      <label><input type="radio" class="yt_form_option" id="live_pov"value="Live POV" name="tf_resource_type" data-hover="A live commentary of a players point-of-view"/>Live POV</label>
+      
+      
+      <label class="display-teamcoms" style="display:none"><input type="checkbox" name="tf_has_teamcoms" id="tf_has_teamcoms" value=1 checked>Team Coms?</label>
+      
+
+      <br><br>
+      <b>Guides: </b>
+      <label><input type="radio" class="yt_form_option" id="guide" value="Guide" name="tf_resource_type" data-hover="A general class or topic specific guide" />General</label>
+      <label><input type="radio" class="yt_form_option" id="callouts" value="Callout Guide" name="tf_resource_type" data-hover="A review of map callouts" />Callout Guide</label>
+      <label><input type="radio" class="yt_form_option" id="rollouts" value="Rollout Guide" name="tf_resource_type" data-hover="A review of rollouts" />Rollout Guide</label>
+      <label><input type="radio" class="yt_form_option" id="jump_guide" value="Jump Guide" name="tf_resource_type" data-hover="A review of jumps" />Jump Guide</label>
+      
+      <label><input type="radio" class="yt_form_option" id="other" value="Other" name="tf_resource_type"/>Other</label>
+    </fieldset>
+    <br>
+    <fieldset><legend required>Classes</legend>
+    <label><input type="checkbox" id="Scout" value=1 name="tf_class_scout"/>Scout</label>
+    <label><input type="checkbox" id="Soldier" value=1  name="tf_class_soldier"/>Soldier</label>
+    <label><input type="checkbox" id="Demo" value=1 name="tf_class_demo"/>Demo</label>
+    <label><input type="checkbox" id="Medic" value=1 name="tf_class_medic"/>Medic</label>
+    <label><input type="checkbox" onclick="toggle('.other-classes', this)">Other</label>
+    <div class = "other-classes" style="display:none;">
+        <br>
+        <label><input type="checkbox" id="Pyro" value=1 name="tf_class_pyro"/>Pyro</label>
+        <label><input type="checkbox" id="Heavy" value=1 name="tf_class_heavy"/>Heavy</label>
+        <label><input type="checkbox" id="Sniper" value=1 name="tf_class_sniper"/>Sniper</label>
+        <label><input type="checkbox" id="Spy" value=1 name="tf_class_spy"/>Spy</label>
+        <label><input type="checkbox" id="Engineer" value=1 name="tf_class_engineer"/>Engineer</label>
+    </div>
+    </fieldset>
+
+    <fieldset><legend>Roles</legend>
+    <label><input type="checkbox" id="Combo" value="1" name="tf_role_combo"/>Combo/Pocket</label>
+    <label><input type="checkbox" id="Flank" value="1" name="tf_role_flank"/>Roamer/Flank</label>
+    <label><input type="checkbox" id="Offclass" value="1" name="tf_role_offclass"/>Pick/Offclass</label>
+    
+    
+    </fieldset>
+    <br>
+    <fieldset><legend>Target Level (RGL)</legend>
+        <label><input type="radio" id="NC/AM" value="NC/AM" name="tf_skill_level"/>Newcomer/Amature</label>
+        <label><input type="radio" id="IM/MAIN" value="IM/MAIN" name="tf_skill_level"/>Intermediate/Main</label>
+        <label><input type="radio" id="AD/INV" value="AD/INV" name="tf_skill_level"/>Advanced/Invite</label>
+    </fieldset>
+
+    <fieldset><legend>League</legend>
+        <label><input type="radio" id="rgl" value="RGL" name="tf_league" selected/>RGL</label>
+        <label><input type="radio" id="etf2l" value="ETF2L" name="tf_league"/>ETF2L</label>
+        <label><input type="radio" id="aisafortress" value="AsiaFortress" name="tf_league"/>AsiaFortress</label>
+        <label><input type="radio" id="ozfortress" value="ozfortress" name="tf_league"/>ozfortress</label>
+        <label><input type="radio" id="ugc" value="UGC" name="tf_league"/>UGC</label>
+        <label><input type="radio" id="esea" value="ESEA" name="tf_league"/>ESEA</label>
+        <label><input type="radio" id="other" value="Other" name="tf_league"/>Other</label>
+    </fieldset>
+    <br>
+    <label for="mrtf_language">Language: 
+    <select name="mrtf_language" id="mrtf_language">
+        <option value="Arabic">Arabic</option>
+        <option value="Bulgarian">Bulgarian</option>
+        <option value="Chinese (Mandarin)">Chinese (Mandarin)</option>
+        <option value="Croatian">Croatian</option>
+        <option value="Czech">Czech</option>
+        <option value="Danish">Danish</option>
+        <option value="Dutch">Dutch</option>
+        <option value="English" selected>English</option>
+        <option value="Finnish">Finnish</option>
+        <option value="French">French</option>
+        <option value="German">German</option>
+        <option value="Greek">Greek</option>
+        <option value="Hindi">Hindi</option>
+        <option value="Hungarian">Hungarian</option>
+        <option value="Icelandic">Icelandic</option>
+        <option value="Indonesian">Indonesian</option>
+        <option value="Irish">Irish</option>
+        <option value="Italian">Italian</option>
+        <option value="Japanese">Japanese</option>
+        <option value="Korean">Korean</option>
+        <option value="Norwegian">Norwegian</option>
+        <option value="Polish">Polish</option>
+        <option value="Portuguese">Portuguese</option>
+        <option value="Romanian">Romanian</option>
+        <option value="Russian">Russian</option>
+        <option value="Serbian">Serbian</option>
+        <option value="Slovak">Slovak</option>
+        <option value="Slovenian">Slovenian</option>
+        <option value="Spanish">Spanish</option>
+        <option value="Swedish ">Swedish </option>
+        <option value="Turkish">Turkish</option>
+        <option value="Ukrainian">Ukrainian</option>
+        <option value="Vietnamese">Vietnamese</option>
+      </select></label><br><br>
+    
+    
+
+    <input type="submit" disabled>
+  </form>
+
+</div>
+</div>
+<div class="container-side rotate-180"></div>
+</div>
+
+{%endblock%}
+{%block script%}
+<script type="text/javascript">
+
+$('input[name="tf_resource_type"]').on('change', function(e) {
+  if(e.currentTarget.id == 'live_pov'){$('.display-teamcoms').show()}else{$('.display-teamcoms').hide()}
+});
+
+
+
+  $("#steamrep_lookup").click(function(){
+    var st_id64 = $("#st_creator_id").val()
+    $.get("https://steamrep.com/api/beta4/reputation/"+ st_id64,{extended:1,json:1}).done(function(data){
+        console.log(data)
+        $('#steam_avatar').attr("src", data.steamrep.avatar);
+        $('#steam_display').text(data.steamrep.displayname);
+        $('#steam_custom').text(data.steamrep.customurl);
+        $('#steamrep_results').show();
+    });
+
+  });
+    function toggle(className, obj) {
+        $(className).toggle(obj.checked )
+    }
+    $("#yt_form").submit(function(event){
+    event.preventDefault();
+    var form_data = $('#yt_form').serializeArray().reduce(function(obj, item) {obj[item.name] = item.value; return obj;}, {});
+
+    $.post("/forms/submit_yt_video",form_data).done(function(){
+      alert("Resource submitted successfully")
+      location.reload();
+    });
+
+    console.log(form_data)
+    
+    return false
+    });
+    $("#lookup_video").click(function(){
+      
+      $.get("/check_existing_videos",{"yt_video_id": $('#yt_video_id').val()}).done(function(data){
+            if(data > 0){
+                alert("Resource alreay in database.")
+                console.log(data)
+                return false
+            } else {
+              $('input').prop("disabled", false);
+            }
+
+            
+      });
+      $.post("/populate_yt_stats", {"yt_video_id": $('#yt_video_id').val()}).done(function(data){
+                      console.log(data.items[0])
+                      var snip = data.items[0].snippet;
+                      var stat = data.items[0].statistics;
+                      
+                      $('#yt_account').attr("value",snip.channelTitle);
+                      $('#yt_channel_id').attr("value",snip.channelId);
+                      $('#yt_channel_title').attr("value",snip.channelTitle);
+                      //$('#yt_video_description').attr("value",snip.localized.description);
+                      //$('#yt_video_thumbnails').attr("value",snip.thumbnails);
+                      $('#yt_video_title').attr("value",snip.localized.title);
+                      $('#yt_published_date').attr("value",snip.publishedAt);
+                      $('#yt_stats_comments').attr("value",stat.commentCount);
+                      $('#yt_stats_favorites').attr("value",stat.favoriteCount);
+                      $('#yt_stats_likes').attr("value",stat.likeCount);
+                      $('#yt_stats_views').attr("value",stat.viewCount);
+                      var date = new Date();
+                      $('#yt_stats_lastupdated').attr("value",date.toISOString());
+                      
+                      $('#yt_account').attr("value",);
+                      $.get("/yt_channel_id_lookup",{"yt_channel_id": snip.channelId}).done(function(data2){
+                        $('#yt_channel_image').attr("value",data2[snip.channelId].yt_channel_image);
+                        $('#st_creator_name').attr("value",data2[snip.channelId].st_creator_name);
+                        $('#st_creator_id').attr("value",data2[snip.channelId].st_creator_id);
+                        //$('#st_presenter_name').attr("value",data2[snip.channelId].st_presenter_name);
+                        //$('#st_presenter_id').attr("value",data2[snip.channelId].st_presenter_id);
+                    })
+                      });
+  
+
+
+      return false;
+  });
+  $("#fetch_yt_stats").click(function(){
+      var form_data = $('#yt_form').serializeArray().reduce(function(obj, item) {obj[item.name] = item.value; return obj;}, {});
+      console.log(form_data)
+        $.post("/refresh_yt_stats")
+        
+  });
+
+
+
+
+
+function tf_map_options(v){
+  console.log(v)
+  if(v == "new"){
+    
+    $('#suggest_map').show();
+    $('#tf_version_full_label').hide();
+  } else if(v == "none"){
+    $('#suggest_map').hide();
+    $('#tf_version_full_label').hide();
+  } else{
+    $('#suggest_map').hide();
+    
+
+    $(".version-toggle").hide();
+    $('option[tf_map_full='+v+']').show();
+    $("#tf_version_full").val($('option[tf_map_full='+v+']:first')[0].value);
+    $('#tf_version_full_label').show();
+  }
+}
+  </script>
+{%endblock%}

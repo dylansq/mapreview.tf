@@ -1,0 +1,215 @@
+{%extends "base2.html"%}
+
+<style>
+input[required] + label:after {
+	content: '*';
+	color: red;
+  }
+
+</style>
+{%block content%}
+
+<div class="item-container"> 
+<div class="container-side"></div>
+    <div class="item-section-container">
+        <div class="item-section">        </div>
+        <div class="item-section" style="text-align:left;">        
+
+    
+
+<form id="yt_form" class="submit-form">
+    <label for="yt_clip_id">Youtube Clip ID: </label><input type="text" id="yt_clip_id" name="yt_clip_id" placeholder="Ugkx7VVIY25lgU6yy9RVlGuuWdi0DWCO8Iuh" required/><button id="lookup_clip">Lookup Clip</button><br><br>
+    <label for="yt_clip_title">Clip Title: </label><input type="text" id="yt_clip_title" name="yt_clip_title" placeholder="" required/>
+
+    <fieldset><legend>Video Data</legend>
+    <label for="yt_video_title">From Video: </label><input type="text" id="yt_video_title" name="yt_video_title" readonly><label for="yt_published_date"></label><input type="text" id="yt_published_date" name="yt_published_date" readonly><br>
+    <label for="yt_account">Published By: </label><input type="text" id="yt_account" name="yt_account" readonly><input type="text" id="yt_channel_id" name="yt_channel_id" readonly><br>
+    <label for="st_presenter_name">Presented By: </label><input type="text" id="st_presenter_name" name="st_presenter_name" readonly><input type="text" id="st_presenter_id" name="st_presenter_id" readonly><br>
+    
+    </fieldset>
+
+    <input type="text" id="yt_clipt" name="yt_clipt"  />
+    <input type="text" id="yt_clip_duration" name="yt_clip_duration"  />
+    <input type="text" id="yt_clip_clipper" name="yt_clip_clipper"  />
+    <input type="text" id="yt_channel_title" name="yt_channel_title"  />
+    <input type="text" id="yt_channel_image" name="yt_channel_image"  />
+    
+    <input type="text" id="yt_video_id" name="yt_video_id"  readonly/>
+    <br>
+    <fieldset><legend>Competitive Format</legend>
+      <label><input type="radio" class="yt_form_option" value="sixes" name="tf_match_format" required checked/>Sixes (6v6)</label>
+      <label><input type="radio" class="yt_form_option" value="highlander"  name="tf_match_format"  />Highlander (9v9)</label>
+      <label><input type="radio" class="yt_form_option" value="other"  name="tf_match_format"  />Other</label>
+      
+    </fieldset><br>
+    <label for="tf_map_full">Map: <select id="tf_map_full" name="tf_map_full" single required>
+      {% for tf_map_full, tf_map_name in tf_versions%}
+      <option value="{{tf_map_full}}">{{tf_map_name}}</option>"
+      {% endfor %}
+      <option value="none" selected>None</option>"
+    </select></label>
+    
+    <label for="tf_version_full" required>Version: <select id = "tf_version_full" name="tf_version_full" single>
+      <option class="version-toggle" value="none" tf_map_full="none" selected>None</option>"
+      {% for tf_version in tf_version_full_list%}
+      <option class="version-toggle" value="{{tf_version.tf_map_full}}" tf_map_full="{{tf_version.tf_map_full}}">{{tf_version.tf_version_full}}</option>"
+      {% endfor %}
+    </select></label>
+    <br><br>
+    <fieldset><legend required>Clip Type</legend><label></label>
+           
+      <label><input type="radio" class="yt-form-option" id="guide" value="Guide" name="tf_resource_type" data-hover="A general class or topic specific guide" />General</label>
+      <label><input type="radio" class="yt-form-option" id="callouts" value="Callout Guide" name="tf_resource_type" data-hover="A review of map callouts" />Callout</label>
+      <label><input type="radio" class="yt-form-option" id="rollouts" value="Rollout Guide" name="tf_resource_type" data-hover="A review of rollouts" />Rollout</label>
+      <label><input type="radio" class="yt-form-option" id="jump_guide" value="Jump Guide" name="tf_resource_type" data-hover="A review of jumps or movement" />Jump Guide</label>
+      
+      <label><input type="radio" class="yt-form-option" id="other" value="Other" name="tf_resource_type"/>Other</label>
+    </fieldset>
+    <br>
+    <fieldset><legend required>Classes</legend>
+    <label><input type="checkbox" id="All" value=1 name="class_all" />All</label>
+    <label><input type="checkbox" id="Scout" value=1 name="class_scout"/>Scout</label>
+    <label><input type="checkbox" id="Soldier" value=1  name="class_soldier"/>Soldier</label>
+    <label><input type="checkbox" id="Demo" value=1 name="class_demo"/>Demo</label>
+    <label><input type="checkbox" id="Medic" value=1 name="class_medic"/>Medic</label>
+    <label><input type="checkbox" name="other-classes" onclick="toggle('.other-classes', this)">Other</label>
+    <div class = "other-classes" style="display:none;">
+        <br>
+        <label><input type="checkbox" id="Pyro" value=1 name="class_pyro"/>Pyro</label>
+        <label><input type="checkbox" id="Heavy" value=1 name="class_heavy"/>Heavy</label>
+        <label><input type="checkbox" id="Sniper" value=1 name="class_sniper"/>Sniper</label>
+        <label><input type="checkbox" id="Spy" value=1 name="class_spy"/>Spy</label>
+        <label><input type="checkbox" id="Engineer" value=1 name="class_engineer"/>Engineer</label>
+    </div>
+    </fieldset>
+
+    <fieldset><legend>Roles</legend>
+    <label><input type="checkbox" id="Pocket" value="Pocket" name="relevant_role"/>Combo/Pocket</label>
+    <label><input type="checkbox" id="Flank" value="Flank" name="relevant_role"/>Roamer/Flank</label>
+    <label><input type="checkbox" id="Offclass" value="Offclass" name="relevant_role"/>Pick/Specialty</label>
+
+    </fieldset>
+    <br>
+
+    
+    
+
+    <input type="submit">
+  </form>
+  <div class="video-frame" id="video-frame" style="display:inline-block">
+    <div class="iframe-container"><div id="iframe-holder"></div></div>
+        <div class="item-box-caption">
+                
+            <div id="vf-creator" class="item-box-creator">Creator</div>
+            <div id="vf-title" class="item-box-title">Title is Ipsum Lorum</div>
+            <div id="vf-views" class="item-box-views">Title is Ipsum Lorum</div>
+            <div id="vf-age" class="item-box-views">Title is Ipsum Lorum</div>
+            <br><br><br>
+        </div>
+</div>
+</div>
+</div>
+<div class="container-side rotate-180"></div>
+</div>
+
+{%endblock%}
+{%block script%}
+<script type="text/javascript">
+  var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+var player;
+
+  $("#tf_map_full").change(function(){
+    //Autoselect first option to display in tf_map_version select dropdown menu when tf_map select dropdown is changed
+    $(".version-toggle").hide();
+    $('option[tf_map_full='+$(this).val()+']').show();
+    $("#tf_version_full").val($('option[tf_map_full='+$(this).val()+']:first')[0].value);
+    
+  });
+
+
+    function toggle(className, obj) {
+        $(className).toggle(obj.checked )
+    }
+    $("#yt_form").submit(function(event){
+    event.preventDefault();
+    var form_data = $('#yt_form').serializeArray().reduce(function(obj, item) {obj[item.name] = item.value; return obj;}, {});
+
+    var relevant_role = new Array();
+    var relevant_class = new Array();
+    $("#yt_form input[name=relevant_role]:checked").each(function () {
+        relevant_role.push(this.value);
+        });
+    $("#yt_form input[name=relevant_class]:checked").each(function () {
+        relevant_class.push(this.value);
+        });
+    form_data["relevant_role"] = relevant_role
+    form_data["relevant_class"] = relevant_class
+
+    $.post("/submit_yt_clip_form",form_data);
+
+    console.log(form_data)
+    
+    return false
+    });
+    $("#lookup_clip").click(function(){
+      //check if clip exists in yt_clips
+      //fetch clip data from /opengraphio_clip_query
+      $.get("/opengraphio_clip_query",{"yt_clip_id": $('#yt_clip_id').val()}).done(function(data){
+        $yt_clip_data = data  
+        $('#yt_video_id').attr("value", data.yt_video_id);
+          //$('#yt_video_id').attr("value", data.yt_video_id);
+        }).then(function(data){
+          //lookup video info from yt_videos db
+          $.get("/tf_map_select_get",{"id": data.yt_video_id}).done(function(data){
+            $yt_video_data = data[Object.keys(data)[0]]
+            $('#yt_clip_title').attr("value", $yt_clip_data.yt_clip_title);
+            $('#yt_clipt').attr("value", $yt_clip_data.yt_clipt);
+            $('#yt_account').attr("value", $yt_video_data.yt_account);
+            $('#yt_published_date').attr("value", $yt_video_data.yt_published_date);
+            $('#yt_video_title').attr("value", $yt_video_data.yt_video_title);
+            $('#st_presenter_name').attr("value", $yt_video_data.st_presenter_name);
+            $('#st_presenter_id').attr("value", $yt_video_data.st_presenter_id);
+            
+            $('#yt_channel_title').val($yt_video_data.yt_channel_title);
+            $('#yt_clip_duration').val(Number($yt_clip_data.yt_clip_duration));
+            $('#yt_clip_clipper').val($yt_clip_data.yt_clip_clipper);
+            $('#yt_channel_id').val($yt_video_data.yt_channel_id);
+            $('#yt_channel_image').val($yt_video_data.yt_channel_image);
+            $('#yt_video_id').val($yt_video_data.yt_video_id);
+            $('#tf_map_full').val($yt_video_data.tf_map_full);
+            $('#tf_version_full').val($yt_video_data.tf_version_full);
+            console.log($yt_clip_data.yt_clipt)
+
+            player = new YT.Player('iframe-holder', {
+                                height: '30%',
+                                width: '100%',
+                                videoId: $yt_video_data.yt_video_id,
+                                playerVars: {
+                                    'clip':$yt_clip_data.yt_clip_id,
+                                    //+`&clipt=`+$yt_clip_data.yt_clipt
+                                    'clipt':$yt_clip_data.yt_clipt,
+                                    'playsinline': 1,
+                                    'autoplay' : 0,
+                                    'modestbranding': 1,
+                                    'origin' : 'mapreview.tf',
+                                    'rel' : 0
+                                }
+                            });
+
+            $("#vf-title").text($yt_clip_data.yt_clip_title)
+            $("#vf-creator").text($yt_video_data.st_presenter_name)
+            $("#vf-views").text($yt_video_data.yt_stats_views+" views")
+            $("#vf-age").text(Date.parse($yt_video_data.yt_published_date))
+            console.log($yt_video_data)
+          });
+        });
+      //$.get("/lemnoslife_clip_query",{"yt_clip_id": $('#yt_clip_id').val()}).done(function(data){console.log(data)});
+
+      return false;
+  });
+
+  </script>
+{%endblock%}

@@ -1,0 +1,98 @@
+.navbar-container {
+    display: flex;
+    position: relative;
+    padding: .2em 0;
+    font-size: 2.5em;
+    font-family: 'TF2-Professor';
+    background: #34302d;
+    color: #fff;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    border-bottom: 2px solid #6b6a65;
+}
+
+.navbar-item {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    color: #ece3cb;
+}
+
+.navbar-logo {
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: #ece3cb;
+}
+
+.navbar-logo:hover {
+    color: rgb(150, 150, 150);
+}
+
+
+.navbar-item:hover {
+    color: rgb(150, 150, 150);
+}
+
+.alert-container {
+    color:#34302d;
+    font-family: 'TF2-Build';
+    font-size: 1em;
+    background-color: #ef9849;
+    text-align: center;
+    padding: .3em 0;
+}
+
+.alert-container:hover {
+    background-color: #f6b98a;
+}
+
+.footer-container {
+    position: relative;
+    padding: .3em 0;
+    font-size: 2.0em;
+    font-family: 'TF2-Professor';
+    background: #34302d;
+    color: #fff;
+    text-align: center;
+    z-index: 5;
+}
+.footer-item {
+    padding: 0px 15px;
+    color: #ece3cb;
+    font-size: 1em;
+}
+
+
+
+.footer-item:hover {
+    color: #969696;
+}
+
+.logo-text {
+
+    padding: .6em 0;
+    font-family: 'TF2-Build';
+    color: #fff;
+    text-align: center
+}
+
+.site-title {
+    position: relative;
+    padding: .2em 0;
+    font-size: 2.5em;
+    font-family: 'TF2-Build';
+    background: #395c78;
+    border-bottom: 4px solid #5b7a8c;
+    text-align: center
+}
+
+.site-title__label:hover{
+    color: grey
+}
+
+.site-title__label {
+    color: #f5e7de
+}

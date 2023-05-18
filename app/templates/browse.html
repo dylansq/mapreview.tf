@@ -1,0 +1,32 @@
+{%extends "base2.html"%}
+
+{% block headder %}
+
+{% block title %}
+<title>{{title_text}}</title>
+{% endblock %}
+{% block meta %}
+{% for meta_key, meta_value in meta_dic.items() %}
+<meta {{meta_key}}="{{meta_value}}">
+{% endfor %}
+{% endblock %}
+
+{%include 'includes/navbar_container.html'%}
+{% endblock %}
+
+{% block content %}
+{%include 'includes/alert_banner.html'%}
+{%include 'includes/search_container.html'%}
+
+{%include 'includes/items_container.html' %}
+{% endblock %}
+
+{% block footer %}
+{%include 'includes/footer_container.html'%}
+{% endblock %}
+
+{% block script %}
+<script type = "text/javascript", src="{{ url_for('static', filename='js/select-filters.js')}}"></script>
+<script type = "text/javascript", src="{{ url_for('static', filename='js/item-box.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/selectize.js')}}"></script>
+{% endblock %}

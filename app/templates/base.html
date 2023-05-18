@@ -1,0 +1,81 @@
+<!doctype html>
+<html dir="ltr" lang="en-US" class="no-js">
+
+<head>
+    <meta charset="utf-8" />
+    <title>TF2 Map Review</title>
+
+    <meta name="viewport" content="width=device-width">
+
+    <link href="//fonts.googleapis.com/css?family=Inconsolata&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='/img/favicon.ico') }}" sizes="16x16 32x32 64x64 128x128" type="image/png" />
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search-container.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/item_box.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/multi-select.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/selectize.bootstrap5.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-light.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/projector.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" media="all">
+    
+    
+
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <script src="static/js/jquery.multi-select.js"></script>
+
+</head>
+
+<body style="min-width: 320px; max-width: 1700px; margin: 0 auto;">
+    <div class = projector><div id="projector-body" class="projector-body"><div id="projector-canvas" class="projector-canvas">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7104910338660789"
+            crossorigin="anonymous"></script>
+        <!-- projector -->
+        <ins class="adsbygoogle"
+            style="display:inline-block;width:600px;height:450px"
+            data-ad-client="ca-pub-7104910338660789"
+            data-ad-slot="7973652343"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div></div></div>
+
+        
+    <header class="ciu-page-header">
+        
+
+        <section class="site-title">
+            <a href="/" class="site-title__label">TF2 Map Review</a>
+        </section>
+        {%include 'includes/navbar_container.html'%}
+    </header>
+
+        <main class="ciu-page-content  js-content" data-static-id="home">
+            <div class="character-slider">
+
+            </div>
+
+            <div>
+
+            </div>
+            {%include 'includes/search_container.html'%}
+
+            {%include 'includes/items_container.html' %}
+
+    </div>
+        </main>
+
+        <footer class="footer">
+
+        </footer>
+
+    <script type = "text/javascript", src="{{ url_for('static', filename='js/select-filters.js')}}"></script>
+    <script type = "text/javascript", src="{{ url_for('static', filename='js/modal-embed-handler.js')}}"></script>
+    <script type = "text/javascript", src="{{ url_for('static', filename='js/item-box-updater.js')}}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.embedVideo.js')}}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/selectize.js')}}"></script>
+</body>
+
+</html>

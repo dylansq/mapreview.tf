@@ -1,0 +1,144 @@
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+<script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.foundation.min.css" media="all">
+
+<a href="/ext/steam_auth"><img src = "https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png"></a>
+
+<button id="update_steamrep">Update SteamRep</button>
+<button id="update_steam">Update Steam</button>
+<button id="update_rich_presence">Update In-Game Status</button>
+<table id="hacker_table">
+    
+    <thead><tr>
+<th></th>
+<th>Display Name</th>
+<th>Steam ID64</th>
+<th>Category</th>
+<th>Conf.</th>
+<th>Game Type</th>
+<th></th>
+<th>Updated</th>
+<!--<th>Created</th>
+<th>SR Sync</th>-->
+<th>VAC</th>
+<th></th>
+<th>State</th>
+<th>Privacy</th>
+<th>Hours Played</th>
+<th>Last Played</th>
+<th>Game</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+{% for hacker in hackers %}
+<tr>
+    <td><a href="https://steamcommunity.com/profiles/{{hacker.st_id64}}"  target="_blank"><img height="20" src={{hacker.st_avatarmedium_url}}><img></a></td>
+    <td>{{hacker.st_personaname}}</td>
+    <td>{{hacker.st_id64}}</td>
+    <td>{{hacker.ht_reason}}</td>
+    <td>{{hacker.ht_confidence}}</td>
+    <td>{{hacker.ht_gamemode}}</td>
+    <td><a href="https://steamrep.com/profiles/{{hacker.st_id64}}">SteamRep</a></td>
+    
+
+    <td>{{hacker.st_lastupdate_datetime}}</td>
+    <!--<td>{{hacker.sr_membersince}}</td>
+    <td>{{hacker.sr_lastsynctime}}</td>-->
+
+    <td>{{hacker.sr_vacban}}</td>
+    <td></td>
+    <td>{{hacker.st_personastate}}</td>
+    <td>{{hacker.st_communityvisibilitystate}}</td>
+    <td>{{hacker.st_hours_played_2weeks|int}}</td>
+    <td>{{hacker.st_lastlogoff}}</td>
+    <td>{{hacker.st_rich_presence_game}}</td>
+    <td>{{hacker.st_rich_presence_desc}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+
+<form id="ht_submit">
+    <label>Steam ID64: <input class="yt_form_option" name="st_id64" id="st_id64" placeholder="76561198082222131" onclick="toggle('.other-classes', this)"/></label>
+    <button id="check_id">Check ID</button>
+    <label>Gamemode: <select name="ht_gamemode" id="ht_gamemode">
+        <option value = "valvecomp" selected="selected">Valve Comp</option>
+        <option value = "casual">Casual</option>
+        <option value = "communitycomp">Community Comp</option>
+        <option value = "mvm">MvM</option>
+        <option value = "other">Other</option>
+    </select></label>
+    <label>Reason: <select name="ht_reason" id="ht_reason">
+        <option value = "cheater" selected="selected">Cheater</option>
+        <option value = "bot">Bot</option>
+        <option value = "racist">Racist</option>
+        <option value = "annoying">Annoying</option>
+    </select></label>
+    <label>Confidence: <input type="number" name="ht_confidence" id="ht_confidence" min="0" max="1" step="0.1" value="1.0" /></label>
+    <button id="ht_form_submit" disabled>Submit</button>
+</form>
+
+<script type="text/javascript">
+
+    $('#hacker_table').DataTable({
+        order: [[12, 'desc']],
+        lengthMenu: [[-1,50,25],['All',50,25]]
+        });
+
+    
+    $("#update_steamrep").click(function(){
+    
+    console.log('updating steam rep')
+    
+    $.get("/ht/ht_update_all_steamrep")
+      
+});
+
+
+$("#update_all_steam").click(function(){
+    $.get("/ht/ht_update_all_steam")
+});
+
+$("#update_rich_presence").click(function(){
+    $.get("/ht/ht_get_all_rich_presence")
+});
+
+$("#ht_form_submit").click(function(event){
+    event.preventDefault();
+    console.log($('#ht_submit').serializeArray())
+    var form_data = $('#ht_submit').serializeArray().reduce(function(obj, item) {obj[item.name] = item.value; return obj;}, {});
+    $.post("/ht/submit_hacker",form_data).done(function(){
+      alert("Account submitted successfully")
+      //location.reload();
+    }).fail(function(err){
+        alert(err.responseText)
+        console.log(err.responseText)
+    });
+    return false
+    });
+
+$("#check_id").click(function(event){
+    event.preventDefault();
+    $.get("/ht/check_existing_hackers?st_id64="+$('#st_id64').val()).done(function(){
+      $('#ht_form_submit').prop("disabled", false);
+    }).fail(function(err){
+        alert(err.responseText)
+        console.log(err.responseText)
+    });
+});
+
+function formatTimeAgo(date) {
+    let duration = (date - new Date()) / 1000
+    
+    for (let i = 0; i <= DIVISIONS.length; i++) {
+        const division = DIVISIONS[i]
+        if (Math.abs(duration) < division.amount) {
+            return formatter.format(Math.round(duration), division.name)
+        }
+        duration /= division.amount
+    }
+}
+</script>

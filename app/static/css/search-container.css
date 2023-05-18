@@ -1,0 +1,46 @@
+.filter-menu-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: auto;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 5px;
+    position: sticky;
+    top:0px;
+    background-color:#ebe6d6;
+    z-index: 7;
+    border-bottom: 2px solid #6b6a65;
+}
+.filter-menu-group {
+    display: flex;
+    align-items: center;
+    padding: 0px;
+    z-index: 7;
+}
+.filter-menu-item {
+    font-family: 'TF2-Build';
+    font-size: 14px;
+    width:150px !important;
+    padding: 0px 2.5px;
+    z-index: 10;
+}
+
+
+.filter-menu-checkbox{
+    background-image: url("../img/check_none.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin: 0 0.2em;
+    height: 1.3em;
+    width: 1.3em;
+}
+.filter-menu-checkbox:after{
+    position:absolute; width:0; height:0; overflow:hidden; z-index:-1;
+    content:url("../img/check_yes.png");
+}
+.checkbox-yes{
+    background-image: url("../img/check_yes.png");
+}
+.filter-menu-checkbox-label{
+    font-family: 'TF2-Build';
+}

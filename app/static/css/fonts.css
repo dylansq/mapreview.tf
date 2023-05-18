@@ -1,0 +1,26 @@
+@font-face {
+    font-family: 'TF2'; /*a name to be used later*/
+    src: url('/static/fonts/TF2.ttf'); /*URL to font*/
+}
+
+@font-face {
+    font-family: 'TF2-Build'; /*a name to be used later*/
+    src: url('/static/fonts/tf2build.ttf'); /*URL to font*/
+}
+
+@font-face {
+    font-family: 'TF2-Professor'; /*a name to be used later*/
+    src: url('/static/fonts/tf2professor.ttf'); /*URL to font*/
+}
+
+@font-face {
+    font-family: 'TF2-Secondary'; /*a name to be used later*/
+    src: url('/static/fonts/TF2secondary.ttf'); /*URL to font*/
+}
+
+@font-face {
+    font-family: 'BNT'; /*a name to be used later*/
+    src: url('/static/fonts/big_noodle_titling.ttf'); /*URL to font*/
+}
+
+

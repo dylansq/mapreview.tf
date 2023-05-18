@@ -1,1 +1,0 @@
-gltfpack -i cp_metalworks_f5_d6.glb -o textured_compressed.glb

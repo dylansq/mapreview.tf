@@ -116,7 +116,7 @@ function updateItemBoxes() {
                 }
                 var item_box = `<div class='item-box' id=${video['yt_video_id']}>${yt_video_new_flag}<div class="item-wrap"><div class="item-box-img"><span class="resource-type-flag" id="${resource_type}">${resource_type_display}</span>
                         <a href="https://youtube.com/channel/${video['yt_channel_id']}"><img class="item-box-logo" src="${video["yt_channel_image"]}"></img></a><div class="item-flag-container">${tf_class_flag}${tf_map_flag}</div>
-                        <img class="item-box-img-select" data-yt_video_id=${video['yt_video_id']} src="https://i.ytimg.com/vi/${video['yt_video_id']}/${thumbnail_resolution}.jpg"></img></div>
+                        <img class="item-box-img-select" data-yt_video_id=${video['yt_video_id']} src="https://i.ytimg.com/vi/${video['yt_video_id']}/${thumbnail_resolution}.jpg" loading="lazy"></img></div>
                         <div class="item-box-caption"><div class="caption-top"><span class="item-box-creator">${display_name}</span><span class="item-box-views">${yt_views} views •</span><span class="item-box-time">${time_ago}</span></div>
                         <span class="item-box-title" title=${video['yt_video_title']}>${video['yt_video_title']}</span></div></div></div>`;
 

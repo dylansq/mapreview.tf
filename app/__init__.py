@@ -21,6 +21,8 @@ def create_app(config_file = '../app.cfg'):
     app.register_blueprint(external, url_prefix = "/ext")
     from .hackertracker import ht
     app.register_blueprint(ht, url_prefix = "/ht")
+    from .dribble import dribble
+    app.register_blueprint(dribble, url_prefix = '/',subdomain = 'demo')
     #Import all table models
     from .models import ytVideos
     from .models import ytClips

@@ -54,16 +54,25 @@
 	height: 58px;
 }
 
+.checkbox-holder{
+	width: 21px;
+	height: 21px;
+	margin: 0 0.2em;
+
+}
+
 .icon.checkbox{
     background: url('../img/icon-sprites.png') no-repeat;
-    background-position: -699px -1px;
+    background-position: -699px -1px; /* define here to change when checking/crosing */
+
     width: 60px;
 	height: 60px;
-    margin: 0 0.2em;
-    zoom:0.35;
+	zoom:0.35;
+	-moz-transform:scale(0.35);
+	-moz-transform-origin: 0 0;
+    
     /*  Mozilla support */
-    -moz-transform:scale(0.35);
-    -moz-transform-origin: 0 0;
+    
     
 }
 .icon.checkbox.checked {

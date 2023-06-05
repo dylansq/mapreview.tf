@@ -1,0 +1,41 @@
+{
+  "files": {
+    "main.css": "./demo/static/css/main.163e5d67.chunk.css",
+    "main.js": "./demo/static/js/main.19f2cfe1.chunk.js",
+    "main.js.map": "./demo/static/js/main.19f2cfe1.chunk.js.map",
+    "runtime-main.js": "./demo/static/js/runtime-main.4700507e.js",
+    "runtime-main.js.map": "./demo/static/js/runtime-main.4700507e.js.map",
+    "static/css/2.64119653.chunk.css": "./demo/static/css/2.64119653.chunk.css",
+    "static/js/2.c8a78030.chunk.js": "./demo/static/js/2.c8a78030.chunk.js",
+    "static/js/2.c8a78030.chunk.js.map": "./demo/static/js/2.c8a78030.chunk.js.map",
+    "0d881c0827014bf79d22.worker.js": "./demo/0d881c0827014bf79d22.worker.js",
+    "0d881c0827014bf79d22.worker.js.LICENSE.txt": "./demo/0d881c0827014bf79d22.worker.js.LICENSE.txt",
+    "0d881c0827014bf79d22.worker.js.map": "./demo/0d881c0827014bf79d22.worker.js.map",
+    "index.html": "./demo/index.html",
+    "precache-manifest.fc5a5dec96f92ff59a1ff14eee0dafa7.js": "./demo/precache-manifest.fc5a5dec96f92ff59a1ff14eee0dafa7.js",
+    "service-worker.js": "./demo/service-worker.js",
+    "static/css/2.64119653.chunk.css.map": "./demo/static/css/2.64119653.chunk.css.map",
+    "static/css/main.163e5d67.chunk.css.map": "./demo/static/css/main.163e5d67.chunk.css.map",
+    "static/js/2.c8a78030.chunk.js.LICENSE.txt": "./demo/static/js/2.c8a78030.chunk.js.LICENSE.txt",
+    "static/media/airstrike.png": "./demo/static/media/airstrike.3ad45f8a.png",
+    "static/media/back_scatter.png": "./demo/static/media/back_scatter.5fe7fe03.png",
+    "static/media/semantic.min.css": "./demo/static/media/outline-icons.ef60a4f6.woff",
+    "static/media/bread_bite.png": "./demo/static/media/bread_bite.9fb4c8ac.png",
+    "static/media/class_icons_64.png": "./demo/static/media/class_icons_64.1550592b.png",
+    "static/media/classic.png": "./demo/static/media/classic.db3416c6.png",
+    "static/media/combine_ball.png": "./demo/static/media/combine_ball.81103d19.png",
+    "static/media/crossbow_bolt.png": "./demo/static/media/crossbow_bolt.d9a1ee9b.png",
+    "static/media/physcannon.png": "./demo/static/media/physcannon.88996152.png",
+    "static/media/slam.png": "./demo/static/media/slam.f8a96600.png",
+    "static/media/snack_attack.png": "./demo/static/media/snack_attack.1eb536d9.png",
+    "static/media/stun.png": "./demo/static/media/stun.cb8e5767.png",
+    "static/media/tide_turner.png": "./demo/static/media/tide_turner.cb8e3cec.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.4700507e.js",
+    "static/css/2.64119653.chunk.css",
+    "static/js/2.c8a78030.chunk.js",
+    "static/css/main.163e5d67.chunk.css",
+    "static/js/main.19f2cfe1.chunk.js"
+  ]
+}

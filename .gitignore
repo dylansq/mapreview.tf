@@ -2,4 +2,5 @@
 app.cfg
 documents/
 database/
-
+app/static/img/dev/*
+app/static/img/dev/

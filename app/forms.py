@@ -43,10 +43,10 @@ class ytFormSchema(Schema):
     yt_channel_id= fields.Str()
     yt_published_date= fields.Str()
     yt_video_title= fields.Str()
-    yt_stats_comments= fields.Int(load_default=0)
-    yt_stats_favorites= fields.Int(load_default=0)
-    yt_stats_likes= fields.Int(load_default=0)
-    yt_stats_views= fields.Int(load_default=0)
+    yt_stats_comments= fields.Int(default=0)
+    yt_stats_favorites= fields.Int(default=0)
+    yt_stats_likes= fields.Int(default=0)
+    yt_stats_views= fields.Int(default=0)
     yt_channel_image= fields.URL()
     yt_channel_title= fields.Str()
     yt_stats_lastupdated= fields.Str()
@@ -82,7 +82,8 @@ class ytFormSchema(Schema):
 
     class Meta:
         unknown = EXCLUDE
-
+        postprocess = True
+        skip_on_field_errors = True
 
 tf_version_args = {
     "tf_match_format" : fields.Str(validate=[validate.OneOf(['sixes','highlander','prolander','bball','ultiduo','other'])]),

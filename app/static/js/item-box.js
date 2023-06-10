@@ -115,7 +115,7 @@ function updateItemBoxes() {
                     <path class="cls-2" d="M274.388,604.066l39.551-3.076-3.223-204.053-48.34,1.9,6.3,131.4-93.6-133.594H132.445V606.7h56.4l-2.929-127.149ZM505.535,447.035v-50.1H335.466L338.1,606.7,488.4,604.066l-1.172-39.99-95.068,3.076L391.57,544.3h62.988V516.175H390.4l-0.879-69.14H505.535Zm167.412-56.194-30.908-2.49L603.074,514.767,574.8,388.351l-58.154,6.885L566.16,599h51.562l43.8-124.219,30.615,116.748,46.582,5.127,53.028-197.461-49.512-8.936L707.517,528.244Zm186.136,10.637-42.48-2.051-5.42,136.231,35.6,2.051ZM802.76,593.519a22.738,22.738,0,0,0,5.567,6.812,26.571,26.571,0,0,0,7.763,4.467,25.132,25.132,0,0,0,8.863,1.612,26.773,26.773,0,0,0,16.919-6.079,22.811,22.811,0,0,0,5.566-6.812,21.084,21.084,0,0,0,2.417-8.789,24.029,24.029,0,0,0-1.318-8.569,21.982,21.982,0,0,0-4.688-7.837,24.749,24.749,0,0,0-7.983-5.713,24.381,24.381,0,0,0-10.913-2.051,24.623,24.623,0,0,0-17.8,7.764,24.4,24.4,0,0,0-6.519,16.406A18.277,18.277,0,0,0,802.76,593.519Z"/></svg>`
                 }
                 var item_box = `<div class='item-box' id=${video['yt_video_id']}>${yt_video_new_flag}<div class="item-wrap"><div class="item-box-img"><span class="resource-type-flag" id="${resource_type}">${resource_type_display}</span>
-                        <a href="https://youtube.com/channel/${video['yt_channel_id']}"><img class="item-box-logo" src="${video["yt_channel_image"]}"></img></a><div class="item-flag-container">${tf_class_flag}${tf_map_flag}</div>
+                        <a href="https://youtube.com/channel/${video['yt_channel_id']}"><img class="item-box-logo logo-absolute" src="${video["yt_channel_image"]}"></img></a><div class="item-flag-container">${tf_class_flag}${tf_map_flag}</div>
                         <img class="item-box-img-select" data-yt_video_id=${video['yt_video_id']} src="https://i.ytimg.com/vi/${video['yt_video_id']}/${thumbnail_resolution}.jpg" loading="lazy"></img></div>
                         <div class="item-box-caption"><div class="caption-top"><span class="item-box-creator">${display_name}</span><span class="item-box-views">${yt_views} views •</span><span class="item-box-time">${time_ago}</span></div>
                         <span class="item-box-title" title=${video['yt_video_title']}>${video['yt_video_title']}</span></div></div></div>`;
@@ -209,7 +209,8 @@ $("#video-floating-frame").on({
             $("#ff-title").text(video.yt_video_title)
             $("#ff-creator").text(video.st_presenter_name)
             $("#ff-views").text(formatViews(video.yt_stats_views) + " views")
-            
+            $("#ff-logo-link").attr("href","https://youtube.com/channel/"+video.yt_channel_id)
+            $("#ff-logo-img").attr("src",video.yt_channel_image)
             $("#ff-age").text(formatTimeAgo(Date.parse(video.yt_published_date)))
 
         })

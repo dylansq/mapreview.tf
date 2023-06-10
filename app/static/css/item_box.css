@@ -189,8 +189,12 @@
     margin: auto;
     cursor:pointer;
 }
+
+.logo-absolute{
+  position: absolute;
+}
+
 .item-box-logo {
-    position: absolute;
     left: 7px;
     bottom: 8px;
     width: 36px;
@@ -199,9 +203,23 @@
     z-index: 5;
     transition: .5s;
 }
+
 .item-box-logo:hover {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     text-align: center;
+}
+
+.ff-logo{
+  display: flex;
+  
+}
+
+.logo-container{
+  
+}
+.bottom-container{
+  display: flex;
+  padding: 5px 8px 2px 8px;
 }
 
 .caption-container {
@@ -210,7 +228,7 @@
   height: 40px;
   width: auto;
   text-align: left;
-  padding: 5px 8px 2px 8px;
+  padding-left: 8px;
   
 }
 
@@ -352,7 +370,7 @@
     padding-right: 10px;
     text-align: left;
     overflow:hidden;
-    width: 285px;
+    width: 99%;/*285px;*/
 }
 
 

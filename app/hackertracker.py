@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, url_for, jsonify,redirect, current_app, send_from_directory
+from flask import Blueprint, render_template, request, flash, url_for, jsonify,redirect, current_app, send_from_directory, Response
 import requests
 from .models import mrtfHackerTracker
 from datetime import datetime
@@ -203,6 +203,14 @@ def ht_get_all_rich_presence(st_id64=None):
     for _hacker in _hackers:
         ht_get_rich_presence(_hacker.st_id64)
     return ''
+
+
+@ht.route('/hacker_ids', methods=['GET'])
+def hacker_ids():
+    players = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot"]),mrtfHackerTracker.ht_confidence>= 0.99))))
+    
+    return Response('\n'.join([p[0].st_id64 for p in players]),mimetype='text/plain')
+
 
 
 @ht.route('/ht_get_rich_presence', methods=['GET'])

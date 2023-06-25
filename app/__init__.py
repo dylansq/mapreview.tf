@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
+from flask_cors import CORS, cross_origin
 from os import path
 from socket import gethostname
 
@@ -12,6 +13,9 @@ def create_app(config_file = '../app.cfg'):
     app.config.from_pyfile(config_file)
 
     db.init_app(app)
+
+    cors = CORS(app, resources={r"/pickup/*": {"origins": "*"}})
+    app.config['CORS_HEADERS'] = 'Content-Type' 
 
     from .views import views
     app.register_blueprint(views, url_prefix = "/")

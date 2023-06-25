@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, flash, url_for, jsonify,redirect, current_app, send_from_directory
+from flask_cors import CORS
 from .models import ptfServers
 from . import db
 import json
@@ -28,6 +29,9 @@ from webargs.flaskparser import abort
 
 #Initialize Blueprints
 pickup = Blueprint("pickup", __name__)
+
+#Setup CORS for pickup
+CORS(pickup)
 
 #Routes
 #Housekeeping

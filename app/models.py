@@ -295,6 +295,7 @@ class ptfServers(db.Model):
     ptf_match_weekly_frequency_value=db.Column(db.Integer)
     ptf_schedule_day= db.Column(db.String(32))
     ptf_schedule_time= db.Column(db.String(32))
+    ptf_schedule_timezone= db.Column(db.String(32))
     ptf_mirrors_leaguebans=db.Column(db.Boolean())
     ptf_region_na=db.Column(db.Boolean())
     ptf_region_sa=db.Column(db.Boolean())

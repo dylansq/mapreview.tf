@@ -23,11 +23,14 @@ def create_app(config_file = '../app.cfg'):
     app.register_blueprint(ht, url_prefix = "/ht")
     from .dribble import dribble
     app.register_blueprint(dribble, url_prefix = '/demo')
+    from .pickup import pickup
+    app.register_blueprint(pickup, url_prefix = '/pickup')
     #Import all table models
     from .models import ytVideos
     from .models import ytClips
     from .models import ytChapters
     from .models import tfVersions
     from .models import mrtfHackerTracker
+    from .models import ptfServers
 
     return app

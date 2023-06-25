@@ -30,8 +30,7 @@ from webargs.flaskparser import abort
 #Initialize Blueprints
 pickup = Blueprint("pickup", __name__)
 
-#Setup CORS for pickup
-CORS(pickup)
+
 
 #Routes
 #Housekeeping
@@ -151,7 +150,12 @@ def update_listings():
         results[ptf_server_id] = _li
     
     #results = sorted(list(results.values()), key=lambda d: d['mrtf_rating_score_a1'],reverse=True)
-    return json.dumps({'results':results,'counts':counts}, default=str), 200
+
+    response = jsonify({'results':results,'counts':counts})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+
+
+    return response, 200 #json.dumps({'results':results,'counts':counts}, default=str), 200
 
 def get_yt_video_counts(q):    
     ptf_regions = ['na','sa','eu','as','oc','af']

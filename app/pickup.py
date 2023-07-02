@@ -112,10 +112,10 @@ def update_listings():
     print(args_dic['skill'])
     #Construct filters
     ptf_language_filter = ''
-    ptf_region_filter_dic = {'na':ptfServers.ptf_region_na.isnot(None),'sa':ptfServers.ptf_region_sa.isnot(None),'eu':ptfServers.ptf_region_eu.isnot(None),'as':ptfServers.ptf_region_as.isnot(None),'oc':ptfServers.ptf_region_oc.isnot(None),'af':ptfServers.ptf_region_af.isnot(None)}
-    tf_skill_filter_dic = {'0':ptfServers.tf_skilllevel_0.isnot(None),'1':ptfServers.tf_skilllevel_1.isnot(None),'2':ptfServers.tf_skilllevel_2.isnot(None),'3':ptfServers.tf_skilllevel_3.isnot(None)}
-    ptf_gamemode_filter_dic = {'ultiduo':ptfServers.tf_gamemode_ultiduo.isnot(None),'ultitrio':ptfServers.tf_gamemode_ultitrio.isnot(None),'fours':ptfServers.tf_gamemode_fours.isnot(None),'sixes':ptfServers.tf_gamemode_sixes.isnot(None),'prolander':ptfServers.tf_gamemode_prolander.isnot(None),'highlander':ptfServers.tf_gamemode_highlander.isnot(None)}
-    ptf_gametype_filter_dic ={'experimental':ptfServers.tf_gamemode_experimental.isnot(None),'passtime':ptfServers.tf_gamemode_passtime.isnot(None),'bball':ptfServers.tf_gamemode_bball.isnot(None),'mge':ptfServers.tf_gamemode_mge.isnot(None),'mvm':ptfServers.tf_gamemode_mvm.isnot(None)}
+    ptf_region_filter_dic = {'na':ptfServers.ptf_region_na.isnot(False),'sa':ptfServers.ptf_region_sa.isnot(False),'eu':ptfServers.ptf_region_eu.isnot(False),'as':ptfServers.ptf_region_as.isnot(False),'oc':ptfServers.ptf_region_oc.isnot(False),'af':ptfServers.ptf_region_af.isnot(False)}
+    tf_skill_filter_dic = {'0':ptfServers.tf_skilllevel_0.isnot(False),'1':ptfServers.tf_skilllevel_1.isnot(False),'2':ptfServers.tf_skilllevel_2.isnot(False),'3':ptfServers.tf_skilllevel_3.isnot(False)}
+    ptf_gamemode_filter_dic = {'ultiduo':ptfServers.tf_gamemode_ultiduo.isnot(False),'ultitrio':ptfServers.tf_gamemode_ultitrio.isnot(False),'fours':ptfServers.tf_gamemode_fours.isnot(False),'sixes':ptfServers.tf_gamemode_sixes.isnot(False),'prolander':ptfServers.tf_gamemode_prolander.isnot(False),'highlander':ptfServers.tf_gamemode_highlander.isnot(False)}
+    ptf_gametype_filter_dic ={'experimental':ptfServers.tf_gamemode_experimental.isnot(False),'passtime':ptfServers.tf_gamemode_passtime.isnot(False),'bball':ptfServers.tf_gamemode_bball.isnot(False),'mge':ptfServers.tf_gamemode_mge.isnot(False),'mvm':ptfServers.tf_gamemode_mvm.isnot(False)}
 
     #TODO handel other
     #,'other':ptfServers.tf_gamemode_other.isnot(None)
@@ -146,6 +146,7 @@ def update_listings():
     for _li in list(listings):
         ptf_server_id = _li.ptf_server_id
         _li = _li.__dict__
+        print(_li)
         del _li['_sa_instance_state']#remove sa object from dictionary to jsonify easier
         results[ptf_server_id] = _li
     
@@ -155,7 +156,7 @@ def update_listings():
     response.headers.add('Access-Control-Allow-Origin', '*')
 
 
-    return response, 200 #json.dumps({'results':results,'counts':counts}, default=str), 200
+    return response #json.dumps({'results':results,'counts':counts}, default=str), 200
 
 def get_yt_video_counts(q):    
     ptf_regions = ['na','sa','eu','as','oc','af']

@@ -514,7 +514,7 @@ def yt_channel_id_lookup():
 def check_existing_videos():
     arg_dic = request.args.to_dict(flat=False)
     yt_video_id = arg_dic['yt_video_id']
-    _videos = db.session.query(ytVideos).filter(ytVideos.yt_video_id.in_([yt_video_id]))
+    _videos = db.session.query(ytVideos).filter(ytVideos.yt_video_id.in_(yt_video_id))
     vids = len(list(_videos))
     return jsonify(vids), 200
 

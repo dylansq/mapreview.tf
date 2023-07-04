@@ -43,7 +43,6 @@ def static_from_root():
 def webhook():
     '''Github Webhook for autoupdating server repo'''
     if request.method == 'POST':
-        print(request) 
         repo = git.Repo('./pickup.tf')
         repo.git.reset('--hard')
         origin = repo.remotes.origin
@@ -96,7 +95,6 @@ def browse():
 @pickup.route('/update_listings/',methods=['GET'])
 def update_listings():
     arg_dic = request.args.to_dict(flat=False)
-    print(arg_dic)
     #Update this if more search parameters are added
     args_dic = {'language':[''],'region':[''],'gamemode':[''],'gametype':[''],'status':[''],'skill':['']}
     arg_labels =  ['language','region','gamemode','gametype','status','skill']
@@ -109,7 +107,6 @@ def update_listings():
         except:
             #argument not found in arg_dic
             continue
-    print(args_dic['skill'])
     #Construct filters
     ptf_language_filter = ''
     ptf_region_filter_dic = {'na':ptfServers.ptf_region_na.isnot(False),'sa':ptfServers.ptf_region_sa.isnot(False),'eu':ptfServers.ptf_region_eu.isnot(False),'as':ptfServers.ptf_region_as.isnot(False),'oc':ptfServers.ptf_region_oc.isnot(False),'af':ptfServers.ptf_region_af.isnot(False)}
@@ -123,7 +120,6 @@ def update_listings():
     query_filter = []
     #query_filter_or = [] #can contain multiple classes which will be filtered using or_ in the SQLAlchemy query
 
-    #print([tf_skill_filter_dic[_var] for _var in [skill]])
     if args_dic['language'][0]:
         query_filter.append(ptfServers.ptf_language.in_(args_dic['language']))
     if args_dic['region'][0]:
@@ -138,7 +134,7 @@ def update_listings():
         _qf = [tf_skill_filter_dic[_var] for _var in args_dic['skill']]
         
         query_filter.extend(or_(*_qf)) if len(_qf) > 1 else query_filter.extend(_qf)
-        print(query_filter)
+
 
     listings = db.session.query(ptfServers).filter(and_(*query_filter))
     counts = get_yt_video_counts(listings.filter(ptfServers.ptf_server_status.in_([1,2,3,4,5,6,7])))#remove 8,9, unknown and dead
@@ -146,7 +142,7 @@ def update_listings():
     for _li in list(listings):
         ptf_server_id = _li.ptf_server_id
         _li = _li.__dict__
-        print(_li)
+
         del _li['_sa_instance_state']#remove sa object from dictionary to jsonify easier
         results[ptf_server_id] = _li
     

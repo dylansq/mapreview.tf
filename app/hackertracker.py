@@ -222,7 +222,7 @@ def valvecomp_cheaters():
         "$schema": "https://raw.githubusercontent.com/PazerOP/tf2_bot_detector/master/schemas/v3/playerlist.schema.json",
         'file_info':{
             'authors':['Zebulon','Fuzzycoco','Plasic74x','Arthur'],
-            'description':'List of cheaters, hackers, aimbots, and racists who que for North American Valve Competitive Matchmaking',
+            'description':'List of cheaters, hackers, aimbots, and racists who queue for North American Valve Competitive Matchmaking',
             'title':"YAVC's Valve Comp Hacker Tracker",
             'update_url':'https://mapreview.tf/ht/valvecomp_cheaters.json'
         },

@@ -216,7 +216,7 @@ def hacker_ids():
 def valvecomp_cheaters():
     cheater_results = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot"]),mrtfHackerTracker.ht_confidence>= 0.99))))
     
-    players = [{'attributes':['cheater'],'steamid':SteamID64To3(p[0].st_id64)[1]} for p in cheater_results]
+    players = [{'attributes':['cheater'],'steamid':SteamID64To3(p[0].st_id64)[0]} for p in cheater_results]
 
     valvecomp_dict = {
         "$schema": "https://raw.githubusercontent.com/PazerOP/tf2_bot_detector/master/schemas/v3/playerlist.schema.json",

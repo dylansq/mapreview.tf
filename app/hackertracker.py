@@ -212,6 +212,24 @@ def hacker_ids():
     return Response('\n'.join([p[0].st_id64 for p in players]),mimetype='text/plain')
 
 
+@ht.route('/valvecomp_cheaters.json', methods=['GET'])
+def valvecomp_cheaters():
+    cheater_results = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot"]),mrtfHackerTracker.ht_confidence>= 0.99))))
+    
+    players = [{'attributes':['cheater'],'steamid':SteamID64To3(p[0].st_id64)[1]} for p in cheater_results]
+
+    valvecomp_dict = {
+        "$schema": "https://raw.githubusercontent.com/PazerOP/tf2_bot_detector/master/schemas/v3/playerlist.schema.json",
+        'file_info':{
+            'authors':['Zebulon','Fuzzycoco','Plasic74x','Arthur'],
+            'description':'List of cheaters, hackers, aimbots, and racists who que for North American Valve Competitive Matchmaking',
+            'title':"YAVC's Valve Comp Hacker Tracker",
+            'update_url':'https://mapreview.tf/ht/valvecomp_cheaters.json'
+        },
+        'players':players}
+    
+    return jsonify(valvecomp_dict)
+
 
 @ht.route('/ht_get_rich_presence', methods=['GET'])
 def ht_get_rich_presence(st_id64=None):

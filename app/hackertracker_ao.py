@@ -1,6 +1,7 @@
 import requests, time
 
 while True:
+    print('running updter')
     try:
         requests.get('http://mapreview.tf/ht/ht_get_all_rich_presence',timeout=0.0000000001)
     except requests.exceptions.Timeout:

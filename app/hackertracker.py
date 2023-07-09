@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, url_for, jsonify,redirect, current_app, send_from_directory, Response
-import requests
+import requests, time
 from .models import mrtfHackerTracker
 from datetime import datetime
 import urllib.parse
@@ -200,8 +200,21 @@ def combine_mutes(existing_mutes,unmute_annoying=False):
 @ht.route('/ht_get_all_rich_presence', methods=['GET'])
 def ht_get_all_rich_presence(st_id64=None):
     _hackers  = mrtfHackerTracker.query.all()
+    i = 0
+    j = 0
+    times = [15, 5, 5, 1, 1, 0.1]
     for _hacker in _hackers:
-        ht_get_rich_presence(_hacker.st_id64)
+        if j%5==0:
+            time.sleep(3)
+        j +=1
+        status = ht_get_rich_presence(_hacker.st_id64)[1]
+        if status == 200:
+            continue
+        elif status == 500:
+            time.sleep(times[i])
+            i +=1
+            if i > len(times)-1:
+                i = len(times)-1
     return ''
 
 
@@ -257,10 +270,21 @@ def ht_get_rich_presence(st_id64=None):
         _data["st_rich_presence_game"] = None
         _data["st_rich_presence_desc"] = None
         _data["st_rich_presence_datetime_updated"] = None
+        
         pass
-    except:
-        print("other error for: ", st_id64)
-
+    except Exception as err:
+        try:
+            print(f"other error {err} for: {st_id64}")
+            print(r.content)
+            r = requests.get(f'https://steamcommunity.com/miniprofile/{st_id3}/json')
+            _data["st_rich_presence_game"] = str(r.json()['in_game']['name'])
+            _data["st_rich_presence_desc"] = str(r.json()['in_game']['rich_presence'])
+            _data["st_rich_presence_datetime_updated"] = datetime.now(pytz.utc)
+            
+            
+            
+        except Exception as err2:
+            return '',500
     _hacker  = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(mrtfHackerTracker.st_id64.in_([st_id64]))))[0][0]
     
 

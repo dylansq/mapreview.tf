@@ -212,7 +212,7 @@ def hacker_ids():
     return Response('\n'.join([p[0].st_id64 for p in players]),mimetype='text/plain')
 
 
-@ht.route('/valvecomp_cheaters.json', methods=['GET'])
+@ht.route('/playerlist.valvecomp_cheaters.json', methods=['GET'])
 def valvecomp_cheaters():
     cheater_results = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot","racist"]),mrtfHackerTracker.ht_confidence>= 0.99))))
     
@@ -224,7 +224,7 @@ def valvecomp_cheaters():
             'authors':['Zebulon','Fuzzycoco','Plasic74x','Arthur'],
             'description':'List of cheaters, hackers, aimbots, and racists who queue for North American Valve Competitive Matchmaking',
             'title':"YAVC's Valve Comp Hacker Tracker",
-            'update_url':'https://mapreview.tf/ht/valvecomp_cheaters.json'
+            'update_url':'https://mapreview.tf/ht/playerlist.valvecomp_cheaters.json'
         },
         'players':players}
     

@@ -30,5 +30,14 @@
       </g></svg>
 
   </a>
+
+  <img id="steam_openid_login" height="31" src = "https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png">
+  <script>
+    $('#steam_openid_login').on('click',function () {
+      location.href = location.origin + "/ext/steam_auth?origin=" + location.href;
+    });
+
+    
+  </script>
   </div>
 </nav>

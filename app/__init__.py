@@ -2,6 +2,7 @@ from flask import Flask, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
 from sqlalchemy import create_engine
+from flask_cors import CORS, cross_origin
 from os import path
 from socket import gethostname
 
@@ -19,6 +20,9 @@ def create_app(config_file = '../app.cfg'):
     #Init
     db.init_app(app)
 
+    cors = CORS(app, resources={r"/pickup/*": {"origins": "*"}})
+    app.config['CORS_HEADERS'] = 'Content-Type' 
+
     from .views import views
     app.register_blueprint(views, url_prefix = "/")
     from .forms import forms
@@ -29,11 +33,14 @@ def create_app(config_file = '../app.cfg'):
     app.register_blueprint(ht, url_prefix = "/ht")
     from .dribble import dribble
     app.register_blueprint(dribble, url_prefix = '/demo')
+    from .pickup import pickup
+    app.register_blueprint(pickup, url_prefix = '/pickup')
     #Import all table models
     from .models import ytVideos
     from .models import ytClips
     from .models import ytChapters
     from .models import tfVersions
     from .models import mrtfHackerTracker
+    from .models import ptfServers
 
     return app

@@ -1,5 +1,6 @@
-from flask import Flask, request
+from flask import Flask, request, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_session import Session
 from sqlalchemy import create_engine
 from flask_cors import CORS, cross_origin
 from os import path
@@ -12,6 +13,11 @@ def create_app(config_file = '../app.cfg'):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_pyfile(config_file)
 
+    #Flask_Session Variables
+    app.config["SESSION_PERMANENT"] = False
+    app.config["SESSION_TYPE"] = "filesystem"
+    Session(app)
+    #Init
     db.init_app(app)
 
     cors = CORS(app, resources={r"/pickup/*": {"origins": "*"}})

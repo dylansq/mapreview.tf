@@ -217,12 +217,9 @@
 .logo-container{
   
 }
-.bottom-container{
-  display: flex;
-  padding: 5px 8px 2px 8px;
-}
 
-.caption-container {
+
+.title-container {
   display: block;
   color: black;
   height: 40px;
@@ -257,6 +254,10 @@
   max-width: 100%;
 }
 
+.bottom-container{
+  display: flex;
+  padding: 5px 8px 2px 8px;
+}
 
 .top-container {
   
@@ -267,8 +268,39 @@
 
   justify-content: flex-start;
   flex-direction: row;
-  flex-wrap: nowrap;
 }
+.left-container {
+  display: flex;
+  flex-grow: 4;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.right-container {
+  display: flex;
+  flex-direction: column;
+  order: 2;
+  padding: 4px;
+  width: auto;
+  vertical-align: middle;
+  align-content: flex-end;
+}
+.caption-container {
+  display: flex;
+}
+.views-container {
+  justify-content: center;
+  display: flex;
+  float: right;
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: 4px;
+}
+.frag-container {
+  display: flex;
+  align-content: flex-end;
+}
+
+
 .chapter-flag {
 
   
@@ -289,22 +321,12 @@
 }
 
 
-.views-container {
-  justify-content: center;
-  display: flex;
-  float: right;
-  white-space: nowrap;
-  vertical-align: middle;
-  padding: 4px;
-}
-
 
 .chapter-container {
   display: flex;
   overflow-x: auto;
 
-  height: 15px;
-  padding: 4px;
+
   width: 100%;
   
   overflow-y: hidden;

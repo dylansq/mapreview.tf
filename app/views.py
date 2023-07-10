@@ -17,7 +17,8 @@ from sqlalchemy.orm import lazyload
 
 from sqlalchemy.sql import label
 
-
+from flask_session import Session
+from flask import session
 
 from webargs import fields, validate
 from webargs.flaskparser import parser

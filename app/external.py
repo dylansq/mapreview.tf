@@ -301,9 +301,9 @@ def ht_update_all_steamrep():
 def auth_with_steam(origin=None):
     arg_dic = request.args.to_dict(flat=False)
     try:
-        origin = arg_dic['origin'][0]
+        origin = 'origin='+ str(arg_dic['origin'][0])
     except:
-        origin = "https://mapreview.tf"
+        origin = "origin=https://mapreview.tf"
 
     steam_openid_url = 'https://steamcommunity.com/openid/login'
     params = {
@@ -311,8 +311,8 @@ def auth_with_steam(origin=None):
     'openid.identity': "http://specs.openid.net/auth/2.0/identifier_select",
     'openid.claimed_id': "http://specs.openid.net/auth/2.0/identifier_select",
     'openid.mode': 'checkid_setup',
-    'openid.return_to': 'http://127.0.0.1:5000/ext/authorize?'+origin,
-    'openid.realm': 'http://127.0.0.1:5000'
+    'openid.return_to': 'http://mapreview.tf/ext/authorize?'+origin,
+    'openid.realm': 'http://mapreview.tf'
     }
     print(origin)
     query_string = urlencode(params)

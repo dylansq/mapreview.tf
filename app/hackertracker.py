@@ -226,6 +226,7 @@ def ht_get_all_rich_presence(st_id64=None):
     return ''
 
 
+
 @ht.route('/playerlist.valvecomp_cheaters.json', methods=['GET'])
 def valvecomp_cheaters():
     cheater_results = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot","racist"]),mrtfHackerTracker.ht_confidence>= 0.99))))

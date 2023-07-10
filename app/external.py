@@ -331,6 +331,7 @@ def authorize():
     
     try:
         identity = request.args['openid.identity']
+        print(identity)
         session['st_id64'] = identity.split('/')[-1]
     except:
         print("error with steam auth")

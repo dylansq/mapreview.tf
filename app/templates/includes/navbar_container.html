@@ -30,7 +30,9 @@
       </g></svg>
 
   </a>
-
+  {% if session['display_name'] %}
+  <div class="navbar-item"><div class="steam-oauth-displayname">Welcome {{ session['display_name'] }} </div></div><a href="/ext/steam_logout"><div class="steam-oauth-logout ">(logout)</div></a>
+  {% else %}
   <img id="steam_openid_login" height="31" src = "https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png">
   <script>
     $('#steam_openid_login').on('click',function () {
@@ -39,5 +41,7 @@
 
     
   </script>
+  {% endif %}
+  
   </div>
 </nav>

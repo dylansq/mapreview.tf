@@ -96,3 +96,14 @@
 .site-title__label {
     color: #f5e7de
 }
+
+
+.steam-oauth-logout {
+    font-size: 18px;
+    text-decoration: none;
+    color: #f5e7de
+}
+.steam-oauth-displayname{
+    font-size: 34px;
+    color: #f5e7de
+}

@@ -300,6 +300,7 @@ def ht_update_all_steamrep():
 @external.route("/steam_auth")
 def auth_with_steam(origin=None):
     arg_dic = request.args.to_dict(flat=False)
+    host = '://'.join(urllib.parse.urlparse(request.base_url)[:2])
     try:
         origin = 'origin='+ str(arg_dic['origin'][0])
     except:
@@ -311,15 +312,15 @@ def auth_with_steam(origin=None):
     'openid.identity': "http://specs.openid.net/auth/2.0/identifier_select",
     'openid.claimed_id': "http://specs.openid.net/auth/2.0/identifier_select",
     'openid.mode': 'checkid_setup',
-    'openid.return_to': 'http://mapreview.tf/ext/authorize?'+origin,
-    'openid.realm': 'http://mapreview.tf'
+    'openid.return_to': f'{host}/ext/authorize?'+origin,
+    'openid.realm': host
     }
     query_string = urlencode(params)
     auth_url = steam_openid_url + "?" + query_string
     #print(auth_url)
     return redirect(auth_url)
 
-#old?
+
 @external.route("/authorize")
 def authorize():
     arg_dic = request.args.to_dict(flat=False)
@@ -330,14 +331,28 @@ def authorize():
     
     try:
         identity = request.args['openid.identity']
-        print(request)
-        print(request.json())
+        
         session['st_id64'] = identity.split('/')[-1]
     except:
         print("error with steam auth")
     #session['st_id64'] = 
+    sq = steam_query(session['st_id64'])['response']['players']
+    print('sq: ',sq)
+    try:
+        sq = steam_query(session['st_id64'])['response']['players'][0]
+        print(sq)
+        session['display_name'] = sq['personaname']
+        session['avatar_url'] = sq['avatarfull']
+    except:
+        pass
     print(session)
     return redirect(origin)
+
+@external.route("/steam_logout")
+def steam_logout():
+    session.clear()
+    host = '://'.join(urllib.parse.urlparse(request.base_url)[:2])
+    return redirect(host)
 
 #old?
 
@@ -380,6 +395,7 @@ def twitch():
     print(r)
     return r.json()
     return render_template('twitch.html')
+
 
 
 @external.route('/refresh_yt_stats', methods=['POST'])

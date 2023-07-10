@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, redirect, current_app
+from flask import Blueprint, request, jsonify, redirect, current_app, session
 import requests
 from .models import ytVideos, tfVersions, ytClips, ytChapters,mrtfHackerTracker
 from datetime import datetime
@@ -298,17 +298,23 @@ def ht_update_all_steamrep():
 
 
 @external.route("/steam_auth")
-def auth_with_steam():
+def auth_with_steam(origin=None):
+    arg_dic = request.args.to_dict(flat=False)
+    try:
+        origin = arg_dic['origin'][0]
+    except:
+        origin = "https://mapreview.tf"
+
     steam_openid_url = 'https://steamcommunity.com/openid/login'
     params = {
     'openid.ns': "http://specs.openid.net/auth/2.0",
     'openid.identity': "http://specs.openid.net/auth/2.0/identifier_select",
     'openid.claimed_id': "http://specs.openid.net/auth/2.0/identifier_select",
     'openid.mode': 'checkid_setup',
-    'openid.return_to': 'http://127.0.0.1:5000/ext/authorize',
+    'openid.return_to': 'http://127.0.0.1:5000/ext/authorize?'+origin,
     'openid.realm': 'http://127.0.0.1:5000'
     }
-
+    print(origin)
     query_string = urlencode(params)
     auth_url = steam_openid_url + "?" + query_string
     #print(auth_url)
@@ -317,8 +323,20 @@ def auth_with_steam():
 #old?
 @external.route("/authorize")
 def authorize():
-  print(request.args)
-  return json.dumps(request.args) + '<br><br><a href="http://localhost:5000/auth">Login with steam</a>'
+    arg_dic = request.args.to_dict(flat=False)
+    try:
+        origin = arg_dic['origin'][0]
+    except:
+        origin = "https://mapreview.tf"
+    
+    try:
+        identity = request.args['openid.identity']
+        session['st_id64'] = identity.split('/')[-1]
+    except:
+        print("error with steam auth")
+    #session['st_id64'] = 
+    print(session)
+    return redirect(origin)
 
 #old?
 

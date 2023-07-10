@@ -2,4 +2,5 @@
 app.cfg
 documents/
 database/
+flask_session/
 /app/static/img/dev

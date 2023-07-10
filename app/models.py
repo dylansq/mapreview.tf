@@ -10,6 +10,7 @@ st: steam
 sr: steamrep.com
 tf: teamfortress2
 mrtf: mapreview.tf
+ptf: pickup.tf
 tw: twitch
 '''
 

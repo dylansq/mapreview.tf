@@ -314,7 +314,6 @@ def auth_with_steam(origin=None):
     'openid.return_to': 'http://mapreview.tf/ext/authorize?'+origin,
     'openid.realm': 'http://mapreview.tf'
     }
-    print(origin)
     query_string = urlencode(params)
     auth_url = steam_openid_url + "?" + query_string
     #print(auth_url)
@@ -331,7 +330,8 @@ def authorize():
     
     try:
         identity = request.args['openid.identity']
-        print(identity)
+        print(request)
+        print(request.json())
         session['st_id64'] = identity.split('/')[-1]
     except:
         print("error with steam auth")

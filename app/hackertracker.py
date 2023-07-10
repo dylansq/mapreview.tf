@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, url_for, jsonify,redirect, current_app, send_from_directory, Response
-import requests
+import requests, time
 from .models import mrtfHackerTracker
 from datetime import datetime
 import urllib.parse
@@ -208,9 +208,48 @@ def hacker_ids():
 @ht.route('/ht_get_all_rich_presence', methods=['GET'])
 def ht_get_all_rich_presence(st_id64=None):
     _hackers  = mrtfHackerTracker.query.all()
+    i = 0
+    j = 0
+    times = [15, 5, 5, 1, 1, 0.1]
     for _hacker in _hackers:
-        ht_get_rich_presence(_hacker.st_id64)
+        if j%5==0:
+            time.sleep(3)
+        j +=1
+        status = ht_get_rich_presence(_hacker.st_id64)[1]
+        if status == 200:
+            continue
+        elif status == 500:
+            time.sleep(times[i])
+            i +=1
+            if i > len(times)-1:
+                i = len(times)-1
     return ''
+
+
+@ht.route('/hacker_ids', methods=['GET'])
+def hacker_ids():
+    players = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot"]),mrtfHackerTracker.ht_confidence>= 0.99))))
+    
+    return Response('\n'.join([p[0].st_id64 for p in players]),mimetype='text/plain')
+
+
+@ht.route('/playerlist.valvecomp_cheaters.json', methods=['GET'])
+def valvecomp_cheaters():
+    cheater_results = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot","racist"]),mrtfHackerTracker.ht_confidence>= 0.99))))
+    
+    players = [{'attributes':[p[0].ht_reason],'steamid':SteamID64To3(p[0].st_id64)[0]} for p in cheater_results]
+
+    valvecomp_dict = {
+        "$schema": "https://raw.githubusercontent.com/PazerOP/tf2_bot_detector/master/schemas/v3/playerlist.schema.json",
+        'file_info':{
+            'authors':['Zebulon','Fuzzycoco','Plasic74x','Arthur'],
+            'description':'List of cheaters, hackers, aimbots, and racists who queue for North American Valve Competitive Matchmaking',
+            'title':"YAVC's Valve Comp Hacker Tracker",
+            'update_url':'https://mapreview.tf/ht/playerlist.valvecomp_cheaters.json'
+        },
+        'players':players}
+    
+    return jsonify(valvecomp_dict)
 
 
 @ht.route('/ht_get_rich_presence', methods=['GET'])
@@ -239,10 +278,21 @@ def ht_get_rich_presence(st_id64=None):
         _data["st_rich_presence_game"] = None
         _data["st_rich_presence_desc"] = None
         _data["st_rich_presence_datetime_updated"] = None
+        
         pass
-    except:
-        print("other error for: ", st_id64)
-
+    except Exception as err:
+        try:
+            print(f"other error {err} for: {st_id64}")
+            print(r.content)
+            r = requests.get(f'https://steamcommunity.com/miniprofile/{st_id3}/json')
+            _data["st_rich_presence_game"] = str(r.json()['in_game']['name'])
+            _data["st_rich_presence_desc"] = str(r.json()['in_game']['rich_presence'])
+            _data["st_rich_presence_datetime_updated"] = datetime.now(pytz.utc)
+            
+            
+            
+        except Exception as err2:
+            return '',500
     _hacker  = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(mrtfHackerTracker.st_id64.in_([st_id64]))))[0][0]
     
 

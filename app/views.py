@@ -533,7 +533,7 @@ def get_chapters(yt_video_id=None):
         arg_dic = request.args.to_dict(flat=False)
         yt_video_id = arg_dic['yt_video_id']
 
-    _chapters = db.session.execute(db.session.query(ytChapters).filter(ytChapters.yt_video_id.in_([yt_video_id])).order_by(ytChapters.yt_chapter_start))
+    _chapters = db.session.execute(db.session.query(ytChapters).filter(ytChapters.yt_video_id.in_(yt_video_id)).order_by(ytChapters.yt_chapter_start))
     _chapters = [_c[0] for _c in list(_chapters)]
     #print(_chapters)
     if len(_chapters) == 0:

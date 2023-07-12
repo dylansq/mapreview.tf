@@ -320,6 +320,10 @@ def auth_with_steam(origin=None):
     #print(auth_url)
     return redirect(auth_url)
 
+def SteamID64To3(st_id64):
+    steamID64IDEnt = 76561197960265728
+    id3base = int(st_id64) - steamID64IDEnt
+    return ("[U:1:{0}]".format(id3base),id3base)
 
 @external.route("/authorize")
 def authorize():
@@ -333,6 +337,7 @@ def authorize():
         identity = request.args['openid.identity']
         
         session['st_id64'] = identity.split('/')[-1]
+        session['st_id3'] = SteamID64To3(identity.split('/')[-1])[1]
     except:
         print("error with steam auth")
     #session['st_id64'] = 

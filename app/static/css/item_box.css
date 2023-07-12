@@ -214,10 +214,6 @@
   
 }
 
-.logo-container{
-  
-}
-
 
 .title-container {
   display: block;
@@ -230,7 +226,6 @@
 }
 
 .atop-container {
-  
   display: flex;
   padding: 4px;
   width: auto;
@@ -295,6 +290,45 @@
   vertical-align: middle;
   padding: 4px;
 }
+
+.chapter-flag {
+  white-space: nowrap;
+  /*text-overflow: ellipsis;
+  margin-right: 5px;
+  max-width: 120px;*/
+  background-color: #9d312f;
+  transition: all .2s ease;
+}
+.chapter-flag:hover {
+  transform: scale(1.02);
+}
+
+.chapter-container {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  width: 100%;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -ms-overflow-y: hidden;
+}
+
+.item-box-caption {
+  color: black;
+  height: 40px;
+  width: auto;
+  text-align: left;
+  padding: 5px 8px 2px 8px;
+  
+}
+
+.caption-top{
+  display:flex;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+
 .frag-container {
   user-select: none;
   display: flex;
@@ -315,57 +349,6 @@
   color: red;
 }
 
-.chapter-flag {
-
-  
-  
-  white-space: nowrap;
-
-  /*text-overflow: ellipsis;
-  margin-right: 5px;
-  max-width: 120px;*/
-  background-color: #9d312f;
-  transition: all .2s ease;
-  
-}
-.chapter-flag:hover {
-
-
-  transform: scale(1.02);
-}
-
-
-
-.chapter-container {
-  display: flex;
-  overflow-x: auto;
-
-
-  width: 100%;
-  
-  overflow-y: hidden;
-  white-space: nowrap;
-  -ms-overflow-y: hidden;
-  
-}
-
-
-
-
-.item-box-caption {
-  color: black;
-  height: 40px;
-  width: auto;
-  text-align: left;
-  padding: 5px 8px 2px 8px;
-  
-}
-
-.caption-top{
-  display:flex;
-  overflow: hidden;
-  white-space: nowrap;
-}
 
 .item-box-creator {
     display: inline;

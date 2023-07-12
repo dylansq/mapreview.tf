@@ -296,10 +296,24 @@
   padding: 4px;
 }
 .frag-container {
+  user-select: none;
   display: flex;
   align-content: flex-end;
+  font-family: 'TF2-Build';
 }
 
+.frag-button {
+  padding: 0 5px 0 5px;
+
+}
+
+.frag-total {
+  padding: 0 5px 0 0;
+}
+
+.frag-selected {
+  color: red;
+}
 
 .chapter-flag {
 

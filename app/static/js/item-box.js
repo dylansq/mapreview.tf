@@ -204,15 +204,22 @@ $("#video-floating-frame").on({
     'modal:before-block': function (event, modal) {
         //before modal opens
         var yt_video_id = modal.options.yt_video_id
-        $.get("/tf_map_select_get?id=" + modal.options.yt_video_id, function (video) {
-            video = JSON.parse(video)['results'][0]
+        $.get("/tf_map_select_get?id=" + modal.options.yt_video_id, function (data) {
+            data = JSON.parse(data)
+            video = data['results'][0]
             $("#ff-title").text(video.yt_video_title)
             $("#ff-creator").text(video.st_presenter_name)
             $("#ff-views").text(formatViews(video.yt_stats_views) + " views")
             $("#ff-logo-link").attr("href","https://youtube.com/channel/"+video.yt_channel_id)
             $("#ff-logo-img").attr("src",video.yt_channel_image)
             $("#ff-age").text(formatTimeAgo(Date.parse(video.yt_published_date)))
-
+            
+            
+            votes = data['votes']
+            $('.frag-button').removeClass("frag-selected")
+            $(`span[data-frag="${votes['user']}"]`).toggleClass("frag-selected")
+            $('.frag-total').text(votes['total'])
+            console.log(votes)
         })
         //handel chapters
         $("#chapter-container").empty();
@@ -224,6 +231,12 @@ $("#video-floating-frame").on({
                 $("#chapter-container").append(`<div class="item-flag chapter-flag" id='${_chapter_id}' data-timestart=${_chapter_start}>${_chapter_title}</div>`)
             })
         });
+
+        //handel votes
+        
+        //$.get("/get_user_vote?mrtf_item_id=" + modal.options.yt_video_id, function (data) {
+        //    console.log(data)
+        //});
         //change url search parameters once iframe holder is opened
         $prevSearchParams = new URLSearchParams(window.location.search);
         $newSearchParams = new URLSearchParams({ "id": yt_video_id });
@@ -312,3 +325,14 @@ $('.alert-container').click(function(){
 })
 
 
+$('.frag-button').on('click',function(e){
+    var $fragbutton = $(this)
+    $.post('/submit_vote',{vote:e.target.dataset.frag},function(data){
+        console.log(data)
+        $('.frag-button').not($fragbutton).removeClass("frag-selected")
+        $fragbutton.toggleClass("frag-selected")
+        $('.frag-total').text(data['total'])
+    }).fail(function(data) {
+        alert(data.responseText)
+      })
+})

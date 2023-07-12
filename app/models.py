@@ -1,5 +1,6 @@
 from . import db
 from sqlalchemy.sql import func
+from sqlalchemy.dialects.mysql import TINYINT
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -35,6 +36,8 @@ class ytVideos(db.Model):
     tf_map_full= db.Column(db.String(32))
     tf_version_full= db.Column(db.String(64))
     relevant_classes= db.Column(db.String(64))
+
+    relevant_classes= db.Column(TINYINT)
     #
     tf_match_format= db.Column(db.String(32)) 
     tf_class_all= db.Column(db.Integer)
@@ -256,6 +259,24 @@ class mrtfHackerTracker(db.Model):
 
     def __init__(self, **kwargs):
         super(mrtfHackerTracker, self).__init__(**kwargs)
+
+
+class mrtfVotes(db.Model):
+    mrtf_votes_id= db.Column(db.Integer, unique= True,primary_key=True)
+    mrtf_item_id= db.Column(db.String(64))
+    mrtf_user_st_id3= db.Column(db.String(32))
+    mrtf_vote= db.Column(TINYINT)
+    mrtf_tag= db.Column(db.String(32))
+    mrtf_tag_common=db.Column(db.Boolean())
+    mrtf_tag_provisional=db.Column(db.Boolean())
+    mrtf_datetime_voted= db.Column(db.DateTime(timezone=True))
+    mrtf_vote_ip= db.Column(db.String(32))
+
+
+
+    def __init__(self, **kwargs):
+        super(mrtfVotes, self).__init__(**kwargs)
+
 
 
 class ptfServers(db.Model):

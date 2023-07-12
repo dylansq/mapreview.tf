@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, flash, url_for, jsonify,redirect, current_app, send_from_directory
-from .models import ytVideos, tfVersions, ytClips, ytChapters, mrtfHackerTracker
+from .models import ytVideos, tfVersions, ytClips, ytChapters, mrtfVotes, mrtfHackerTracker
 from . import db
 import json
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse, parse_qsl
 import requests
 import git
 from datetime import datetime, timezone
@@ -315,11 +315,48 @@ def tf_map_select_get():
     #print('results ',results)
     #print('counts ',counts)
     
+    #get votes if video is selected
 
-    return json.dumps({'results':results,'counts':counts}, default=str), 200
+    results_dict = {'results':results,'counts':counts}
+
+    if id:
+        
+
+        results_dict['votes'] = get_user_vote(yt_video_id)
 
 
+    return json.dumps(results_dict, default=str), 200
 
+
+def get_user_vote(mrtf_item_id = None):
+    _positive_votes = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id ,mrtfVotes.mrtf_vote > 0)).with_entities(func.sum(mrtfVotes.mrtf_vote)).scalar()
+    print(_positive_votes)
+    _negative_votes = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id ,mrtfVotes.mrtf_vote < 0)).with_entities(func.sum(mrtfVotes.mrtf_vote)).scalar()
+    print(_negative_votes)
+
+    _positive_votes = 0 if _positive_votes == None else _positive_votes
+    _negative_votes = 0 if _negative_votes == None else _negative_votes
+    try:
+        session['st_id3']
+    except:
+        #must be logged in
+        return {'up':int(_positive_votes),'down':int(_negative_votes),'total':int(_positive_votes)+int(_negative_votes),'user':'none'}
+
+    _votes = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id ,mrtfVotes.mrtf_user_st_id3 == session['st_id3'],mrtfVotes.mrtf_vote !=0))
+    print(_votes)
+    if _votes.count() > 0:
+        #youve voted, 
+        _vote = _votes.one()
+        if _vote.mrtf_vote > 0: 
+            _vote_updown = "up"
+        elif _vote.mrtf_vote < 0:
+            _vote_updown = "down"
+        
+    else:
+        #you havent voted
+        _vote_updown = 'none'
+        
+    return {'up':int(_positive_votes),'down':int(_negative_votes), 'total':int(_positive_votes)+int(_negative_votes),'user':_vote_updown}
 
 
 
@@ -525,6 +562,98 @@ def check_existing_videos():
 def temporary():
     return render_template('./temporary.html')
     yt_video_id = arg_dic['yt_video_id']
+
+
+@views.route('/submit_vote', methods=['POST'])
+def submit_vote():
+    try:
+        session['st_id3']
+    except:
+        return "You must be logged in to vote", 401
+    
+    _vote_updown = request.form['vote']
+    if _vote_updown == "up":
+        vote_sign = 1 
+    elif _vote_updown == "down":
+        vote_sign = -1
+    args = dict(parse_qsl(urlparse(request.referrer).query))
+    mrtf_item_id = args['id']
+    _votes = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id ,mrtfVotes.mrtf_user_st_id3 == session['st_id3'],mrtfVotes.mrtf_vote !=0))
+    #_votes = list(_votes)
+    print(_votes.count())
+    try:
+        vote_power = session['vote_power']
+    except:
+        vote_power = 1
+    
+    if _votes.count() == 0:
+        #you have not voted here before add vote
+        vote_dict = {'mrtf_item_id': mrtf_item_id,
+            'mrtf_user_st_id3': session['st_id3'],
+            'mrtf_vote':vote_sign*vote_power,
+            'mrtf_datetime_voted':datetime.now()}
+        _vote = mrtfVotes()
+        for k,v in vote_dict.items():
+            setattr(_vote,k,v)
+
+        try:
+            setattr(_vote,"mrtf_vote_ip",str(request.headers.get('X-Forwarded-For')))
+        except:
+            pass
+        
+        db.session.add(_vote)
+        db.session.commit()
+
+
+    elif _votes.count() == 1:
+        print('lenght of 1')
+        #you have voted here before change vote
+        
+        _vote = _votes.one()
+        if (_vote.mrtf_vote > 0 and vote_sign > 0) or (_vote.mrtf_vote < 0 and vote_sign < 0):
+            #clicked on existing vote, remove vote object
+            db.session.delete(_vote)
+            db.session.commit()
+        else:
+            #clicked on opposite vote, change sign of vote object
+            _vote.mrtf_vote = _vote.mrtf_vote * -1
+            db.session.commit()
+    else:
+        print('lenght of unknown?')
+        pass
+        #another error?
+
+    #print(list(_votes)[0][0])
+    #have you voted on this before?
+
+    
+    #return user vote dict
+    return get_user_vote(mrtf_item_id), 200
+
+    
+
+
+@views.route('/get_votes', methods=['POST'])
+def get_votes(mrtf_item_id=None):
+
+    #get all votes fro current item
+    _votes = db.session.execute(db.session.query(mrtfVotes).filter(mrtfVotes.mrtf_item_id.in_(mrtf_item_id)))
+    print(_votes)
+    #check if logged in
+    if session['st_id3']:
+        #is logged in
+        print(session['st_id3'])
+
+
+
+    #user = session.st
+    #_user_st_id3 = None
+    #_user_vote = None
+    
+    #I want to know, if a user has voted on the item, so get the users record
+    #I also want to sum all of the mrtf_votes for the video
+    #I also want to get all unique mrtf_tags that are not provisional and their counts
+    return
 
 @views.route('/get_chapters', methods=['GET'])
 def get_chapters(yt_video_id=None):

@@ -41,6 +41,8 @@ def create_app(config_file = '../app.cfg'):
     from .models import ytChapters
     from .models import tfVersions
     from .models import mrtfHackerTracker
+    from .models import mrtfVotes
     from .models import ptfServers
+
 
     return app

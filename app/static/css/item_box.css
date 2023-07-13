@@ -330,6 +330,8 @@
 
 
 .frag-container {
+  margin-left: auto;
+  margin-right: auto;
   user-select: none;
   display: flex;
   align-content: flex-end;
@@ -338,17 +340,24 @@
 
 .frag-button {
   padding: 0 5px 0 5px;
-
+  margin: 1px;
+  border-radius: 2px;
+  background-color: #c5c1bc;
+  transition: .3s;
 }
 
-.frag-total {
-  padding: 0 5px 0 0;
+.frag-label {
+  padding: 0 5px 0 5px;
 }
 
-.frag-selected {
-  color: red;
+.frag-selected.frag-up {
+  background-color: #3bbd41;
+  color:#f3f3f3;
 }
-
+.frag-selected.frag-down {
+  background-color: #B8383B;
+  color:#f3f3f3;
+}
 
 .item-box-creator {
     display: inline;

@@ -218,8 +218,8 @@ $("#video-floating-frame").on({
             votes = data['votes']
             $('.frag-button').removeClass("frag-selected")
             $(`span[data-frag="${votes['user']}"]`).toggleClass("frag-selected")
-            $('.frag-total').text(votes['total'])
-            console.log(votes)
+            $('.frag-up').text('+'+votes['up'])
+            $('.frag-down').text('-'+votes['down'])
         })
         //handel chapters
         $("#chapter-container").empty();
@@ -331,7 +331,8 @@ $('.frag-button').on('click',function(e){
         console.log(data)
         $('.frag-button').not($fragbutton).removeClass("frag-selected")
         $fragbutton.toggleClass("frag-selected")
-        $('.frag-total').text(data['total'])
+        $('.frag-up').text('+'+data['up'])
+        $('.frag-down').text('-'+data['down'])
     }).fail(function(data) {
         alert(data.responseText)
       })

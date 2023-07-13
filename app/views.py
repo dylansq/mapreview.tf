@@ -356,7 +356,7 @@ def get_user_vote(mrtf_item_id = None):
         #you havent voted
         _vote_updown = 'none'
         
-    return {'up':int(_positive_votes),'down':int(_negative_votes), 'total':int(_positive_votes)+int(_negative_votes),'user':_vote_updown}
+    return {'up':int(_positive_votes),'down':int(_negative_votes)*-1, 'total':int(_positive_votes)+int(_negative_votes),'user':_vote_updown}
 
 
 

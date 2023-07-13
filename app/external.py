@@ -441,6 +441,7 @@ def refresh_yt_stats():
 
         #update algorithm
         #print('chapters')
+        print(_vid.yt_video_id)
         _gc = get_chapters(yt_video_id=_vid.yt_video_id)
         #print("_a :", _gc[0].json)
         chapter_count = len(_gc[0].json)

@@ -213,13 +213,47 @@ $("#video-floating-frame").on({
             $("#ff-logo-link").attr("href","https://youtube.com/channel/"+video.yt_channel_id)
             $("#ff-logo-img").attr("src",video.yt_channel_image)
             $("#ff-age").text(formatTimeAgo(Date.parse(video.yt_published_date)))
-            
+            $('#tag-submit-dialogue').empty();
             
             votes = data['votes']
+            tags = data['tags']
+            common_tags = data['common_tags']
+
+            
             $('.frag-button').removeClass("frag-selected")
             $(`span[data-frag="${votes['user']}"]`).toggleClass("frag-selected")
             $('.frag-up').text('+'+votes['up'])
             $('.frag-down').text('-'+votes['down'])
+
+            $('.tag-container-display').empty();
+            $('.tag-submit-dialogue').empty();
+            
+            var tag_items = ``
+            if($.isEmptyObject(tags)){
+                $('.tag-opener').text(`+ Add Tag`)
+                $('.tag-opener').css("font-size", '10px');
+            }else{
+                $('.tag-opener').text(`+`)
+                $('.tag-opener').css("font-size", '20px');
+            }
+            $.each(tags,function(tag,counts){
+                console.log([tag, counts['count'], counts['user']])
+                tag_select_class = ``
+                if(counts['user']){tag_select_class = `tag-selected`}
+                tag_items += `<div class="tag-button item-flag ${tag_select_class}" data-tag="${tag}">${tag} <span class="tag-count">${counts['count']}</span></div>`
+                common_tags.splice( $.inArray(tag, common_tags), 1 );
+                
+            })
+            
+
+            console.log(common_tags)
+            $('.tag-container-display').append(tag_items);
+
+            $.each(common_tags,function(i,tag){
+                $('.tag-submit-dialogue').append(`<div class="tag-button item-flag tag-submit-dialogue-button" data-tag="${tag}">${tag}</div>`)
+            });
+
+
         })
         //handel chapters
         $("#chapter-container").empty();
@@ -328,12 +362,47 @@ $('.alert-container').click(function(){
 $('.frag-button').on('click',function(e){
     var $fragbutton = $(this)
     $.post('/submit_vote',{vote:e.target.dataset.frag},function(data){
-        console.log(data)
+        console.log(data['tags'])
         $('.frag-button').not($fragbutton).removeClass("frag-selected")
         $fragbutton.toggleClass("frag-selected")
-        $('.frag-up').text('+'+data['up'])
-        $('.frag-down').text('-'+data['down'])
+        $('.frag-up').text('+'+data['votes']['up'])
+        $('.frag-down').text('-'+data['votes']['down'])
+
+
+
     }).fail(function(data) {
         alert(data.responseText)
       })
 })
+
+
+
+
+$('.tag-container').on('click','.tag-button',function(e){
+    var $tagbutton = $(this)
+    $.post('/submit_tag',{tag:e.target.dataset.tag},function(data){
+        $tagbutton.toggleClass("tag-selected")
+        if($('.tag-submit-dialogue').is($tagbutton.parent())){
+            var $tagmove = $tagbutton.detach();
+            $tagmove.removeClass('tag-submit-dialogue-button')
+            $('.tag-container-display').append($tagmove)
+        }
+    }).fail(function(data) {
+        alert(data.responseText)
+      })
+})
+
+
+$('.tag-opener').on('click',function(){
+    if($('.tag-submit-dialogue').is(':visible')){
+        $('.tag-submit-dialogue').hide();
+    }else{
+        $('.tag-submit-dialogue').show();
+    }
+})
+
+$(document).mouseup(function(e){
+    if (!$('.tag-submit-dialogue').is(e.target) || !$('.tag-opener').is(e.target)){
+        $('.tag-submit-dialogue').hide();
+    }
+});

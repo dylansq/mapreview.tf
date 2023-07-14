@@ -321,14 +321,38 @@ def tf_map_select_get():
 
     if id:
         
+        _votetag = get_user_vote(yt_video_id)
+        results_dict['votes'] = _votetag['votes']
+        results_dict['tags'] = _votetag['tags']
+        results_dict['common_tags'] = _votetag['common_tags']
 
-        results_dict['votes'] = get_user_vote(yt_video_id)
 
 
     return json.dumps(results_dict, default=str), 200
 
 
 def get_user_vote(mrtf_item_id = None):
+
+    common_tags = ['helpful', 'good for new players', 'advanced strategies','outdated']
+    _tags = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id ,mrtfVotes.mrtf_vote == None))
+    tag_dict = {}
+    if _tags.count() > 0:
+        for _tag in _tags:
+            #add all entries to all dict
+            try:
+                tag_dict[_tag.mrtf_tag]['count'] = tag_dict[_tag.mrtf_tag] + 1
+            except: 
+                tag_dict[_tag.mrtf_tag] = {'count':0,'user':0}
+                tag_dict[_tag.mrtf_tag]['count'] = 1
+            try:
+                if str(_tag.mrtf_user_st_id3)==str(session['st_id3']):
+                    
+                    #if user voted, add to dict
+                    tag_dict[_tag.mrtf_tag]['user'] = 1
+            except:
+                #not logged in
+                pass
+
     _positive_votes = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id ,mrtfVotes.mrtf_vote > 0)).with_entities(func.sum(mrtfVotes.mrtf_vote)).scalar()
     print(_positive_votes)
     _negative_votes = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id ,mrtfVotes.mrtf_vote < 0)).with_entities(func.sum(mrtfVotes.mrtf_vote)).scalar()
@@ -340,9 +364,11 @@ def get_user_vote(mrtf_item_id = None):
         session['st_id3']
     except:
         #must be logged in
-        return {'up':int(_positive_votes),'down':int(_negative_votes),'total':int(_positive_votes)+int(_negative_votes),'user':'none'}
+        return {'votes':{'up':int(_positive_votes),'down':int(_negative_votes)*-1, 'total':int(_positive_votes)+int(_negative_votes),'user':'none'},'tags':tag_dict,'common_tags':common_tags}
+        
 
     _votes = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id ,mrtfVotes.mrtf_user_st_id3 == session['st_id3'],mrtfVotes.mrtf_vote !=0))
+    _tags = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id,mrtfVotes.mrtf_tag_provisional == 0,mrtfVotes.mrtf_vote == None))
     print(_votes)
     if _votes.count() > 0:
         #youve voted, 
@@ -355,9 +381,9 @@ def get_user_vote(mrtf_item_id = None):
     else:
         #you havent voted
         _vote_updown = 'none'
-        
-    return {'up':int(_positive_votes),'down':int(_negative_votes)*-1, 'total':int(_positive_votes)+int(_negative_votes),'user':_vote_updown}
-
+    
+    return {'votes':{'up':int(_positive_votes),'down':int(_negative_votes)*-1, 'total':int(_positive_votes)+int(_negative_votes),'user':_vote_updown},'tags':tag_dict,'common_tags':common_tags}
+    
 
 
 @views.route("/query_yt_clips", methods = ['GET'])
@@ -630,7 +656,72 @@ def submit_vote():
     #return user vote dict
     return get_user_vote(mrtf_item_id), 200
 
+
+
+@views.route('/submit_tag', methods=['POST'])
+def submit_tag():
+    try:
+        session['st_id3']
+    except:
+        return "You must be logged in to submit a tag", 401
     
+    common_tags = ['helpful', 'good for new players', 'advanced strategies','outdated']
+    _tag_suggested = request.form['tag']
+    if _tag_suggested in [common_tags]:
+        _tag_provisional = 0
+        _tag_common = 0
+    else:
+        _tag_provisional = 1
+        _tag_common = 1
+
+    args = dict(parse_qsl(urlparse(request.referrer).query))
+    mrtf_item_id = args['id']
+    _tags = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id ,mrtfVotes.mrtf_user_st_id3 == session['st_id3'],mrtfVotes.mrtf_tag == _tag_suggested,mrtfVotes.mrtf_vote == None))
+    #_votes = list(_votes)
+    print(_tags.count())
+
+
+    if _tags.count() == 0:
+        #you have not voted here before add vote
+        tag_dict = {'mrtf_item_id': mrtf_item_id,
+            'mrtf_user_st_id3': session['st_id3'],
+            'mrtf_tag':_tag_suggested,
+            'mrtf_tag_common':_tag_common,
+            'mrtf_tag_provisional':_tag_provisional,
+            'mrtf_datetime_voted':datetime.now()}
+        _tag = mrtfVotes()
+        for k,v in tag_dict.items():
+            setattr(_tag,k,v)
+
+        try:
+            setattr(_tag,"mrtf_vote_ip",str(request.headers.get('X-Forwarded-For')))
+        except:
+            pass
+        
+        db.session.add(_tag)
+        db.session.commit()
+
+
+    elif _tags.count() == 1:
+        print('lenght of 1')
+        #you have voted here before remove vote
+
+        db.session.delete(_tags.first())
+        db.session.commit()
+
+    else:
+        print('lenght of unknown?')
+        pass
+        #another error?
+
+    #print(list(_votes)[0][0])
+    #have you voted on this before?
+
+    
+    #return user vote dict
+    return get_user_vote(mrtf_item_id), 200
+
+
 
 
 @views.route('/get_votes', methods=['POST'])
@@ -661,8 +752,9 @@ def get_chapters(yt_video_id=None):
     if not yt_video_id:
         arg_dic = request.args.to_dict(flat=False)
         yt_video_id = arg_dic['yt_video_id']
-
-    _chapters = db.session.execute(db.session.query(ytChapters).filter(ytChapters.yt_video_id.in_([yt_video_id])).order_by(ytChapters.yt_chapter_start))
+    else:
+        yt_video_id = [yt_video_id]
+    _chapters = db.session.execute(db.session.query(ytChapters).filter(ytChapters.yt_video_id.in_(yt_video_id)).order_by(ytChapters.yt_chapter_start))
     _chapters = [_c[0] for _c in list(_chapters)]
     #print(_chapters)
     if len(_chapters) == 0:

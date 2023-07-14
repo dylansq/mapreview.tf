@@ -208,7 +208,9 @@ $("#video-floating-frame").on({
             data = JSON.parse(data)
             video = data['results'][0]
             $("#ff-title").text(video.yt_video_title)
-            $("#ff-creator").text(video.st_presenter_name)
+
+            if (video.mrtf_display_name != null) {display_name = video.mrtf_display_name} else {display_name = video.yt_channel_title}
+            $("#ff-creator").text(display_name)
             $("#ff-views").text(formatViews(video.yt_stats_views) + " views")
             $("#ff-logo-link").attr("href","https://youtube.com/channel/"+video.yt_channel_id)
             $("#ff-logo-img").attr("src",video.yt_channel_image)

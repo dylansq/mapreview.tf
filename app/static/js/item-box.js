@@ -242,7 +242,7 @@ $("#video-floating-frame").on({
                 console.log([tag, counts['count'], counts['user']])
                 tag_select_class = ``
                 if(counts['user']){tag_select_class = `tag-selected`}
-                tag_items += `<div class="tag-button item-flag ${tag_select_class}" data-tag="${tag}">${tag} <span class="tag-count">${counts['count']}</span></div>`
+                tag_items += `<div class="tag-button item-flag ${tag_select_class}" data-tag="${tag}">${tag} <span class="tag-count">x ${counts['count']}</span></div>`
                 common_tags.splice( $.inArray(tag, common_tags), 1 );
                 
             })

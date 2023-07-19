@@ -14,6 +14,9 @@ from dateutil import parser as dtparser
 import pytz
 import urllib.parse
 
+from flask_session import Session
+from flask import session
+
 from webargs import  validate
 from webargs.flaskparser import parser, abort, use_args
 from marshmallow import Schema, fields, EXCLUDE, missing
@@ -156,6 +159,12 @@ def submit_yt_form(args):
     '''Accept POST request for YouTube Video forms'''
     print(f"args: {args}")
     _vid = ytVideos()
+    try:
+        setattr(_vid,'mrtf_upload_steam_id',session['st_id3'])
+    except:
+        #not logged in
+        pass
+    
     setattr(_vid,'mrtf_upload_datetime',datetime.now())
     tf_map_full_provisional, tf_version_provisional = None, None
     for k,v in args.items():

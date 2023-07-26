@@ -1,8 +1,57 @@
-<iframe src="https://discord.com/widget?id=727627956058325052&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
 
 
-https://discord.com/api/guilds/727627956058325052/widget.json
+<meta name="viewport" content="width=device-width">
 
-1082122418891530301
+<link href="//fonts.googleapis.com/css?family=Inconsolata&display=swap" rel="stylesheet">
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" sizes="16x16 32x32 64x64 128x128" type="image/png" />
 
-https://discord.gg/tf2-coaching-central-tf2cc-727627956058325052
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" media="all">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}" media="all">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/search-container.css') }}" media="all">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/item_box.css') }}" media="all">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/selectize.bootstrap5.css') }}" media="all">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css') }}" media="all">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" media="all">
+<!--<link rel="stylesheet" href="{{ url_for('static', filename='css/projector.css') }}" media="all">-->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" media="all">
+
+
+
+<select class="filter-menu-item" id="type" method="GET" action="/" placeholder="Resource Type" readonly single>
+  <!--<option value=''>Resource Type</option>
+  {% for resource_type in resource_types %}
+  <option count = 0 value="{{resource_type}}">{{resource_type}}</option>"
+  {% endfor %}-->
+</select>
+
+
+<script type = "text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+<script type = "text/javascript" src="{{ url_for('static', filename='js/selectize.js')}}"></script>
+<script type = "text/javascript" src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
+<script type = "text/javascript" src="{{ url_for('static', filename='js/isotope-dyanmicGrid.js')}}"></script>
+
+<script type = "text/javascript" src="{{ url_for('static', filename='js/item-box-handler.js')}}"></script>
+
+<script type = "text/javascript" src="{{ url_for('static', filename='js/select-filters.js')}}"></script>
+<script type = "text/javascript" src="{{ url_for('static', filename='js/search-handler.js')}}"></script>
+
+<script>
+  $('#type').selectize({ 
+    valueField: 'value',
+    searchField: 'value',
+    labelField: 'label',
+    
+    dropdownParent:'body',
+    plugins: ["clear_button"],
+    
+    render: {option: function(item, escape) {return `<div class='option'> ${escape(item.label)} (${escape(item.count)}) </div>`;}},
+
+    onChange: function(value) {
+        updateSearchParms("type",value);
+        filterListings();
+    },
+    onInitialize: function(){
+        updateSelectedParms("type");
+    }
+});
+</script>

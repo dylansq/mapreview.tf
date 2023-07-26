@@ -44,3 +44,16 @@
 .filter-menu-checkbox-label{
     font-family: 'TF2-Build';
 }
+
+.slider-container {
+    display: flex;
+    font-family: 'TF2-Build';
+
+    border: 1px solid #ced4da;
+    padding: 6px 12px;
+    display: inline-block;
+    z-index: 1;
+    box-sizing: border-box;
+    box-shadow: none;
+    border-radius: 3px;
+}

@@ -4,129 +4,142 @@ tag.src = "https://youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-
-
-//Run box upadateItemBoxes when page is loaded
+//Run box initItemBoxes when page is loaded
 $(document).ready(function () {
     window.onYouTubeIframeAPIReady = function() {
         var yt_player;
-    updateItemBoxes();}
+        initItemBoxes();}
 });
 
-//add ytplayer
+function initItemBoxes(){
+/**
+ * Creates initial get request to server for all items and creates Isotope functions 
+ * TODO:// make dictionary returning {}
+ */
 
+    //Get current URL Search parameters to reference later
+    const urlParams = new URLSearchParams(window.location.search);
+    var queryString = window.location.search;
 
-function updateItemBoxes() {
+    //GET request to API with current query string
+    $.get("http://127.0.0.1:5000/tf_map_select_get", function (data) {
+        data = JSON.parse(data)
 
-        const urlParams = new URLSearchParams(window.location.search);
-        var queryString = window.location.search;
-        const qs_len = queryString.length
-        if(window.location.pathname.length>2){
-            var qamp
-            if(qs_len==0){qamp = "?"}else{qamp = "&"}
-            queryString = queryString + qamp + "format=" + window.location.pathname.substring(1)
-        }
-        //GET request to Flask with current query string
-        $.get("/tf_map_select_get/" + queryString, function (data) {
-            data = JSON.parse(data)
-            //Remove previous container contents
-            $('#item-boxes-container').empty();
-            //Iterate over each yt_video object from Flask and add to boxes-container
+        //Remove previous container contents
+        $('#item-boxes-container').empty();
 
-            //Update selectize
+        //$('#item-boxes-container').append(`<div class="grid-sizer"></div><div class="gutter-sizer"></div>`)
+
+        //Iterate over each listing
+        $.each(data.results, function (key, video) {
+            //Define display variables 
+            const thumbnail_resolution = "0"
+
+            var filter_string = ``
+            var time_ago_string = ``
+            var yt_views_string = ``
             
-
-            jQuery.each(data.counts.tf_resource_type, function(i, val) {
-                $('#type')[0].selectize.addOption(val);
-                $('#type')[0].selectize.updateOption(val.value,val)
-                updateSelectedParms('type')
-            });
-
-            jQuery.each(Object.keys($('#type')[0].selectize.options).filter(x => !Object.keys(data.counts.tf_resource_type).map((key) => [data.counts.tf_resource_type[key].value][0]).includes(x)), function(i, val) {
-                $('#type')[0].selectize.removeOption(val)
-            });
-
-            // existing options: Object.keys($('#map')[0].selectize.options)
-            jQuery.each(data.counts.tf_map_full, function(i, val) {
-                $('#map')[0].selectize.addOption(val);
-                $('#map')[0].selectize.updateOption(val.value,val)
-                //add    Object.keys(data.counts.tf_map_full).map((key) => [data.counts.tf_map_full[key].value][0])
-                updateSelectedParms('map')
-            });
-
-            //Results from flask Object.keys(data.counts.tf_map_full).map((key) => [data.counts.tf_map_full[key].value][0])
-            //Objects in search Object.keys($('#map')[0].selectize.options)
+            //Youtube Stats
+            var date_arr = video['yt_published_date'].split(/[^0-9]/);
+            var published_date = new Date (date_arr[0],date_arr[1]-1,date_arr[2],date_arr[3],date_arr[4],date_arr[5]);
+            var published_age = formatTimeAgo(published_date)
+            time_ago_string += `<span class="item-box-time">${published_age}</span>`
+            yt_views_string  += `<span class="item-box-views">${formatViews(video['yt_stats_views'])} views •</span>`
             
-            jQuery.each(Object.keys($('#map')[0].selectize.options).filter(x => !Object.keys(data.counts.tf_map_full).map((key) => [data.counts.tf_map_full[key].value][0]).includes(x)), function(i, val) {
-                $('#map')[0].selectize.removeOption(val)
-            });
+            //Resource Type
+            var resource_type_flag_string = ``
+            resource_type_flag_string += `<span class="resource-type-flag" id="${video['tf_resource_type'].replace(' ', "_").toLowerCase()}">${video['tf_resource_type']}</span>`
+            filter_string += `type-${video['tf_resource_type'].replace(' ', "+")},`
 
-            jQuery.each(data.counts.tf_class, function(i, val) {
-                $('#class')[0].selectize.addOption(val);
-                $('#class')[0].selectize.updateOption(val.value,val)
-                updateSelectedParms('class')
-            });
-            try{
-            jQuery.each(data.counts.tf_role, function(i, val) {
-                $('#role')[0].selectize.addOption(val);
-                $('#role')[0].selectize.updateOption(val.value,val)
-                updateSelectedParms('role')
-            });
-            }catch{
-
-        }
-            jQuery.each(data.counts.tf_match_format, function(i, val) {
-                $('#format')[0].selectize.addOption(val);
-                $('#format')[0].selectize.updateOption(val.value,val)
-                updateSelectedParms('format')
-                if(window.location.pathname.length >2){
-                    console.log('changing format' + window.location.pathname.substring(1) )
-                    $('#format')[0].selectize.setValue(window.location.pathname.substring(1));
-                }
-            });
-            
-
-            
-
-
-
-        }).done(function(){
-            //Handel fetching and displaying clips
-            if (!urlParams.has('showclips')) {
-                $.get('/query_yt_clips' + queryString, function (cd) {
-                    var container_i = 0;
-                    var clip_i = 0;
-                    var clip_container = `<div class="item-clip-container"  id="clip_container_${container_i}"></div>`
-                    
-                    $('#item-boxes-container').append(clip_container);
-                    $.each(cd, function (key, clip) {
-                        
-                        if (clip_i % 4 == 0){
-                            container_i +=1;
-                            clip_container = `<div class="item-clip-container"  id="clip_container_${container_i}"></div>`
-                            $('#item-boxes-container').append(clip_container);
-                        }
-
-                        var item_clip = `<div class="item-clip" data-yt_clip_id=${clip['yt_clip_id']} data-yt_video_id=${clip['yt_video_id']} data-yt_clipt=${clip['yt_clipt']} id="${clip['yt_clip_id']}">
-                            <div class="item-clip-caption"><span class="item-box-creator">${clip['yt_channel_title']}</span>
-                                <span class="item-box-title" title="${clip['yt_clip_title']}">${clip['yt_clip_title']}</span>
-                                <div class="item-clip-flag-container">
-                                    <span class="item-flag map-flag">${clip['tf_map_full']}</span>
-                                    <span class="item-flag type-flag">${clip['tf_resource_type']}</span></div></div></div>`
-    
-                        $(`#clip_container_${container_i}`).append(item_clip);
-                        clip_i +=1;
-                    });
-            
-                });
+            //Map
+            var tf_map_flag_string = ``
+            if ((video['tf_map_full'] != null) && (video['tf_map_full'] != 'none')) {
+                tf_map_flag_string += `<span class='item-flag map-flag'">${video['tf_map_full']}</span>`
+                filter_string += `map-${video['tf_map_full']},`
             }
-        }).fail(function () {
-            //GET Request to Flask Failed
-            $('#item-boxes-container').append(`<div>Search Failed</div>`);
-            console.log('get fail')
+
+            //Display Name
+            var display_name = ``
+            if (video['mrtf_display_name'] != null) {
+                display_name = video['mrtf_display_name']
+                filter_string += `creator-${video['mrtf_display_name']},`
+            } else {
+                display_name = video['yt_channel_title']
+                filter_string += `creator-${video['yt_channel_title']},`
+            }
+
+            //Classes
+            var tf_class_flag_string = ``
+            var tf_class = video['relevant_classes']
+            if (video['relevant_classes'] != null) {
+                tf_class_flag_string += `<span class='item-flag class-flag'">${tf_class}</span>`
+                filter_string += `class-${tf_class},`
+            }
+            if (video['tf_match_format'] == 'sixes') {
+                if (video['tf_role_combo'] != null){filter_string += `role-combo,`}
+                if (video['tf_role_flank'] != null){filter_string += `role-flank,`}
+                if (video['tf_role_offclass'] != null){filter_string += `role-offclass,`}
+            }
+            
+            if (video['mrtf_language'] != null) {
+                filter_string += `language-${video['mrtf_language']},`
+            }
+            
+            if (video['tf_match_format'] != null) {
+                filter_string += `gamemode-${video['tf_match_format']},`
+            }
+            
+            //New
+            var yt_video_new_flag = ``
+            var yt_video_days_old = (new Date() - Date.parse(video['yt_published_date']) ) / 1000 /(60*60*24)
+            filter_string += `age-${Math.floor(yt_video_days_old)},`
+            if (yt_video_days_old <= 120) {
+                //If age is <= 120 days, show new tag
+                yt_video_new_flag = `<svg class='new-flag' xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 1012 1030">
+                <defs><style> .cls-1 {fill: #ef9849;} .cls-1, .cls-2 {fill-rule: evenodd;} </style></defs>
+                <path class="cls-1" d="M4,379l137-67L124,169l150,5L330,30l129,76L571,3l84,127L796,94l14,150,148,35L901,420l108,96L895,612l51,138L804,789,786,931,637,895l-84,122L448,921,312,982,262,841l-147-1,20-147L9,625,94,505Z"/>
+                <path class="cls-2" d="M274.388,604.066l39.551-3.076-3.223-204.053-48.34,1.9,6.3,131.4-93.6-133.594H132.445V606.7h56.4l-2.929-127.149ZM505.535,447.035v-50.1H335.466L338.1,606.7,488.4,604.066l-1.172-39.99-95.068,3.076L391.57,544.3h62.988V516.175H390.4l-0.879-69.14H505.535Zm167.412-56.194-30.908-2.49L603.074,514.767,574.8,388.351l-58.154,6.885L566.16,599h51.562l43.8-124.219,30.615,116.748,46.582,5.127,53.028-197.461-49.512-8.936L707.517,528.244Zm186.136,10.637-42.48-2.051-5.42,136.231,35.6,2.051ZM802.76,593.519a22.738,22.738,0,0,0,5.567,6.812,26.571,26.571,0,0,0,7.763,4.467,25.132,25.132,0,0,0,8.863,1.612,26.773,26.773,0,0,0,16.919-6.079,22.811,22.811,0,0,0,5.566-6.812,21.084,21.084,0,0,0,2.417-8.789,24.029,24.029,0,0,0-1.318-8.569,21.982,21.982,0,0,0-4.688-7.837,24.749,24.749,0,0,0-7.983-5.713,24.381,24.381,0,0,0-10.913-2.051,24.623,24.623,0,0,0-17.8,7.764,24.4,24.4,0,0,0-6.519,16.406A18.277,18.277,0,0,0,802.76,593.519Z"/></svg>`
+            }
+
+            //Item Box
+            var item_box = `<div class='item-box' id=${video['yt_video_id']} data-filters="${filter_string}">
+                                ${yt_video_new_flag}
+                                <div class="item-wrap">
+                                    <div class="item-box-img">${resource_type_flag_string}
+                                        <a href="https://youtube.com/channel/${video['yt_channel_id']}"><img class="item-box-logo logo-absolute" src="${video[" yt_channel_image"]}"></img></a>
+                                        <div class="item-flag-container">${tf_map_flag_string}${tf_class_flag_string}</div>
+                                        <img class="item-box-img-select" data-yt_video_id=${video['yt_video_id']} src="https://i.ytimg.com/vi/${video['yt_video_id']}/${thumbnail_resolution}.jpg" loading="lazy"></img>
+                                    </div>
+                                    <div class="item-box-caption">
+                                        <div class="caption-top"><span
+                                                class="item-box-creator">${display_name}</span>${yt_views_string}${time_ago_string}</div>
+                                        <span class="item-box-title" title=${video['yt_video_title']}>${video['yt_video_title']}</span>
+                                    </div>
+                                </div>
+                            </div>`;
+
+            $('#item-boxes-container').append(item_box);
+            //$('#item-boxes-container').append(`<div class='item-box' style='height:100px;width:316px;background-color:red; margin:0px;' data-filters='map-orange'></div>`);
+
         });
 
-};
+}).done(function(){
+    //Initialize Isotope on listing container after loading all listings
+    $(".item-boxes-container").dynamicGrid({
+        "isotopeArgs": {
+            transitionDuration: 0,
+            fitWidth: true,
+            layoutMode: 'masonry'},
+        "width": 316,
+        "height": 228,
+        "itemsSelector": ".item-box"
+    });
+    
+    filterListings();
+})
+}
+
+//Text formatting functions
 
 $(".item-boxes-container").on('click', "img.item-box-img-select", function () {
     //on click of preload image, get data-yt_video_id from box and load youtube player
@@ -203,7 +216,6 @@ $("#video-floating-frame").on({
                 $('.tag-opener').css("font-size", '20px');
             }
             $.each(tags,function(tag,counts){
-                console.log([tag, counts['count'], counts['user']])
                 tag_select_class = ``
                 if(counts['user']){tag_select_class = `tag-selected`}
                 tag_items += `<div class="tag-button item-flag ${tag_select_class}" data-tag="${tag}">${tag} <span class="tag-count">x ${counts['count']}</span></div>`
@@ -212,7 +224,6 @@ $("#video-floating-frame").on({
             })
             
 
-            console.log(common_tags)
             $('.tag-container-display').append(tag_items);
 
             $.each(common_tags,function(i,tag){
@@ -262,15 +273,13 @@ $("#video-floating-frame").on({
             window.history.replaceState({}, '', prevPath);
         }else{
             window.history.replaceState({}, '', prevPath+`?`+$prevSearchParams.toString());
-    }
-
+        }
         yt_player.destroy();
     }
 });
 
 function loadVideo(yt_video_id,clip=null,clipt=null){
     if (clip == null){var clip_string = ``}else{var clip_string = `?clip=${clip}&clipt=${clipt}`}
-    console.log(`http://www.youtube.com/clip/${yt_video_id}${clip_string}`)
     YT.get('iframe-holder').loadVideoByUrl({'mediaContentUrl':`http://www.youtube-nocookie.com/embed/${yt_video_id}${clip_string}`})
 }
 
@@ -278,7 +287,6 @@ function onPlayerReady(event) {
     if($.modal.isActive()){
         var m = $.modal.getCurrent().options;
         loadVideo(m.yt_video_id,m.yt_clip_id,m.yt_clipt)
-        console.log($.modal.getCurrent().options.yt_video_id)
     }
 
 
@@ -328,7 +336,6 @@ $('.alert-container').click(function(){
 $('.frag-button').on('click',function(e){
     var $fragbutton = $(this)
     $.post('/submit_vote',{vote:e.target.dataset.frag},function(data){
-        console.log(data['tags'])
         $('.frag-button').not($fragbutton).removeClass("frag-selected")
         $fragbutton.toggleClass("frag-selected")
         $('.frag-up').text('+'+data['votes']['up'])
@@ -372,3 +379,8 @@ $(document).mouseup(function(e){
         $('.tag-submit-dialogue').hide();
     }
 });
+
+
+
+
+

@@ -1,6 +1,6 @@
 <div class="filter-menu-container">
     <div class="filter-menu-group">
-        <select class="filter-menu-item" id="format" method="GET" action="/" readonly single>
+        <select class="filter-menu-item" id="gamemode" method="GET" action="/" readonly single>
             <option value=''>Format</option>
             <!--<option value='sixes'>Sixes</option>
             <option value='highlander'>Highlander</option>-->
@@ -46,18 +46,15 @@
 </div>
 <div id="more_filters" class="filter-menu-container" style="display:none; z-index: 6;">
 <div class="filter-menu-group">
-    <select class="filter-menu-item" id="creators" method="GET" action="/" readonly single>
+    <div class="slider-container">
+        Age: <span id="age-slider-value">All</span> <input type="range" min="0" max="14" value="14" class="filter-menu-slider" id="age-slider">
+      </div>
+    <select class="filter-menu-item" id="creator" method="GET" action="/" readonly single>
         <option value=''>Creator</option>
-        {% for creator,st_id in yt_creators %}
-        <option value="{{st_id}}">{{creator}}</option>"
-        {% endfor %}
     </select>
 
     <select class="filter-menu-item" id="language" method="GET" action="/" style="width:200px" readonly single>
         <option value=''>Language</option>
-        {% for mrtf_language in mrtf_languages %}
-        <option value="{{mrtf_language}}">{{mrtf_language}}</option>"
-        {% endfor %}
     </select>
 
     <div class="checkbox-holder"><div id="checkbox_show_clips" class="icon checkbox checked"></div></div>

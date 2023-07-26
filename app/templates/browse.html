@@ -26,7 +26,14 @@
 {% endblock %}
 
 {% block script %}
-<script type = "text/javascript", src="{{ url_for('static', filename='js/select-filters.js')}}"></script>
-<script type = "text/javascript", src="{{ url_for('static', filename='js/item-box.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/selectize.js')}}"></script>
+<script type = "text/javascript" src="{{ url_for('static', filename='js/selectize.js')}}"></script>
+<script type = "text/javascript" src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
+<script type = "text/javascript" src="{{ url_for('static', filename='js/isotope-dyanmicGrid.js')}}"></script>
+
+<script type = "text/javascript" src="{{ url_for('static', filename='js/item-box-handler.js')}}"></script>
+
+<script type = "text/javascript" src="{{ url_for('static', filename='js/search-handler.js')}}"></script>
+<script type = "text/javascript" src="{{ url_for('static', filename='js/select-filters.js')}}"></script>
+
+
 {% endblock %}

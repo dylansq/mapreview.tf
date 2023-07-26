@@ -307,7 +307,10 @@ def tf_map_select_get():
     for _vid in vids:
         yt_video_id = _vid.yt_video_id
         _vid = _vid.__dict__
-        del _vid['_sa_instance_state']#remove sa object from dictionary to jsonify easier
+        del _vid['_sa_instance_state']
+        del _vid['mrtf_upload_ip']
+        del _vid['mrtf_upload_steam_id']
+        del _vid['mrtf_upload_datetime']#remove sensitive data
         results[yt_video_id] = _vid
     
     results = sorted(list(results.values()), key=lambda d: d['mrtf_rating_score_a1'],reverse=True)
@@ -317,7 +320,7 @@ def tf_map_select_get():
     
     #get votes if video is selected
 
-    results_dict = {'results':results,'counts':counts}
+    results_dict = {'results':results}#,'counts':counts}
 
     if id:
         
@@ -330,6 +333,15 @@ def tf_map_select_get():
 
     return json.dumps(results_dict, default=str), 200
 
+
+
+#    var filter_counts = {
+#        'region':{'na': 0, 'sa': 0, 'eu': 0, 'as': 0, 'oc': 0, 'af': 0},
+#        'skill':{'0': 0, '1': 0, '2': 0, '3': 0, },
+#        'gamemode':{'ultiduo': 0, 'ultitrio': 0, 'fours': 0, 'sixes': 0, 'prolander': 0, 'highlander': 0},
+#        'gametype':{'bball': 0, 'passtime': 0, 'experimental': 0, 'mge': 0, 'mvm': 0},
+#        'language':{},
+#        'status':{'1': 0, '2': 0, '8': 0, '9': 0}}
 
 def get_user_vote(mrtf_item_id = None):
 

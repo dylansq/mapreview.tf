@@ -22,9 +22,8 @@ function initItemBoxes(){
     var queryString = window.location.search;
 
     //GET request to API with current query string
-    $.get("https://mapreview.tf/tf_map_select_get", function (data) {
+    $.get("/tf_map_select_get", function (data) {
         data = JSON.parse(data)
-
         //Remove previous container contents
         $('#item-boxes-container').empty();
 
@@ -106,7 +105,7 @@ function initItemBoxes(){
                                 ${yt_video_new_flag}
                                 <div class="item-wrap">
                                     <div class="item-box-img">${resource_type_flag_string}
-                                        <a href="https://youtube.com/channel/${video['yt_channel_id']}"><img class="item-box-logo logo-absolute" src="${video[" yt_channel_image"]}"></img></a>
+                                        <a href="https://youtube.com/channel/${video['yt_channel_id']}"><img class="item-box-logo logo-absolute" src="${video["yt_channel_image"]}"></img></a>
                                         <div class="item-flag-container">${tf_map_flag_string}${tf_class_flag_string}</div>
                                         <img class="item-box-img-select" data-yt_video_id=${video['yt_video_id']} src="https://i.ytimg.com/vi/${video['yt_video_id']}/${thumbnail_resolution}.jpg" loading="lazy"></img>
                                     </div>

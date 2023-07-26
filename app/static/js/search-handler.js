@@ -15,6 +15,7 @@ function filterListings(){
                 }}
             found.push(age_found)
             found.push(getSearchParms()['regex'].test(attribute_string))
+            
             return found.every(Boolean);
         }});
 
@@ -48,9 +49,15 @@ function filterListings(){
         $.each(counts, function(label,count) {
             if(parameter == 'age'){return;}
             else if(parameter == 'creator'){
-                $('#'+parameter)[0].selectize.addOption({'count':count,'label':label.replace('+',' '),'value':label.replace('+',' ').toLowerCase()});}
+                $('#'+parameter)[0].selectize.addOption({
+                    'count':count,
+                    'label':label.replace('+',' '),
+                    'value':label.replace('+',' ').toLowerCase()});}
             else{
-                $('#'+parameter)[0].selectize.addOption({'count':count,'label':label.replace('+',' '),'value':label.replace('+',' ').replace('_',' ').toLowerCase()});}
+                $('#'+parameter)[0].selectize.addOption({
+                    'count':count,
+                    'label':label.replace('+',' '),
+                    'value':label.replace('+',' ').replace('_',' ').toLowerCase()});}
             //$('#'+parameter)[0].selectize.refreshOptions();
             //$('#type')[0].selectize.updateOption({count:count,label:label})
             //console.log({'count':count,'label':label,'value':label})
@@ -113,9 +120,11 @@ function getSearchParms(){
 
         if(param=='age'){ 
             return;
+        }else if( param == 'map'){
+            param_reg_string += '(?=.*'+param+'-('+data.replace('+','_').replace('%7E','|')+'))'
         }
         else{
-            param_reg_string += '(?=.*'+param+'-('+data.replace('+','\\+').replace('%7E','|')+'))'
+            param_reg_string += '(?=.*'+param+'-('+data.replace('+','(\\s|\\+)').replace(' ','(\\s|\\+)').replace('%7E','|')+'))'
         }
 
     });
@@ -136,6 +145,7 @@ function updateSearchParms(parameter, value, concatParams) {
     var searchParams = new URLSearchParams(window.location.search);
     var locationPath = window.location.pathname
     try{value = value.replace(' ', "+").replace('%2B', "+").toLowerCase();}
+    
     catch{}
     if (searchParams.has(parameter) && concatParams) {
         //Parameter exists and user wants to concat

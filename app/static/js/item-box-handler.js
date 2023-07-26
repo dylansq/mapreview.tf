@@ -22,7 +22,7 @@ function initItemBoxes(){
     var queryString = window.location.search;
 
     //GET request to API with current query string
-    $.get("http://127.0.0.1:5000/tf_map_select_get", function (data) {
+    $.get("https://mapreview.tf/tf_map_select_get", function (data) {
         data = JSON.parse(data)
 
         //Remove previous container contents

@@ -61,8 +61,8 @@ def browse_home():
     
     meta_dic = {"description":"TF2 Competitive Sixes and Highlander Map Reviews showcasing community-created resources for all RGL/ETF2L/ozfortress/AsiaFortress rotation maps including Process, Sunshine, Gullywash, Metalworks, Sultry, ClearCut, Reckoner, Snakewater, Villa, Bagel, Badlands, Granary and more map reviews, class guides, and community made resources for Soldier, Demo, Scout, and Medic"}
     title_text = "TF2 Map Review - Home"
-
-    return render_template("./browse.html", format_sixes = True, tf_maps=tf_maps,tf_versions=tf_versions,yt_creators = yt_creators,relevant_roles=relevant_roles,relevant_classes=relevant_classes,resource_types=resource_types,mrtf_languages=mrtf_languages,meta_dic=meta_dic,title_text=title_text)
+    alert_text = "Sign-in through STEAM to vote on Resources!"
+    return render_template("./browse.html", format_sixes = True, tf_maps=tf_maps,tf_versions=tf_versions,yt_creators = yt_creators,relevant_roles=relevant_roles,relevant_classes=relevant_classes,resource_types=resource_types,mrtf_languages=mrtf_languages,meta_dic=meta_dic,title_text=title_text,alert_login=alert_text)
 
 
 @views.route('/sixes', methods=['GET'])

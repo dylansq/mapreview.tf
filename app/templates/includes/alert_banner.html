@@ -4,4 +4,18 @@
     </div>
 
     
-    {% endif %}
+{% endif %}
+
+{% if not session['display_name'] and alert_login %}
+<div class="alert-container" id="alert_login">
+    {{alert_login}}
+    </div>
+
+<script>
+  $('#alert_login').on('click',function () {
+    location.href = location.origin + "/ext/steam_auth?origin=" + location.href;
+  });
+
+  
+</script>
+{% endif %}

@@ -512,11 +512,33 @@
 .item-section{
     text-align: center;
     display: block;
-    padding: 15px 30px;
+    padding: 5px 15px;
     border-bottom: 1px solid #E0EDED;
 }
 .item-section:nth-child(even){
     background: #c5c1bc;
+}
+
+.item-section-paragraph{
+  font-family: georgia;
+  display: block;
+  margin-bottom: .4em;
+}
+
+.item-section-header-1 {
+  display: block;
+  font-size: 2em;
+  font-weight: bold;
+  
+}
+
+
+.item-section-header-2 {
+  display: block;
+  margin-top: .4em;
+  margin-bottom: .1em;
+  font-size: 1.25em;
+  font-weight: bold;
 }
 
 

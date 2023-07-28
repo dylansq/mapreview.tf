@@ -37,6 +37,7 @@
 }
 
 .alert-container {
+    cursor: pointer;
     color:#34302d;
     font-family: 'TF2-Build';
     font-size: 1em;

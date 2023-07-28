@@ -416,17 +416,28 @@ def refresh_yt_stats():
         r = requests.get(search_url,search_params)
         _stats = r.json()["items"][0]["statistics"]
         _snip = r.json()["items"][0]["snippet"]
-        _data = {"yt_stats_views":_stats["viewCount"],
-                 "yt_stats_likes":_stats["likeCount"],
-                 "yt_stats_favorites":_stats["favoriteCount"],
-                 "yt_stats_comments":_stats["commentCount"],
-                 "yt_channel_title":_snip["channelTitle"],
-                 "yt_channel_id":_snip["channelId"],
-                 "yt_video_description":_snip["localized"]["description"],
-                 "yt_video_title":_snip["localized"]["title"],
-                 "yt_published_date":dtparser.parse(_snip["publishedAt"]),
-                 "yt_stats_lastupdated":datetime.now(pytz.utc),
-                 "yt_channel_image":get_yt_channel_image(_snip["channelId"])}#"yt_video_thumbnails":_snip["thumbnails"]
+        _data = {}
+        _keyvalues = [
+            ("yt_stats_views",_stats["viewCount"]),
+            ("yt_stats_likes",_stats["likeCount"]),
+            ("yt_stats_favorites",_stats["favoriteCount"]),
+            ("yt_stats_comments",_stats["commentCount"]),
+            ("yt_channel_title",_snip["channelTitle"]),
+            ("yt_channel_id",_snip["channelId"]),
+            ("yt_video_description",_snip["localized"]["description"]),
+            ("yt_video_title",_snip["localized"]["title"]),
+            ("yt_published_date",dtparser.parse(_snip["publishedAt"])),
+            ("yt_stats_lastupdated",datetime.now(pytz.utc)),
+            ("yt_channel_image",get_yt_channel_image(_snip["channelId"]))
+        ]
+        #Some videos didn't have some keys, if key doesnt exist, skip
+        for k,v in _keyvalues:
+            try:
+                _data[k] = v
+            except:
+                print(f'Could not retrieve youtube data {k} for {_vid.yt_video_id}')
+
+        _data = {}#"yt_video_thumbnails":_snip["thumbnails"]
         #print(_data)
         
         for key, value in _data.items():

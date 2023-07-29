@@ -185,123 +185,15 @@ def get_yt_video_counts(q):
 @views.route('/sixes')
 @views.route("/tf_map_select_get", methods = ['GET'])
 def tf_map_select_get():
-
     #TODO update url parameters to real parameters
     arg_dic = request.args.to_dict(flat=False)
-    try:
-        tf_map_full = arg_dic['map']
-    except: 
-        tf_map_full = ['']
-    try:
-        creators = arg_dic['creators']
-    except: 
-        creators = ['']
-
-    try:
-        tf_classes = arg_dic['class']
-    except: 
-        tf_classes = ['']
-
-    try:
-        relevant_role = arg_dic['role']
-        if len(relevant_role) == 1:
-            relevant_role = relevant_role[0].split('&')
-            
-
-        if relevant_role == ['offclass']:
-            tf_classes.extend(['Engineer', 'Sniper', 'Heavy', 'Spy', 'Pyro'])
-            relevant_role = ['']
-            print(tf_classes)
-    except: 
-        relevant_role = ['']
-
-    try:
-        resource_type = arg_dic['type']
-    except: 
-        resource_type = ['']
-    try:
-        within_date = arg_dic['date']
-    except: 
-        within_date = ['']
-    try:
-        id = arg_dic['id']
-    except: 
-        id = ['']
-    try:
-        language = arg_dic['language']
-    except: 
-        language = ['English']
-
-    try:
-        format = arg_dic['format']
-    except: 
-        format = ['']
-
-    if creators == ['']:
-        creators = None
-    if resource_type == ['']:
-        resource_type = None
-    if tf_map_full == ['']:
-        tf_map_full = None
-    if tf_classes == ['']:
-        tf_classes = None
-    if relevant_role == ['']:
-        relevant_role = None
-
-    if within_date == ['']:
-        within_date = None
-    if id == ['']:
-        id = None
-    if format == ['']:
-        format = None
-
-
-
-
-
-    #construct filter
-    tf_class_filter_dic = {'scout':ytVideos.tf_class_scout.isnot(None),'soldier':ytVideos.tf_class_soldier.isnot(None), 'demo':ytVideos.tf_class_demo.isnot(None), 'medic':ytVideos.tf_class_medic.isnot(None), 'pyro':ytVideos.tf_class_pyro.isnot(None), 'engineer':ytVideos.tf_class_engineer.isnot(None), 'heavy':ytVideos.tf_class_heavy.isnot(None), 'sniper':ytVideos.tf_class_sniper.isnot(None), 'spy':ytVideos.tf_class_spy.isnot(None)}
-    tf_role_filter_dic = {'roamer':ytVideos.tf_role_flank.isnot(None),'flank':ytVideos.tf_role_flank.isnot(None), 'combo':ytVideos.tf_role_combo.isnot(None), 'pocket':ytVideos.tf_role_combo.isnot(None), 'offclass':ytVideos.tf_role_offclass.isnot(None)}
-
-    query_filter = []
-    query_class_filter = [] #can contain multiple classes which will be filtered using or_ in the SQLAlchemy query
-    if tf_map_full:
-        query_filter.append(ytVideos.tf_map_full.in_(tf_map_full))
     
-    if creators:
-        query_filter.append(or_(ytVideos.mrtf_display_id.in_(creators),ytVideos.st_creator_id.in_(creators),ytVideos.st_presenter_id.in_(creators)))
+
+    current_videos = db.session.query(ytVideos).order_by(ytVideos.yt_date_uploaded.desc())
     
-    if tf_classes:
-        for tf_class in tf_classes:
-            print("filtering ",tf_class)
-            try:
-                query_class_filter.append(tf_class_filter_dic[tf_class.lower()])
-            except KeyError:
-                print("Incorrect class filter: ", tf_class.lower())
-    
-    if relevant_role:
-        for role in relevant_role:
-            query_filter.append(tf_role_filter_dic[role])
-            #query_filter.append(ytVideos.tf_role.in_(relevant_role)) #old
 
-    if resource_type:
-        query_filter.append(ytVideos.tf_resource_type.in_(resource_type))
-    if within_date:
-        print("within_date: ",within_date)
-    if id:
-        query_filter.append(ytVideos.yt_video_id.in_(id))
-    
-    if format:
-        query_filter.append(ytVideos.tf_match_format.in_(format))
-
-    query_filter.append(ytVideos.mrtf_language.in_(language))
-
-    current_videos = db.session.query(ytVideos).order_by(ytVideos.yt_date_uploaded.desc()).filter(and_(or_(*query_class_filter),*query_filter))
-
-    counts = get_yt_video_counts(current_videos)
 
     #print("counts: ", counts)
-    print(and_(or_(*query_class_filter),*query_filter))
     vids = list(current_videos)
     results = {}
     for _vid in vids:
@@ -313,6 +205,13 @@ def tf_map_select_get():
         del _vid['mrtf_upload_datetime']#remove sensitive data
         results[yt_video_id] = _vid
     
+    _votes = get_all_votes()
+    for yt_video_id, _vote in _votes:
+        try:
+            results[yt_video_id]['mrtf_votes_sum'] = int(_vote)
+        except:
+            pass
+        
     results = sorted(list(results.values()), key=lambda d: d['mrtf_rating_score_a1'],reverse=True)
 
     #print('results ',results)
@@ -335,6 +234,12 @@ def tf_map_select_get():
 
 
 
+
+def get_all_votes():
+    votes_groupby = db.session.query(mrtfVotes.mrtf_item_id,func.sum(mrtfVotes.mrtf_vote).label('mrtf_votes_sum')).group_by(mrtfVotes.mrtf_item_id).all()
+    return list(votes_groupby)
+
+
 #    var filter_counts = {
 #        'region':{'na': 0, 'sa': 0, 'eu': 0, 'as': 0, 'oc': 0, 'af': 0},
 #        'skill':{'0': 0, '1': 0, '2': 0, '3': 0, },
@@ -344,7 +249,7 @@ def tf_map_select_get():
 #        'status':{'1': 0, '2': 0, '8': 0, '9': 0}}
 
 def get_user_vote(mrtf_item_id = None):
-
+    
     common_tags = ['helpful', 'good for new players', 'advanced strategies','outdated']
     _tags = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id ,mrtfVotes.mrtf_vote == None))
     tag_dict = {}

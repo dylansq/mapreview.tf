@@ -417,6 +417,20 @@
   color:#f3f3f3;
 }
 
+.frag-flag-up{
+  background-color: #3bbd41;
+}
+.frag-flag-down{
+  background-color: #B8383B;
+}
+
+.frag-flag-hover{
+  display:none;
+}
+.frag-flag-hover:hover{
+  display: inline !important;;
+}
+
 .item-box-creator {
     display: inline;
     font-family: 'Arial';

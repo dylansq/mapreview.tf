@@ -87,7 +87,18 @@ function initItemBoxes(){
             if (video['tf_match_format'] != null) {
                 filter_string += `gamemode-${video['tf_match_format']},`
             }
-            
+            mrtf_votes_sum_flag_string = ``
+            try{
+                if(video['mrtf_votes_sum'] != null){
+                    if(video['mrtf_votes_sum'] > 0){
+                        mrtf_votes_sum_flag_string += `<span class="item-flag frag-flag-up">+${video['mrtf_votes_sum']}<span class="frag-flag-hover"> Frags</span></span>`
+                    }else if(video['mrtf_votes_sum'] < 0){
+                        mrtf_votes_sum_flag_string +=  `<span class="item-flag frag-flag-down">${video['mrtf_votes_sum']}<span class="frag-flag-hover"> Frags</span></span>`
+                    }
+                }
+            }catch{
+                console.log('error logging votes for ', video[yt_video_id])
+            }
             //New
             var yt_video_new_flag = ``
             var yt_video_days_old = (new Date() - Date.parse(video['yt_published_date']) ) / 1000 /(60*60*24)
@@ -106,7 +117,7 @@ function initItemBoxes(){
                                 <div class="item-wrap">
                                     <div class="item-box-img">${resource_type_flag_string}
                                         <a href="https://youtube.com/channel/${video['yt_channel_id']}"><img class="item-box-logo logo-absolute" src="${video["yt_channel_image"]}"></img></a>
-                                        <div class="item-flag-container">${tf_map_flag_string}${tf_class_flag_string}</div>
+                                        <div class="item-flag-container">${tf_map_flag_string}${tf_class_flag_string}${mrtf_votes_sum_flag_string}</div>
                                         <img class="item-box-img-select" data-yt_video_id=${video['yt_video_id']} src="https://i.ytimg.com/vi/${video['yt_video_id']}/${thumbnail_resolution}.jpg" loading="lazy"></img>
                                     </div>
                                     <div class="item-box-caption">

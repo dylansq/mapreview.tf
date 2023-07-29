@@ -187,9 +187,16 @@ def get_yt_video_counts(q):
 def tf_map_select_get():
     #TODO update url parameters to real parameters
     arg_dic = request.args.to_dict(flat=False)
-    
+    try:
+        id = arg_dic['id']
+    except: 
+        id = None
 
-    current_videos = db.session.query(ytVideos).order_by(ytVideos.yt_date_uploaded.desc())
+    query_filter = []
+    if id:
+        query_filter.append(ytVideos.yt_video_id.in_(id))
+    current_videos = db.session.query(ytVideos).order_by(ytVideos.yt_date_uploaded.desc()).filter(and_(*query_filter))
+    
     
 
 

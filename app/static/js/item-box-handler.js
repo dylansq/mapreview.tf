@@ -6,6 +6,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 //Run box initItemBoxes when page is loaded
 $(document).ready(function () {
+    console.log('documnt ready')
     window.onYouTubeIframeAPIReady = function() {
         var yt_player;
         initItemBoxes();}
@@ -18,11 +19,13 @@ function initItemBoxes(){
  */
 
     //Get current URL Search parameters to reference later
+    console.log('before init get')
     const urlParams = new URLSearchParams(window.location.search);
     var queryString = window.location.search;
 
     //GET request to API with current query string
     $.get("/tf_map_select_get", function (data) {
+        console.log('init get')
         data = JSON.parse(data)
         //Remove previous container contents
         $('#item-boxes-container').empty();
@@ -31,6 +34,7 @@ function initItemBoxes(){
 
         //Iterate over each listing
         $.each(data.results, function (key, video) {
+            console.log('looping items')
             //Define display variables 
             const thumbnail_resolution = "0"
 

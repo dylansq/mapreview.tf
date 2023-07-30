@@ -5,13 +5,14 @@ var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 //Run box initItemBoxes when page is loaded
+window.onYouTubeIframeAPIReady = function() {
 $(document).ready(function () {
     console.log('documnt ready')
-    window.onYouTubeIframeAPIReady = function() {
+    
         var yt_player;
         console.log('loading yt iframe api')
-        initItemBoxes();}
-});
+        initItemBoxes();
+});}
 
 function initItemBoxes(){
 /**

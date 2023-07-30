@@ -9,6 +9,7 @@ $(document).ready(function () {
     console.log('documnt ready')
     window.onYouTubeIframeAPIReady = function() {
         var yt_player;
+        console.log('loading yt iframe api')
         initItemBoxes();}
 });
 

@@ -180,9 +180,6 @@ def get_yt_video_counts(q):
     return {"tf_map_full":tf_map_full_result_dict,"tf_match_format":tf_match_format_result_dict, "tf_role":tf_role_result_dict, "tf_resource_type":tf_resource_type_dict, "tf_class":tf_class_result_dict}
 
 
-@views.route('/')
-@views.route('/highlander')
-@views.route('/sixes')
 @views.route("/tf_map_select_get", methods = ['GET'])
 def tf_map_select_get():
     #TODO update url parameters to real parameters

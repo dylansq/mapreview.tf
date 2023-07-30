@@ -6,11 +6,12 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 //Run box initItemBoxes when page is loaded
 window.onYouTubeIframeAPIReady = function() {
-$(document).ready(function () {
-    console.log('documnt ready')
+    console.log('loaded yt iframe api')
+    $(document).ready(function () {
+        console.log('documnt ready')
     
         var yt_player;
-        console.log('loading yt iframe api')
+        
         initItemBoxes();
 });}
 

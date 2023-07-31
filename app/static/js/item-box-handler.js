@@ -8,7 +8,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 window.onYouTubeIframeAPIReady = function() {
     $(document).ready(function () {
         var yt_player;
-        initItemBoxes();
+        
 });}
 
 function initItemBoxes(){
@@ -148,6 +148,7 @@ function initItemBoxes(){
     filterListings();
 })
 }
+initItemBoxes();
 
 //Text formatting functions
 

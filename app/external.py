@@ -325,8 +325,9 @@ def SteamID64To3(st_id64):
     id3base = int(st_id64) - steamID64IDEnt
     return ("[U:1:{0}]".format(id3base),id3base)
 
-def SteamID64To3(st_id3 = '[U:1:262314696]'):
-    id3base = st_id3.strip('[]').strip(']').split(':')[2]
+def SteamID3To64(st_id3):
+    id3base = st_id3.strip('[]').strip(']').split(':')
+    id3base = id3base[2] if len(id3base) == 3 else id3base
     steamID64IDEnt = 76561197960265728
     st_id64 = int(id3base) + steamID64IDEnt
     return (str(st_id64))
@@ -342,7 +343,8 @@ def authorize():
     
     try:
         identity = request.args['openid.identity']
-        
+        print('steam auth identity ',identity.split('/')[-1])
+        print(SteamID64To3(identity.split('/')[-1])[1])
         session['st_id64'] = identity.split('/')[-1]
         session['st_id3'] = SteamID64To3(identity.split('/')[-1])[1]
     except:

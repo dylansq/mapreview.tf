@@ -226,8 +226,8 @@ def tf_map_select_get():
     results_dict = {'results':results}#,'counts':counts}
 
     if id:
-        
-        _votetag = get_user_vote(yt_video_id)
+        print(id)
+        _votetag = get_user_vote(id)
         results_dict['votes'] = _votetag['votes']
         results_dict['tags'] = _votetag['tags']
         results_dict['common_tags'] = _votetag['common_tags']
@@ -255,6 +255,10 @@ def get_all_votes():
 def get_user_vote(mrtf_item_id = None):
     
     common_tags = ['helpful', 'good for new players', 'advanced strategies','outdated']
+    
+    if type(mrtf_item_id) == list:
+        mrtf_item_id = mrtf_item_id[0]
+
     _tags = mrtfVotes.query.filter(and_(mrtfVotes.mrtf_item_id == mrtf_item_id ,mrtfVotes.mrtf_vote == None))
     tag_dict = {}
     if _tags.count() > 0:

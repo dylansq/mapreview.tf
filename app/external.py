@@ -325,6 +325,13 @@ def SteamID64To3(st_id64):
     id3base = int(st_id64) - steamID64IDEnt
     return ("[U:1:{0}]".format(id3base),id3base)
 
+def SteamID64To3(st_id3 = '[U:1:262314696]'):
+    id3base = st_id3.strip('[]').strip(']').split(':')[2]
+    steamID64IDEnt = 76561197960265728
+    st_id64 = int(id3base) + steamID64IDEnt
+    return (str(st_id64))
+
+
 @external.route("/authorize")
 def authorize():
     arg_dic = request.args.to_dict(flat=False)

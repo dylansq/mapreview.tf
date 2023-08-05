@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, flash, url_for, jsonify,redirect, current_app, send_from_directory, Response
 import requests, time
 from .models import mrtfHackerTracker
+from .models import htUsers
+from .models import htEvidence
 from datetime import datetime
 import urllib.parse
 from urllib.parse import urlencode
@@ -16,7 +18,8 @@ from sqlalchemy import or_, and_
 from webargs import  validate
 from webargs.flaskparser import parser, abort, use_args
 from marshmallow import Schema, fields, EXCLUDE, missing
-
+from flask_session import Session
+from flask import session
 
 
 ht = Blueprint("hackertracker", __name__)
@@ -74,9 +77,34 @@ def check_existing_hackers(st_id64=None):
 def submit_hacker(args):
     '''Accept POST request for hacker submit'''
     print(f"args: {args}")
+    try:
+        session['st_id3']
+    except:
+        return "You must be logged in to submit a hacker", 401
+    
+    _submitter = db.session.query(htUsers).filter(htUsers.st_id3 == session['st_id3']).first()
+    _submitter_role = 'User'
+    if _submitter == None:
+        #user hasn't submitted anything yet, add to database as user
+        _submitter = htUsers()
+        setattr(_submitter,'st_id3',session['st_id3'])
+        setattr(_submitter,'st_username',session['display_name'])
+        setattr(_submitter,'ht_role',_submitter_role)
+        
+    else:
+        print(_submitter.ht_role)
+        _submitter_role = _submitter.ht_role
 
     _hacker = mrtfHackerTracker()
     setattr(_hacker,'ht_datetime_added',datetime.now())
+    print(f'submitted by {session["st_id3"]}')
+    setattr(_hacker,'st_id3_submitter',session['st_id3'])
+
+    if _submitter_role == 'Admin' or _submitter_role == 'Mod':
+        setattr(_hacker,'ht_provisional',0)
+    else:
+        setattr(_hacker,'ht_provisional',1)
+
     for k,v in args.items():
         #use dateutil.parse to parse dates - more robust than webargs/marshmallow
         if 'date' in k:

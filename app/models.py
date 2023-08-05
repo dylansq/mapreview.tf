@@ -223,18 +223,22 @@ class mrtfHackerTracker(db.Model):
     ht_datetime_added= db.Column(db.DateTime(timezone=True))
     ht_gamemode= db.Column(db.String(32))
     ht_uploadip= db.Column(db.String(32))
-
+    ht_provisional= db.Column(db.Integer)
+    st_id3_submitter= db.Column(db.String(128))
+    st_id3_approvedby= db.Column(db.String(128))
     sr_steamrepurl= db.Column(db.String(128))
     sr_displayname= db.Column(db.String(64))
     sr_rawdisplayname= db.Column(db.String(64))
     sr_customurl= db.Column(db.String(64))
-    sr_avatar= db.Column(db.String(128))
+    sr_avatar= db.Column(db.String(640))
     sr_lastupdate_datetime= db.Column(db.DateTime(timezone=True))
     sr_membersince= db.Column(db.DateTime(timezone=True))
     sr_lastsynctime= db.Column(db.DateTime(timezone=True))
     sr_tradeban= db.Column(db.Integer)
     sr_vacban= db.Column(db.Integer)
-    
+    #
+    #
+    #
     st_lastupdate_datetime= db.Column(db.DateTime(timezone=True))
     st_communityvisibilitystate= db.Column(db.Integer)
     st_profilestate= db.Column(db.Integer)
@@ -252,14 +256,33 @@ class mrtfHackerTracker(db.Model):
     st_lastlogoff= db.Column(db.DateTime(timezone=True))
     st_realname= db.Column(db.String(64))
     st_hours_played_2weeks= db.Column(db.Float)
-    st_rich_presence_game = db.Column(db.String(64))
+    st_rich_presence_game= db.Column(db.String(64))
     st_rich_presence_desc= db.Column(db.String(64))
     st_rich_presence_datetime_updated= db.Column(db.DateTime(timezone=True))
+
 
 
     def __init__(self, **kwargs):
         super(mrtfHackerTracker, self).__init__(**kwargs)
 
+class htUsers(db.Model):
+    st_id3= db.Column(db.String(32), unique= True,primary_key=True)
+    st_username= db.Column(db.String(128))
+    ht_role= db.Column(db.String(32))
+
+    def __init__(self, **kwargs):
+        super(htUsers, self).__init__(**kwargs)
+
+class htEvidence(db.Model):
+    st_id3_hacker= db.Column(db.String(32), unique= True,primary_key=True)
+    st_id3_submitter= db.Column(db.String(128))
+    ht_ip_submitter= db.Column(db.String(32))
+    ht_evidence_url= db.Column(db.String(2048))
+    ht_datetime_added= db.Column(db.DateTime(timezone=True))
+
+
+    def __init__(self, **kwargs):
+        super(htEvidence, self).__init__(**kwargs)
 
 class mrtfVotes(db.Model):
     mrtf_votes_id= db.Column(db.Integer, unique= True,primary_key=True)

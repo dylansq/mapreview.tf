@@ -4,7 +4,18 @@
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.foundation.min.css" media="all">
 
-<a href="/ext/steam_auth"><img src = "https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png"></a>
+{% if session['display_name'] %}
+<div class="steam-oauth-displayname">Welcome {{ session['display_name'] }} </div><a href="/ext/steam_logout"><div class="steam-oauth-logout ">(logout)</div></a>
+{% else %}
+<img id="steam_openid_login" height="31" src = "https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png">
+<script>
+  $('#steam_openid_login').on('click',function () {
+    location.href = location.origin + "/ext/steam_auth?origin=" + location.href;
+  });
+
+  
+</script>
+{% endif %}
 
 <button id="update_steamrep">Update SteamRep</button>
 <button id="update_all_steam">Update Steam</button>

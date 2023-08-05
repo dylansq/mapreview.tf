@@ -1,6 +1,7 @@
 from flask import Flask, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
+from flaskext.markdown import Markdown
 from sqlalchemy import create_engine
 from flask_cors import CORS, cross_origin
 from os import path
@@ -9,7 +10,7 @@ from socket import gethostname
 db = SQLAlchemy()
 
 def create_app(config_file = '../app.cfg'):
-    # create and configure the app
+    # create and configure thenpm install markdown-it --save app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_pyfile(config_file)
 
@@ -17,6 +18,7 @@ def create_app(config_file = '../app.cfg'):
     app.config["SESSION_PERMANENT"] = False
     app.config["SESSION_TYPE"] = "filesystem"
     Session(app)
+    Markdown(app)
     #Init
     db.init_app(app)
 
@@ -43,6 +45,9 @@ def create_app(config_file = '../app.cfg'):
     from .models import mrtfHackerTracker
     from .models import mrtfVotes
     from .models import ptfServers
+    
+    from .models import htEvidence
+    from .models import htUsers
 
 
     return app

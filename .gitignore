@@ -2,5 +2,7 @@
 app.cfg
 documents/
 database/
+node_modules/
+package-lock.json
 flask_session/
 /app/static/img/dev

@@ -18,7 +18,7 @@ def create_app(config_file = '../app.cfg'):
     app.config["SESSION_PERMANENT"] = False
     app.config["SESSION_TYPE"] = "filesystem"
     Session(app)
-    Markdown(app)
+
     #Init
     db.init_app(app)
 
@@ -45,7 +45,7 @@ def create_app(config_file = '../app.cfg'):
     from .models import mrtfHackerTracker
     from .models import mrtfVotes
     from .models import ptfServers
-
+    
     from .models import htEvidence
     from .models import htUsers
 

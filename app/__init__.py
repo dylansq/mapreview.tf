@@ -1,7 +1,7 @@
 from flask import Flask, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
-from flaskext.markdown import Markdown
+
 from sqlalchemy import create_engine
 from flask_cors import CORS, cross_origin
 from os import path
@@ -45,7 +45,7 @@ def create_app(config_file = '../app.cfg'):
     from .models import mrtfHackerTracker
     from .models import mrtfVotes
     from .models import ptfServers
-    
+
     from .models import htEvidence
     from .models import htUsers
 

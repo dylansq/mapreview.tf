@@ -208,3 +208,25 @@ def get_yt_video_counts(q):
 
     return {"language":ptf_language_result_dict,"status":ptf_server_status_result_dict, "region":ptf_region_result_dict, "gamemode":tf_gamemode_result_dict, "gametype":tf_gametype_result_dict, "skill":tf_skilllevel_result_dict}
 
+@pickup.route("/steam_auth")
+def auth_with_steam(origin=None):
+    arg_dic = request.args.to_dict(flat=False)
+    host = '://'.join(urllib.parse.urlparse(request.base_url)[:2])
+    try:
+        origin = 'origin='+ str(arg_dic['origin'][0])
+    except:
+        origin = "origin=https://pickup.tf"
+
+    steam_openid_url = 'https://steamcommunity.com/openid/login'
+    params = {
+    'openid.ns': "http://specs.openid.net/auth/2.0",
+    'openid.identity': "http://specs.openid.net/auth/2.0/identifier_select",
+    'openid.claimed_id': "http://specs.openid.net/auth/2.0/identifier_select",
+    'openid.mode': 'checkid_setup',
+    'openid.return_to': f'{host}/ext/authorize?'+origin,
+    'openid.realm': host
+    }
+    query_string = urlencode(params)
+    auth_url = steam_openid_url + "?" + query_string
+    #print(auth_url)
+    return redirect(auth_url)

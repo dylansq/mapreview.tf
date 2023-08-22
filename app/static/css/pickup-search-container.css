@@ -1,0 +1,618 @@
+.main-container{
+    display: flex;
+    flex-direction: column;
+    width:auto;
+  }
+
+
+  .edit-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .edit-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0 5px 0 5px;
+  }
+
+  .edit-row {
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 5px;
+  }
+  
+  .text-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:50%;
+    margin: auto;
+  
+  }
+  
+  .text-header {
+    font-family: 'TF2-Build';
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .text-section {
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  
+  
+  .left-container{
+    display:flex;
+    flex-direction: column;
+  }
+  .right-container{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 5px;
+  }
+  
+  .joins-container {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  
+  .browse-container {
+    display:flex;
+    align-self: center;
+    text-align:center;
+  }
+  
+  
+  .search-container {
+    display:flex;
+  }
+  
+  .filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:center;
+    padding: 5px 5px;
+    top:0px;
+    z-index: 7;
+  }
+  
+  @media  (max-width:960px) {
+    .browse-container {flex-direction: column; margin:auto;}
+    .filter-container {flex-direction: row; width:100vw;}
+    .flag-select-container{flex-direction:row;}
+    .filter-title{display:none;}
+    .listing-container {width: auto;}
+  }
+  @media  (min-width:960px) {
+    .browse-container {flex-direction: row;  margin: 0px;}
+    .filter-container {flex-direction: column; width:250px;}
+    .flag-select-container{flex-direction:column;}
+    .listing-container {width: 800px;}
+  }
+  .filter-title {
+    font-family: 'TF2-Build';
+    font-size: 18px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .filter-subtitle {
+    font-family: 'TF2-Build';
+    font-size: 18px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 5px;
+    padding-top: 10px;
+    text-decoration: underline;
+  }
+  
+  
+  .listing-container {
+    display:flex;
+    margin: 20px;
+    height: auto !important;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  
+  .listing-main-container {
+    display:flex;
+    position:relative;
+    border-radius: 1px;
+    margin: 8px 8px;
+    padding: 4px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 4px 4px 0 rgba(0, 0, 0, 0.19);
+  }
+  .listing-description-container{
+    height: 45px;
+    padding: 10px 4px 6px 4px;
+    margin: -8px 16px 0px 16px  ;
+    width: auto;
+    display: none;
+    background-color: #ffffff;
+  }
+  
+  .description-age{
+    display: block;
+  }
+  
+  .item-listing {
+    display:flex;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+    transition: all .2s ease;
+  }
+  .edit-listing {
+    display:flex;
+    flex-direction:column;
+    width: 100%;
+    text-align: center;
+    align-items: left;
+  }
+  .listing-edit{
+    background-color: #2a475e;
+    opacity: 85%;
+  }
+  .listing-edit:hover{
+    opacity: 100% !important;
+  }
+  .edit-icon {
+    user-select: none;
+    height: 42px;
+    width: 42px;
+    border-radius: 21px;
+    background-color: #171a211a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 70% 
+  }
+  
+
+
+  .listing-main-container:hover{
+    background-color: #f3f3f3;
+  }
+  
+  .title-container{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+  
+  .listing-title{
+    font-family: 'TF2-Build';
+    text-align: start;
+    font-size: 16px;
+    margin:  0 5px 0 5px;
+  }
+  
+  .listing-icon {
+    height: 42px;
+    width: 42px;
+    border-radius: 21px;
+    background-color: #171a211a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .listing-join {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    width: 60px;
+    overflow: hidden;
+    margin-left:10px;
+    color: #f3f3f3;
+    z-index: 10;
+  }
+  
+  
+  
+  .listing-website {
+    background-color: #f08149;
+  }
+  .listing-discord {
+    background-color: #7289DA;
+  }
+  .listing-steamgroup {
+    background-color: #2a475e;
+  }
+  
+  
+  .flag-container {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 2px;
+    right: 10px;
+    bottom: 10px;
+    z-index: 5;
+  }
+  
+  .flag {
+    font-family: 'TF2-Build';
+    user-select: none;
+    border-radius: 3px;
+    overflow: hidden;
+    font-size: 10px;
+    padding: 0.2em 0.6em 0.2em;
+    margin-left:0.2em;
+    color: #f3f3f3;
+    z-index: 10;
+  }
+  
+  .time-flag {
+    background-color: #f08149;
+  }
+  
+  .sixes-flag {
+    background-color: #5b7a8c;
+  }
+  .highlander-flag {
+    background-color: #bd3b3b;
+  }
+  .skill-container {
+    display:flex;
+    flex-direction: column-reverse;
+  }
+  .skill-flag {
+    height: 15px;
+    width: 15px;
+    opacity: 55%;
+    z-index: 10;
+    transition: .2s;
+  }
+  .skill-flag:hover {
+    opacity: 90% !important;
+  }
+  .skill-flag-0 {
+    border-radius:  0 0 4px 4px;
+    background-color: #69b34c;
+  }
+  .skill-flag-1 {
+    border-radius: 0px;
+    background-color: #faf733;
+  }
+  .skill-flag-2 {
+    border-radius: 0px;
+    background-color: #FAB733;
+  }
+  .skill-flag-3 {
+    border-radius: 4px 4px 0  0px;
+    background-color: #FF0D0D;
+  }
+  .skill-flag-none{
+    background-color: #d1d1d1;
+  }
+  .skill-flag-container {
+    margin: 0 4px 0 4px;
+  }
+  
+  
+  .region-flag {
+    background-color: #000000;
+  }
+  
+  
+  
+  .new-flag {
+    display: block;
+    position:absolute;
+  
+    z-index: 6
+  }
+  
+  
+  
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+    padding: 0px;
+    z-index: 7;
+  }
+  .filter-item {
+    font-family: 'TF2-Build';
+    font-size: 14px;
+    width:240px !important;
+    padding: 0px 2.5px;
+    z-index: 10;
+  }
+  
+  
+  .filter-checkbox{
+    background-image: url("../img/check_none.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin: 0 0.2em;
+    height: 1.3em;
+    width: 1.3em;
+  }
+  .filter-checkbox:after{
+    position:absolute; width:0; height:0; overflow:hidden; z-index:-1;
+    content:url("../img/check_yes.png");
+  }
+  .checkbox-yes{
+    background-image: url("../img/check_yes.png");
+  }
+  .filter-checkbox-label{
+    font-family: 'TF2-Build';
+  }
+  
+  .region-container {
+    display: flex;
+    background-color: #34302d;
+    padding: 4px;
+  }
+  
+  .region-container-svg{
+    overflow:hidden;
+  }
+  
+  .region-select-label {
+    z-index:12;
+    fill:white;
+    pointer-events: none;
+    user-select: none;
+    opacity:50%;
+    font-size: 60px;
+    font-family: 'TF2-Build';
+  }
+  
+  
+  .region-select:hover, .flag.region-select:hover{
+    fill: rgb(205, 32, 39);
+    background-color: rgb(205, 32, 39);
+  }
+  
+  .region-selected {
+    fill: rgb(205, 32, 39);
+    background-color: rgb(205, 32, 39) !important;
+  }
+  
+  .region-unselected {
+    fill: rgb(134, 134, 134);
+  }
+  
+  
+  .flag.region-select {
+    background-color: rgb(134, 134, 134);
+    display: block;
+    position:absolute;
+    opacity: 60%;
+  }
+  
+  .flag-select-container {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .flag-select{
+    opacity:90%;
+    font-family: 'TF2-Build';
+    font-size: 14px;
+    transition: all .2s ease;
+  }
+  
+  .flag-select:hover{
+    opacity:100% !important;
+  }
+  .flag-selected{
+    opacity:100%;
+  }
+  
+  .flag-unselected{
+    background-color: rgb(134, 134, 134) !important;
+    opacity:20% !important;
+  }
+  
+  
+  .gamemode-flag {
+    margin: 0 5px 5px 0;
+    background-color: #bd3b3b;
+  }
+  .gametype-flag {
+    margin: 0 5px 5px 0;
+    background-color: #bd3b3b;
+  }
+  
+  
+  .skill-select {
+    display:flex;
+  }
+  
+  .skill-unselected {
+    opacity: 10% !important;
+  }
+  .skill-select-flag {
+    width:24px;
+    height:24px;
+  }
+  .skill-select-label {
+    font-family: 'TF2-Build';
+    user-select: none;
+    font-size: 16px;
+    padding-left: 4px;
+    vertical-align: middle;
+  }
+  
+  .skill-select-count{
+    font-family: 'TF2-Build';
+    user-select: none;
+    font-size: 16px;
+    transition: all .2s ease;
+  }
+  
+  
+  .status-select {
+    display:flex;
+  }
+  
+  .status-container {
+    display:flex;
+    margin-left: auto;
+    margin-right: auto;
+    flex-direction: row;
+  }
+  .status-select-flag {
+    font-size: 14px;
+    opacity: 85%;
+    z-index: 10;
+    transition: .2s;
+    margin: 0 5px 5px 0;
+  }
+  .status-select-flag:hover {
+    opacity: 100% !important;
+  }
+  
+  .status-flag {
+    font-family: 'TF2-Build';
+    user-select: none;
+    border-radius: 3px;
+    overflow: hidden;
+    height: fit-content;
+    font-size: 12px;
+    padding: 2px 6px 2px 6px;
+    color: #f3f3f3;
+    z-index: 10;
+    margin-left: 4px;
+  }
+  .status-active{
+    background-color: #3bbd41;
+  }
+  .status-inactive, .status-dev, .status-other{
+    background-color: #bd753b;
+  }
+  .status-dead {
+    background-color: #bd3b3b;
+  }
+  .status-unknown{
+    background-color: #7E7E7E;
+  }
+  
+  .status-flag-none{
+    background-color: #d1d1d1;
+  }
+  .status-flag-container {
+    margin: 0 4px 0 4px;
+  }
+  
+  .select-hide{
+    opacity: 10% !important;
+  }
+
+  .tag-container {
+    display: flex;
+    flex-direction: row;
+  }
+  .tag-opener{
+    background-color: #5b7a8c;
+  
+    font-family: 'TF2-Build';
+    user-select: none;
+    border-radius: 3px;
+    overflow: hidden;
+    font-size: 20px;
+    padding: 0 3px 0 4px;
+    color: #fff;
+    text-align: center;
+    margin-left: 3px;
+    vertical-align: middle;
+    float: right;
+    z-index: 10;
+    line-height:16px;
+    height: 16px;
+  
+  }
+  
+  .tag-button{
+    font-size: 10px;
+    height: 12px;
+    background-color: #5b7a8c;
+    line-height: 12px;
+  }
+  
+  .tag-selected {
+    background-color: #0f9aeb;
+  }
+  .tag-submit-dialogue {
+    position: relative;
+    border-radius: 1px;
+    z-index: 100;
+    overflow: hidden;
+    display: none;
+    transition: all .25s;
+  
+  }
+  
+  .tag-submit-dialogue-button {
+    background-color: #f3f3f3 !important;
+    border-style: solid;
+    border-radius: 5px;
+    border-width: 2px;
+    color: #34302d;
+    border-color: #34302d !important;
+    height: 10px;
+    line-height: 10px;
+  }
+  
+  .tag-submit-dialogue-open {
+    width: auto;
+    display: block;
+  }
+  
+  .badge-container{
+    display:flex !important;
+    flex-direction: row;
+  }
+  .badge-left{
+    display:flex;
+    align-self:center;
+  }
+  .badge-right{
+    padding-left:5px;
+    display:flex;
+    flex-direction: column;
+  }
+
+  .badge-avatar{
+    
+  }
+
+  .badge-name{
+    font-family: 'TF2-Build';
+    margin: -2px 0 -2px 0;
+  }
+  .badge-id{
+    font-size:0.75em;
+    opacity: 75%;
+  }
+
+  .remove{
+    text-decoration: none;
+    align-self: center;
+    padding: 0 8px;
+    color: black;
+  }
+  
+  .remove:hover{
+    background-color: #f3f3f3;
+  }

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, flash, url_for, jsonify,redirect, current_app, send_from_directory
 from flask_cors import CORS
 from .models import ptfServers
+from .models import ptfUsers
 from . import db
 import json
 from urllib.parse import urlencode
@@ -11,6 +12,7 @@ from dateutil import parser as dtparser
 import pytz
 import urllib.parse
 import operator
+import math
 
 #SQLAlchemy
 from sqlalchemy import or_, and_
@@ -24,8 +26,9 @@ from flask import session
 
 #Webargs Validation
 from webargs import fields, validate
-from webargs.flaskparser import parser
-from webargs.flaskparser import abort
+from webargs.flaskparser import parser, abort, use_args
+#from webargs.fields import DelimitedList
+from marshmallow import Schema, EXCLUDE, pre_load
 
 #Initialize Blueprints
 pickup = Blueprint("pickup", __name__)
@@ -92,6 +95,91 @@ def browse():
     status_dic = {1:["Active",'active'], 2:["Inactive",'inactive'], 3:["In-Development",'dev'],7:["Other",'other'],8:["Unknown",'unknown'], 9:["Dead",'dead'], 0:["All",'all']}
     return render_template("main.html",ptf_servers=results,meta_dic=meta_dic,status_dic=status_dic)
 
+
+#Main Routes
+@pickup.route('/admin',methods=['GET','POST'])
+def admin_pannel():
+    try:
+        session['st_id3']
+    except:
+        print('fail')
+        return "You must be logged in to vote", 401
+    
+    user = list(db.session.query(ptfUsers).filter(and_((ptfUsers.st_id64 == session['st_id64']),or_(ptfUsers.ptf_server_role_owner.isnot(False),ptfUsers.ptf_server_role_admin.isnot(False),ptfUsers.ptf_server_role_developer.isnot(False)))))
+    print(session['st_id64'],user)
+    server_ids = [str(server.ptf_server_id) for server in user]
+    is_developer = any([server.ptf_server_role_developer for server in user])
+    print('is_developer: ', is_developer)
+    #ptf_servers = list(set(db.session.execute(db.select(ptfServers.ptf_server_name,ptfServers.ptf_server_status).order_by(ptfServers.ptf_server_status))))
+    if is_developer:
+        ptf_servers = list(db.session.query(ptfServers))
+    else:
+        ptf_servers = list(db.session.query(ptfServers).filter(ptfServers.ptf_server_id.in_(server_ids)))
+    results = {}
+    for _server in ptf_servers:
+        ptf_server_id = _server.ptf_server_id
+        _server = _server.__dict__
+        del _server['_sa_instance_state']#remove sa object from dictionary to jsonify easier
+        del _server['ptf_modified_ip']
+        del _server['ptf_modified_steamid64']
+        del _server['ptf_upload_ip']
+        del _server['ptf_datetime_modified']
+        results[ptf_server_id] = _server
+    
+    if is_developer:
+        ptf_users = list(db.session.query(ptfUsers))
+    else:
+        ptf_users = list(db.session.query(ptfUsers).filter(ptfUsers.ptf_server_id.in_(server_ids)))
+
+    user_results = {}
+    user_id_list = []
+    for _user in ptf_users:
+        ptf_users_key = _user.ptf_users_key
+        _user = _user.__dict__
+        del _user['_sa_instance_state']#remove sa object from dictionary to jsonify easier
+        user_id_list.append(_user['st_id64'])
+        #get steam avatars
+
+        try:
+            user_results[_user['ptf_server_id']].append(_user)
+        except:
+            user_results[_user['ptf_server_id']] = [_user]
+
+    
+    #query all steam users at once
+    
+    _sq = {}
+    unique_st_id64 = list(set(user_id_list))
+    id_count = len(unique_st_id64)
+    #can handel max of 100 ids per request
+    for i in range(math.ceil(id_count/100)):
+        user_id_string = ','.join(unique_st_id64[i*100:(i+1)*100])
+        __sq = steam_query(user_id_string)
+        if __sq[1] == 200:
+            _sq.update(__sq[0])
+    
+    print(_sq)
+    for ptf_server_id in user_results.keys():
+        #loop over each server
+        for i, _user in enumerate(user_results[ptf_server_id]):
+            #loop over each user in a server
+            user_results[ptf_server_id][i]['st_display_avatar'] = _sq[_user['st_id64']]['avatar']
+            
+            #user_results[_server][i]['st_display_name'] = _sq[0][_user['st_id64']]['personaname']
+
+
+        
+    #results = sorted(list(results.values()), key=lambda d: d['ptf_server_status'])
+    print(results)
+    print(user_results)
+    meta_dic = {"description":"testing"}
+    status_dic = {1:["Active",'active'], 2:["Inactive",'inactive'], 3:["In-Development",'dev'],7:["Other",'other'],8:["Unknown",'unknown'], 9:["Dead",'dead'], 0:["All",'all']}
+    return render_template("pickup/pickup_admin.html",ptf_servers=results,ptf_users=user_results,meta_dic=meta_dic,status_dic=status_dic)
+
+
+
+
+
 @pickup.route('/update_listings/',methods=['GET'])
 def update_listings():
     arg_dic = request.args.to_dict(flat=False)
@@ -154,6 +242,7 @@ def update_listings():
 
     return response #json.dumps({'results':results,'counts':counts}, default=str), 200
 
+#depreciated
 def get_yt_video_counts(q):    
     ptf_regions = ['na','sa','eu','as','oc','af']
     tf_gamemodes = ['ultiduo','ultitrio','fours','sixes','prolander','highlander']
@@ -230,3 +319,263 @@ def auth_with_steam(origin=None):
     auth_url = steam_openid_url + "?" + query_string
     #print(auth_url)
     return redirect(auth_url)
+
+
+#CRUD opperations
+
+# Return validation errors as JSON
+@pickup.errorhandler(422)
+@pickup.errorhandler(400)
+def handle_error(err):
+    headers = err.data.get("headers", None)
+    messages = err.data.get("messages", ["Invalid request."])
+    if headers:
+        return jsonify({"errors": messages}), err.code, headers
+    else:
+        return jsonify({"errors": messages}), err.code
+
+
+class ptfUpdateServer(Schema):
+    ptf_server_id = fields.Int()
+    ptf_steamcommunity_url = fields.URL(allow_none=True)
+    ptf_discord_url = fields.URL(allow_none=True)
+    ptf_site_url = fields.URL(allow_none=True)
+
+    ptf_skill = fields.DelimitedList(fields.Str(allow_none=True), delimiter=',',allow_none=True)
+    ptf_region = fields.DelimitedList(fields.Str(allow_none=True), delimiter=',',allow_none=True)
+    ptf_gamemode = fields.DelimitedList(fields.Str(allow_none=True), delimiter=',',allow_none=True)
+    ptf_gametype = fields.DelimitedList(fields.Str(allow_none=True), delimiter=',',allow_none=True)
+
+    ptf_role_owner = fields.DelimitedList(fields.Str(allow_none=True), delimiter=',',allow_none=True)
+    ptf_role_admin = fields.DelimitedList(fields.Str(allow_none=True), delimiter=',',allow_none=True)
+    ptf_role_moderator = fields.DelimitedList(fields.Str(allow_none=True), delimiter=',',allow_none=True)
+
+    ptf_server_name = fields.Str()
+    ptf_server_description = fields.Str(allow_none=True)
+
+
+    @pre_load
+    def replace_empty_strings_with_nones(self, data, **kwargs):
+        data = data.to_dict()
+        for key in data.keys():
+            if data[key] == "":
+                data[key] = None
+        return data
+    
+    class Meta:
+        unknown = EXCLUDE
+
+
+
+
+@pickup.route("/update_server",methods=['POST'])
+@use_args(ptfUpdateServer(), location='form', unknown=None)
+def update_server(args):
+    '''Accept POST request for ptf_users submit'''
+    print(f"args: {args}")
+    try:
+        session['st_id3']
+    except:
+        return "You must be logged in to update server data", 401
+    
+    ptf_server_id = args['ptf_server_id']
+    
+    #Recheck who submitter is and check if they can update the server data
+    _submitter = db.session.query(ptfUsers).filter(and_(ptfUsers.st_id64 == session['st_id64'],ptfUsers.ptf_server_id == ptf_server_id)).first()
+    if not _submitter:
+       _submitter = db.session.query(ptfUsers).filter(and_(ptfUsers.st_id64 == session['st_id64'],ptfUsers.ptf_server_role_developer)).first()
+    print('is admin? ',_submitter.ptf_server_role_admin)
+    if _submitter.ptf_server_role_admin or _submitter.ptf_server_role_owner or _submitter.ptf_server_role_developer:
+        pass
+    else:
+        return "You do not have permission to edit the data for this server", 401
+    
+
+    _server = db.session.query(ptfServers).filter(ptfServers.ptf_server_id == ptf_server_id).first()
+
+    #print(args['ptf_server_description'])
+
+
+
+    ptf_fields_dict = {'ptf_skill':['tf_skilllevel_0', 'tf_skilllevel_1', 'tf_skilllevel_2', 'tf_skilllevel_3'],
+                       'ptf_gamemode':['tf_gamemode_ultiduo', 'tf_gamemode_ultitrio', 'tf_gamemode_fours', 'tf_gamemode_sixes', 'tf_gamemode_prolander', 'tf_gamemode_highlander'],
+                       'ptf_gametype':['tf_gamemode_bball', 'tf_gamemode_passtime', 'tf_gamemode_experimental', 'tf_gamemode_mge', 'tf_gamemode_mvm'],
+                       'ptf_region':['ptf_region_na', 'ptf_region_sa',  'ptf_region_eu', 'ptf_region_af', 'ptf_region_as', 'ptf_region_oc']}
+
+    
+    for ptf_field_key, ptf_fields in ptf_fields_dict.items():
+        for ptf_field in ptf_fields:
+            if args[ptf_field_key] == None:
+                print('nothing for ', ptf_field )
+                #user didnt submit anything to this field group, set false
+                setattr(_server,ptf_field,False)
+            elif ptf_field in args[ptf_field_key]:
+                print("setting ", ptf_field)
+                #user submitted the field, set to true
+                setattr(_server,ptf_field,True)
+            else:
+                #user didnt submit field, set to false
+                setattr(_server,ptf_field,False)
+
+    setattr(_server,'ptf_server_name',args['ptf_server_name'])
+    setattr(_server,'ptf_steamcommunity_url',args['ptf_steamcommunity_url'])
+    setattr(_server,'ptf_site_url',args['ptf_site_url'])
+    setattr(_server,'ptf_discord_url',args['ptf_discord_url'])
+
+
+
+    setattr(_server,'ptf_datetime_modified',datetime.now())
+    setattr(_server,'ptf_modified_ip',str(request.headers.get('X-Forwarded-For')))
+    setattr(_server,'ptf_modified_steamid64',str(session['st_id64']))
+    db.session.commit()
+
+    ptf_role_dict = {'owner':args['ptf_role_owner'],
+                     'admin':args['ptf_role_admin'],
+                     'moderator':args['ptf_role_moderator']}
+
+    update_users(ptf_server_id, ptf_role_dict)
+    '''
+    ptf_server_name
+    ptf_server_status
+
+    ptf_site_url
+    ptf_steamcommunity_url
+    ptf_discord_url
+    ptf_discord_private
+
+    
+
+
+    
+    ptf_subregion
+    ptf_language
+
+    
+    ptf_mirrors_leaguebans
+    ptf_match_weekly_frequency
+    ptf_match_weekly_frequency_value
+    ptf_schedule_day
+    ptf_schedule_time
+    ptf_schedule_timezone
+    ptf_server_owner_name
+    ptf_server_owner_discordid
+    ptf_server_owner_steamid64
+    ptf_date_created
+    ptf_datetime_uploaded
+    ptf_upload_ip
+    ptf_upload_steamid64
+'''
+    return ''
+    if _submitter == None:
+        #user hasn't submitted anything yet, add to database as user
+        _submitter = htUsers()
+        setattr(_submitter,'st_id3',session['st_id3'])
+        setattr(_submitter,'st_username',session['display_name'])
+        setattr(_submitter,'ht_role',_submitter_role)
+        
+    else:
+        print(_submitter.ht_role)
+        _submitter_role = _submitter.ht_role
+
+
+
+def update_users(ptf_server_id, ptf_role_dict):
+    ''''''
+    """
+
+    If the user does not exist for the current server,
+        check if steam id id is valid
+        add user to table
+    If the user does exist for the current server
+        If role exists for current user and server, remove role
+
+    list of users and role {st_id64:xxx,st_display_name:xxx,ptf_role:xxx,ptf_server_id:xxx}
+    need to check through all 
+"""
+
+    '''
+    ptf_role_dict = {'owner':[],
+                     'admin':[],
+                     'moderator':[]}
+
+    ptf_user_dict - {"76xxxx1": {'owner':False,'admin':False,'moderator':False},
+                     "76xxxx2": {'owner':False,'admin':False,'moderator':False}}
+    '''
+    #Create ptf_user_dict from ptf_role_dict
+    ptf_user_dict = {}
+    for ptf_role, st_id64_list in ptf_role_dict.items():
+        if not st_id64_list:
+            continue
+        for st_id64 in st_id64_list:
+            try:
+                ptf_user_dict[st_id64][ptf_role] = True
+            except:
+                ptf_user_dict[st_id64] = {'owner':False,'admin':False,'moderator':False}
+                ptf_user_dict[st_id64][ptf_role] = True
+        
+
+        
+    #get users in the server and check against role_dict
+    _users = list(db.session.query(ptfUsers).filter(ptfUsers.ptf_server_id == ptf_server_id))
+
+    #Check if requested users exist, if not, create them here
+    existing_user_ids = [_u.st_id64 for _u in _users]
+    for requested_user_id in ptf_user_dict.keys():
+        if requested_user_id not in existing_user_ids:
+            #create empty user entry
+            _new_user = ptfUsers()
+            setattr(_new_user,'st_id64',requested_user_id)
+            setattr(_new_user,'ptf_server_id',ptf_server_id)
+            db.session.add(_new_user)
+            db.session.commit()
+
+    #If the user wasnt submitted but exists in the database, set ownerships to false
+    for existing_user in existing_user_ids:
+        if existing_user not in ptf_user_dict.keys():
+            ptf_user_dict[existing_user] = {'owner':False,'admin':False,'moderator':False}
+
+    #update user list in case one was added
+    _users = list(db.session.query(ptfUsers).filter(ptfUsers.ptf_server_id == ptf_server_id))
+    print(ptf_user_dict)
+    #Check requested roles against existing roles
+    for _user in _users:
+        if(_user.ptf_server_role_owner and not ptf_user_dict[_user.st_id64]['owner']):
+            _user.ptf_server_role_owner = 0
+        elif(not _user.ptf_server_role_owner and ptf_user_dict[_user.st_id64]['owner']):
+            _user.ptf_server_role_owner = 1
+
+        if(_user.ptf_server_role_admin and not ptf_user_dict[_user.st_id64]['admin']):
+            _user.ptf_server_role_admin = 0
+        elif(not _user.ptf_server_role_admin and ptf_user_dict[_user.st_id64]['admin']):
+            _user.ptf_server_role_admin = 1
+
+        if(_user.ptf_server_role_moderator and not ptf_user_dict[_user.st_id64]['moderator']):
+            _user.ptf_server_role_moderator = 0
+        elif(not _user.ptf_server_role_moderator and ptf_user_dict[_user.st_id64]['moderator']):
+            _user.ptf_server_role_moderator = 1
+
+    db.session.commit()
+
+
+
+
+@pickup.route("/steam_query", methods=['GET'])
+def steam_query(_st_id64=None):
+    '''Wrapper for SteamAPI GetPlayerSummaries
+        _st_id64 can handel single steam id 64 or multiple ids separated by commas'''
+    if not _st_id64:
+        arg_dic = request.args.to_dict(flat=False)
+        try:
+            _st_id64 = arg_dic['st_id64']
+        except:
+            return "Invalid Steam ID"
+    
+    api_key = current_app.config["STEAM_API_KEY"]
+    r = requests.get(f'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={api_key}&steamids={_st_id64}&appid=440')
+    players = r.json()['response']['players']
+    if len(players) == 0:
+        return "No results found, check for valid Steam ID 64", 400
+    player_dict = {}
+    for p in players:
+        player_dict[p['steamid']] = p
+    return player_dict, 200

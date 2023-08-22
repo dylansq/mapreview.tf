@@ -356,6 +356,23 @@ class ptfServers(db.Model):
     ptf_rating_score_d=db.Column(db.Integer)
     ptf_rating_score_e=db.Column(db.Integer)
 
-
     def __init__(self, **kwargs):
         super(ptfServers, self).__init__(**kwargs)
+
+
+class ptfUsers(db.Model):
+    ptf_users_key=db.Column(db.Integer, unique= True,primary_key=True)
+    st_id64=db.Column(db.String(32))
+    st_display_name=db.Column(db.String(64))
+    ptf_discord_tag=db.Column(db.String(64))
+    ptf_server_id=db.Column(db.Integer)
+    ptf_server_name=db.Column(db.String(64))
+    ptf_server_role_owner=db.Column(db.Boolean())
+    ptf_server_role_admin=db.Column(db.Boolean())
+    ptf_server_role_moderator=db.Column(db.Boolean())
+    ptf_server_role_member=db.Column(db.Boolean())
+    ptf_server_role_banned=db.Column(db.Boolean())
+    ptf_server_role_developer=db.Column(db.Boolean())
+
+    def __init__(self, **kwargs):
+        super(ptfUsers, self).__init__(**kwargs)

@@ -48,20 +48,14 @@ function filterListings(){
         if(parameter == 'age'){return;}
         $.each(counts, function(label,count) {
             if(parameter == 'age'){return;}
-            else if(parameter == 'creator'){
-                $('#'+parameter)[0].selectize.addOption({
-                    'count':count,
-                    'label':label.replace('+',' '),
-                    'value':label.replace('+',' ').toLowerCase()});}
             else{
-                $('#'+parameter)[0].selectize.addOption({
+                var option_data = {
                     'count':count,
                     'label':label.replace('+',' '),
-                    'value':label.replace('+',' ').replace('_',' ').toLowerCase()});}
-            //$('#'+parameter)[0].selectize.refreshOptions();
-            //$('#type')[0].selectize.updateOption({count:count,label:label})
-            //console.log({'count':count,'label':label,'value':label})
-           
+                    'value':label.replace('+',' ').replace('_',' ').toLowerCase()}
+                $('#'+parameter)[0].selectize.addOption(option_data);
+                $('#'+parameter)[0].selectize.updateOption(option_data.value,option_data);}
+
             //Update selectize options from url now that everything is loaded
             updateSelectedParms(parameter);
         });

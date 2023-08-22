@@ -1,11 +1,9 @@
-from flask import Blueprint, render_template, request, flash, url_for, jsonify,redirect, current_app, send_from_directory, Response
+from flask import Blueprint, render_template, request, jsonify, current_app, send_from_directory, Response
 import requests, time
 from .models import mrtfHackerTracker
 from .models import htUsers
 from .models import htEvidence
 from datetime import datetime
-import urllib.parse
-from urllib.parse import urlencode
 from datetime import datetime, timezone
 from dateutil import parser as dtparser
 import pytz
@@ -16,13 +14,13 @@ from . import db
 from werkzeug.utils import secure_filename
 from sqlalchemy import or_, and_
 from webargs import  validate
-from webargs.flaskparser import parser, abort, use_args
-from marshmallow import Schema, fields, EXCLUDE, missing
+from webargs.flaskparser import use_args
+from marshmallow import Schema, fields, EXCLUDE
 from flask_session import Session
 from flask import session
 
 
-ht = Blueprint("hackertracker", __name__)
+hackertracker = Blueprint("hackertracker", __name__)
 
 #'cheater' - Player manually controlling a(n) account(s) that are using a script/program to cheat
 #'bot' - Automatically controlled account using a script/program to cheat
@@ -38,17 +36,37 @@ class htFormSchema(Schema):
     class Meta:
         unknown = EXCLUDE
 
-@ht.route('/', methods=['GET'])
+@hackertracker.route('/', methods=['GET'])
 def hacker_tracker():
-    _hackers = mrtfHackerTracker.query.all()
+    _hackers = mrtfHackerTracker.query.filter(mrtfHackerTracker.ht_provisional != 1)
     #array for display
     sr_vac = ["","Banned"]
     st_privacy = ['Private','Unused','Public']
     st_state = ['Offline','Online','Busy','Away','Snooze','Other','Other']
-    return render_template('./hacker_tracker.html',hackers =_hackers,sr_vac = sr_vac,st_privacy=st_privacy,st_state=st_state)
+
+    #if user is logged in, check if they are a mod/admin
+    print('here')
+    _provisionals = None
+    try:
+        if session['st_id3']:
+            _role = 'User'
+            _user = db.session.query(htUsers).filter(htUsers.st_id3 == session['st_id3']).first()
+            print(_user)
+            if _user:
+                _role = _user.ht_role
+            
+            if _role == "Admin" or _role == "Mod":
+                _provisionals = db.session.query(mrtfHackerTracker).filter(mrtfHackerTracker.ht_provisional == 1)
+                print(_provisionals)
+    except:
+        pass
 
 
-@ht.route('/check_existing_hackers', methods=['GET'])
+
+    return render_template('./hacker_tracker.html',hackers =_hackers, provisionals = _provisionals,sr_vac = sr_vac,st_privacy=st_privacy,st_state=st_state)
+
+
+@hackertracker.route('/check_existing_hackers', methods=['GET'])
 def check_existing_hackers(st_id64=None):
     if st_id64 is None:
         arg_dic = request.args.to_dict(flat=False)
@@ -72,7 +90,7 @@ def check_existing_hackers(st_id64=None):
     
     return jsonify({'count':len(list(_hackers))}), 200
 
-@ht.route('/submit_hacker', methods=['POST'])
+@hackertracker.route('/submit_hacker', methods=['POST'])
 @use_args(htFormSchema(), location='form', unknown=None)
 def submit_hacker(args):
     '''Accept POST request for hacker submit'''
@@ -141,7 +159,7 @@ def submit_hacker(args):
     return '',200
 
 
-@ht.route('/cheaters', methods=['GET'])
+@hackertracker.route('/cheaters', methods=['GET'])
 def show_cheaters():
     return send_from_directory('static/txt/','cheaters.txt')
 
@@ -157,7 +175,7 @@ def SteamID64To3(st_id64):
     id3base = int(st_id64) - steamID64IDEnt
     return ("[U:1:{0}]".format(id3base),id3base)
 
-@ht.route('/upload_voice_ban_dt', methods=['POST'])
+@hackertracker.route('/upload_voice_ban_dt', methods=['POST'])
 def upload_voice_ban_dt(unmute_annoying=None):
     if not unmute_annoying:
         arg_dic = request.args.to_dict(flat=False)
@@ -180,7 +198,7 @@ def upload_voice_ban_dt(unmute_annoying=None):
     #print(st_id3s)
     return combine_mutes(st_id3s,unmute_annoying), 200
 
-@ht.route('/mutes', methods=['GET'])
+@hackertracker.route('/mutes', methods=['GET'])
 def combine_mutes(existing_mutes,unmute_annoying=False):
     print("unmuting is ",unmute_annoying)
     steamIDlen = 32
@@ -192,7 +210,7 @@ def combine_mutes(existing_mutes,unmute_annoying=False):
 
     
     ## new from db
-    players = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot"]),mrtfHackerTracker.ht_confidence>= 0.9))))
+    players = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot"]),mrtfHackerTracker.ht_confidence>= 0.9,mrtfHackerTracker.ht_provisional != 1))))
     
     players = [SteamID64To3(str(x[0].st_id64))[0] for x in players]
     
@@ -226,14 +244,14 @@ def combine_mutes(existing_mutes,unmute_annoying=False):
     return players_as_string
 
 
-@ht.route('/hacker_ids', methods=['GET'])
+@hackertracker.route('/hacker_ids', methods=['GET'])
 def hacker_ids():
     players = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot"]),mrtfHackerTracker.ht_confidence>= 0.99))))
     
     return Response('\n'.join([p[0].st_id64 for p in players]),mimetype='text/plain')
 
 
-@ht.route('/ht_get_all_rich_presence', methods=['GET'])
+@hackertracker.route('/ht_get_all_rich_presence', methods=['GET'])
 def ht_get_all_rich_presence(st_id64=None):
     _hackers  = mrtfHackerTracker.query.all()
     i = 0
@@ -255,7 +273,7 @@ def ht_get_all_rich_presence(st_id64=None):
 
 
 
-@ht.route('/playerlist.valvecomp_cheaters.json', methods=['GET'])
+@hackertracker.route('/playerlist.valvecomp_cheaters.json', methods=['GET'])
 def valvecomp_cheaters():
     cheater_results = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot","racist"]),mrtfHackerTracker.ht_confidence>= 0.99))))
     
@@ -274,7 +292,7 @@ def valvecomp_cheaters():
     return jsonify(valvecomp_dict)
 
 
-@ht.route('/ht_get_rich_presence', methods=['GET'])
+@hackertracker.route('/ht_get_rich_presence', methods=['GET'])
 def ht_get_rich_presence(st_id64=None):
     if not st_id64:
         arg_dic = request.args.to_dict(flat=False)
@@ -328,7 +346,7 @@ def ht_get_rich_presence(st_id64=None):
 
     return '',200
 
-@ht.route('/ht_get_recently_played', methods=['GET'])
+@hackertracker.route('/ht_get_recently_played', methods=['GET'])
 def ht_get_recently_played(_st_id64=None):
     '''Returns hours of tf2 hours played in the last two weeks. If not available, returns -1'''
     if not _st_id64:
@@ -359,7 +377,7 @@ def ht_get_recently_played(_st_id64=None):
         return jsonify({"st_hours_played_2weeks":-1.})
 
 
-@ht.route('/ht_get_last_played_tf2', methods=['GET'])
+@hackertracker.route('/ht_get_last_played_tf2', methods=['GET'])
 def ht_get_last_played_tf2(_st_id64=None):
     '''Returns hours of tf2 hours played in the last two weeks. If not available, returns -1'''
     if not _st_id64:
@@ -388,7 +406,7 @@ def ht_get_last_played_tf2(_st_id64=None):
     except:
         return jsonify({"st_last_played":None})
 
-@ht.route('/steam_query',methods = ['GET'])
+@hackertracker.route('/steam_query',methods = ['GET'])
 def steam_query(_st_id64=None):
     if not _st_id64:
         arg_dic = request.args.to_dict(flat=False)
@@ -403,7 +421,7 @@ def steam_query(_st_id64=None):
 
 
 
-@ht.route('/ht_update_all_steam', methods=['GET'])
+@hackertracker.route('/ht_update_all_steam', methods=['GET'])
 def ht_update_all_steam():
     _hackers  = mrtfHackerTracker.query.all()
     for _hacker in _hackers:
@@ -462,7 +480,7 @@ def ht_update_steam(_hacker):
 
     db.session.commit()
 
-@ht.route('/steam_rep_query',methods = ['GET'])
+@hackertracker.route('/steam_rep_query',methods = ['GET'])
 def steam_rep_query(st_id64=None):
     if not st_id64:
         arg_dic = request.args.to_dict(flat=False)
@@ -503,7 +521,7 @@ def ht_update_steamrep(_hacker):
     db.session.commit()
 
 
-@ht.route('/ht_update_all_steamrep', methods=['GET'])
+@hackertracker.route('/ht_update_all_steamrep', methods=['GET'])
 def ht_update_all_steamrep():
     _hackers  = mrtfHackerTracker.query.all()
     for _hacker in _hackers:

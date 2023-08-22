@@ -27,16 +27,22 @@ def create_app(config_file = '../app.cfg'):
 
     from .views import views
     app.register_blueprint(views, url_prefix = "/")
+
     from .forms import forms
     app.register_blueprint(forms, url_prefix = "/forms")
+
     from .external import external
     app.register_blueprint(external, url_prefix = "/ext")
-    from .hackertracker import ht
-    app.register_blueprint(ht, url_prefix = "/ht")
+
+    from .hackertracker import hackertracker
+    app.register_blueprint(hackertracker, url_prefix = "/ht")
+
     from .dribble import dribble
     app.register_blueprint(dribble, url_prefix = '/demo')
+
     from .pickup import pickup
     app.register_blueprint(pickup, url_prefix = '/pickup')
+    
     #Import all table models
     from .models import ytVideos
     from .models import ytClips
@@ -45,7 +51,7 @@ def create_app(config_file = '../app.cfg'):
     from .models import mrtfHackerTracker
     from .models import mrtfVotes
     from .models import ptfServers
-    
+    from .models import ptfUsers
     from .models import htEvidence
     from .models import htUsers
 

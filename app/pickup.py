@@ -170,8 +170,6 @@ def admin_pannel():
 
         
     #results = sorted(list(results.values()), key=lambda d: d['ptf_server_status'])
-    print(results)
-    print(user_results)
     meta_dic = {"description":"testing"}
     status_dic = {1:["Active",'active'], 2:["Inactive",'inactive'], 3:["In-Development",'dev'],7:["Other",'other'],8:["Unknown",'unknown'], 9:["Dead",'dead'], 0:["All",'all']}
     return render_template("pickup/pickup_admin.html",ptf_servers=results,ptf_users=user_results,meta_dic=meta_dic,status_dic=status_dic)
@@ -384,7 +382,7 @@ def update_server(args):
     _submitter = db.session.query(ptfUsers).filter(and_(ptfUsers.st_id64 == session['st_id64'],ptfUsers.ptf_server_id == ptf_server_id)).first()
     if not _submitter:
        _submitter = db.session.query(ptfUsers).filter(and_(ptfUsers.st_id64 == session['st_id64'],ptfUsers.ptf_server_role_developer)).first()
-    print('is admin? ',_submitter.ptf_server_role_admin)
+
     if _submitter.ptf_server_role_admin or _submitter.ptf_server_role_owner or _submitter.ptf_server_role_developer:
         pass
     else:
@@ -406,11 +404,9 @@ def update_server(args):
     for ptf_field_key, ptf_fields in ptf_fields_dict.items():
         for ptf_field in ptf_fields:
             if args[ptf_field_key] == None:
-                print('nothing for ', ptf_field )
                 #user didnt submit anything to this field group, set false
                 setattr(_server,ptf_field,False)
             elif ptf_field in args[ptf_field_key]:
-                print("setting ", ptf_field)
                 #user submitted the field, set to true
                 setattr(_server,ptf_field,True)
             else:
@@ -536,7 +532,7 @@ def update_users(ptf_server_id, ptf_role_dict):
 
     #update user list in case one was added
     _users = list(db.session.query(ptfUsers).filter(ptfUsers.ptf_server_id == ptf_server_id))
-    print(ptf_user_dict)
+
     #Check requested roles against existing roles
     for _user in _users:
         if(_user.ptf_server_role_owner and not ptf_user_dict[_user.st_id64]['owner']):

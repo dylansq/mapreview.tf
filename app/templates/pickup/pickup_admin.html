@@ -1,0 +1,312 @@
+<!doctype html>
+<html dir="ltr" lang="en-US" class="no-js">
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pickup-search-container.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/selectize.bootstrap5.css') }}" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}" media="all">
+    <title>{{title_text}}</title>
+    <meta charset="utf-8" />
+    {% for meta_dic in meta_dic_list %}
+    <meta {% for meta_key, meta_value in meta_dic.items() %} {{meta_key}}="{{meta_value}}" {% endfor %}>
+    {% endfor %}
+    <meta name="viewport" content="width=device-width">
+    <link rel="icon" href="{{ url_for('static', filename='/img/favicon.ico') }}" sizes="16x16 32x32 64x64 128x128"
+        type="image/png" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/selectize.js')}}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/pickup-admin.js')}}"></script>
+
+</head>
+
+
+
+
+<body>
+
+    <script type="text/javascript">
+        function openEditContainer(ptf_server_id) {
+            var servers = {{ ptf_servers| tojson}}
+            var users = {{ ptf_users| tojson}}
+
+        owner_list = []
+        owner_values = []
+        admin_list = []
+        admin_values = []
+        mod_list = []
+        mod_values = []
+        $.each(users[ptf_server_id],function(i,user){
+            if(user.ptf_server_role_owner){owner_list.push({'st_id64':user.st_id64,'st_display_name':user.st_display_name,'st_display_avatar':user.st_display_avatar});owner_values.push(user.st_id64)}
+            if(user.ptf_server_role_admin){admin_list.push({'st_id64':user.st_id64,'st_display_name':user.st_display_name,'st_display_avatar':user.st_display_avatar});admin_values.push(user.st_id64)}
+            if(user.ptf_server_role_moderator){mod_list.push({'st_id64':user.st_id64,'st_display_name':user.st_display_name,'st_display_avatar':user.st_display_avatar});mod_values.push(user.st_id64)}
+        })
+
+
+
+        $('.edit-container').empty();
+        $('.edit-container').appendTo('#listing-'+ptf_server_id);
+        $('.edit-container').append(`
+        <form id="ptf_form">
+            <div class="edit-row"><div class="edit-item"><label>Server Name: <input name="ptf_server_name" id="ptf_server_name"></label><input type="hidden" name="ptf_server_id" id="ptf_server_id"></div></div>
+            <div class="edit-row">
+                <div class="edit-item"><label>Region<input name="ptf_region" id="ptf_region"></label></div>
+                <div class="edit-item"><label>Skill Level<input name="ptf_skill" id="ptf_skill"></label></div></div>
+            <div class="edit-row">
+                <div class="edit-item"><label>Gamemode<input name="ptf_gamemode" id="ptf_gamemode"></label></div>
+                <div class="edit-item"><label>Gametype<input name="ptf_gametype" id="ptf_gametype"></label></div></div>
+            <div class="edit-row">
+                <div class="edit-item"><label>Owners<input name="ptf_role_owner" id="ptf_role_owner"></div>
+                <div class="edit-item"><label>Admins<input name="ptf_role_admin" id="ptf_role_admin"></div>
+                <div class="edit-item"><label>Moderators<input name="ptf_role_moderator" id="ptf_role_moderator"></div>
+                </div>
+            <div class="edit-row">
+                <div>Server Description:</div> <textarea name="ptf_server_description" id="ptf_server_description" rows="5" cols="50"></textarea></div>
+            <div class="edit-row"><label>Discord Invite URL: <input name="ptf_discord_url" id="ptf_discord_url"></label></div>
+            <div class="edit-row"><label>Website URL: <input name="ptf_site_url" id="ptf_site_url"></label></div>
+            <div class="edit-row"><label>Steam Community URL: <input name="ptf_steamcommunity_url" id="ptf_steamcommunity_url"></label></div>
+            </form>
+            <button id="ptf_submit">Submit</button>
+            `);
+            
+            $("#ptf_submit").on("click",function(event){
+                event.preventDefault();
+                
+                var form_data = $('#ptf_form').serializeArray().reduce(function(obj, item) {obj[item.name] = item.value; return obj;}, {});
+                console.log(form_data)
+                $.post("/pickup/update_server",form_data).done(function(){
+                    alert("Account submitted successfully")
+                    //location.reload();
+                    }).fail(function(err){
+                        alert(err.responseText)
+                    });
+                return false
+            });
+        const region_options = [
+            { label: "North America", region2: "NA", ptf_field: "ptf_region_na", value: true },
+            { label: "South America", region2: "SA", ptf_field: "ptf_region_sa", value: true },
+            { label: "Europe", region2: "EU", ptf_field: "ptf_region_eu", value: true },
+            { label: "Asia", region2: "AS", ptf_field: "ptf_region_as", value: true },
+            { label: "Africa", region2: "AF", ptf_field: "ptf_region_af", value: true },
+            { label: "Oceania", region2: "OC", ptf_field: "ptf_region_oc", value: true }]
+        const skill_options = [
+            { label: "New Players", ptf_field: "tf_skilllevel_0", sort: 1, value: true },
+            { label: "NC/AM", region2: "SA", ptf_field: "tf_skilllevel_1", sort: 2, value: true },
+            { label: "IM/Main", region2: "EU", ptf_field: "tf_skilllevel_2", sort: 3, value: true },
+            { label: "Adv+", region2: "AS", ptf_field: "tf_skilllevel_3", sort: 4, value: true }]
+        const gamemode_options =  [
+            { label: "ultiduo", ptf_field: "tf_gamemode_ultiduo", sort: 1, value: true },
+            { label: "ultitrio", ptf_field: "tf_gamemode_ultitrio", sort: 1, value: true },
+            { label: "fours", ptf_field: "tf_gamemode_fours", sort: 1, value: true },
+            { label: "sixes", ptf_field: "tf_gamemode_sixes", sort: 1, value: true },
+            { label: "prolander", ptf_field: "tf_gamemode_prolander", sort: 1, value: true },
+            { label: "highlander", ptf_field: "tf_gamemode_highlander", sort: 1, value: true }]
+        const gametype_options = [
+            { label: "bball", ptf_field: "tf_gamemode_bball", sort: 1, value: true },
+            { label: "passtime", ptf_field: "tf_gamemode_passtime", sort: 1, value: true },
+            { label: "experimental", ptf_field: "tf_gamemode_experimental", sort: 1, value: true },
+            { label: "mge", ptf_field: "tf_gamemode_mge", sort: 1, value: true },
+            { label: "mvm", ptf_field: "tf_gamemode_mvm", sort: 1, value: true }]
+        
+        //Get selected options
+        
+        var region_selected = []
+        var gamemode_selected = []
+        var gametype_selected = []
+        var skill_selected = []
+
+        $.each([[region_options, region_selected], [skill_options, skill_selected], [gamemode_options, gamemode_selected], [gametype_options, gametype_selected]], function (i, values) {
+            var ptf_options = values[0]
+            var ptf_selected = values[1]
+            $.each(ptf_options, function (j,option) {
+                if (servers[ptf_server_id][option.ptf_field]) {
+                     ptf_selected.push(option.ptf_field)
+                    }
+                //$(idtag).selectize()[0].selectize.setValue(arr)
+            });
+        });
+
+        //Set Textbox entries
+        $('#ptf_server_name').val(servers[ptf_server_id].ptf_server_name)
+        $('#ptf_server_id').val(servers[ptf_server_id].ptf_server_id)
+        $('#ptf_discord_url').val(servers[ptf_server_id].ptf_discord_url)
+        $('#ptf_steamcommunity_url').val(servers[ptf_server_id].ptf_steamcommunity_url)
+        $('#ptf_site_url').val(servers[ptf_server_id].ptf_site_url)
+
+
+
+        //Selectize Initialize
+        $('#ptf_region').selectize({
+            plugins: ["remove_button"],
+            delimiter: ',',
+            persist: false,
+            valueField: "ptf_field",
+            labelField: "label",
+            options: region_options,
+            items: region_selected
+        });
+
+        $('#ptf_skill').selectize({
+            plugins: ["remove_button"],
+            delimiter: ',',
+            persist: false,
+            valueField: "ptf_field",
+            labelField: "label",
+            sortField: "sort",
+            options: skill_options,
+            items: skill_selected
+        });
+
+        $('#ptf_gamemode').selectize({
+            plugins: ["remove_button"],
+            delimiter: ',',
+            persist: false,
+            valueField: "ptf_field",
+            labelField: "label",
+            options: gamemode_options,
+            items: gamemode_selected
+        });
+
+        $('#ptf_gametype').selectize({
+            plugins: ["remove_button"],
+            delimiter: ',',
+            persist: false,
+            valueField: "ptf_field",
+            labelField: "label",
+            options: gametype_options,
+            items: gametype_selected
+        });
+
+        $('#ptf_role_owner').selectize({
+            plugins: ["remove_button"],
+            delimiter: ',',
+            persist: false,
+            valueField: "st_id64",
+            labelField: "st_display_name",
+            options: owner_list,
+            items: owner_values,
+            render: {
+                item: function (item, escape) {
+                    return (
+                    '<div class="badge-container">' +
+                        '<div class="badge-left">' +
+                    (item.st_display_avatar ? '<img height="32" class="badge-avatar" src='+ escape(item.st_display_avatar) +'></img>' : "") +
+                        '</div> <div class="badge-right">' + 
+                    (item.st_display_name ? '<span  class="badge-name">' + escape(item.st_display_name) + "</span>" : "") +
+                    (item.st_id64 ? '<span  class="badge-id">' + escape(item.st_id64) + '</span>' : "") + "</div></div>");
+                }},
+            create: function (st_id64, callback) {
+                if(st_id64.length != 17){
+                    alert("Please enter a valid Steam ID 64");
+                    return null;}
+                $.get("http://127.0.0.1:5000/pickup/steam_query?st_id64="+st_id64, function (data) {
+                    var ptf_display_avatar = data[st_id64]['avatar']
+                    var ptf_display_name = data[st_id64]['personaname']
+                    var _user = {
+                        'st_id64':st_id64,
+                        'st_display_name':ptf_display_name,
+                        'st_display_avatar':ptf_display_avatar}
+                    callback(_user);
+                });
+                }
+            
+        });
+        $('#ptf_role_admin').selectize({
+            plugins: ["remove_button"],
+            delimiter: ',',
+            persist: false,
+            valueField: "st_id64",
+            labelField: "st_display_name",
+            options: admin_list,
+            items: admin_values,
+            render: {
+                item: function (item, escape) {
+                    return (
+                    '<div class="badge-container">' +
+                        '<div class="badge-left">' +
+                    (item.st_display_avatar ? '<img height="32" class="badge-avatar" src='+ escape(item.st_display_avatar) +'></img>' : "") +
+                        '</div> <div class="badge-right">' + 
+                    (item.st_display_name ? '<span  class="badge-name">' + escape(item.st_display_name) + "</span>" : "") +
+                    (item.st_id64 ? '<span  class="badge-id">' + escape(item.st_id64) + '</span>' : "") + "</div></div>");
+                }},
+            create: function (st_id64, callback) {
+                if(st_id64.length != 17){
+                    alert("Please enter a valid Steam ID 64");
+                    return null;}
+                $.get("http://127.0.0.1:5000/pickup/steam_query?st_id64="+st_id64, function (data) {
+                    var ptf_display_avatar = data[st_id64]['avatar']
+                    var ptf_display_name = data[st_id64]['personaname']
+                    var _user = {
+                        'st_id64':st_id64,
+                        'st_display_name':ptf_display_name,
+                        'st_display_avatar':ptf_display_avatar}
+                    callback(_user);
+                });
+                }
+        });
+        $('#ptf_role_moderator').selectize({
+            plugins: ["remove_button"],
+            delimiter: ',',
+            persist: false,
+            valueField: "st_id64",
+            labelField: "st_display_name",
+            options: mod_list,
+            items: mod_values,
+            render: {
+                item: function (item, escape) {
+                    return (
+                    '<div class="badge-container">' +
+                        '<div class="badge-left">' +
+                    (item.st_display_avatar ? '<img height="32" class="badge-avatar" src='+ escape(item.st_display_avatar) +'></img>' : "") +
+                        '</div> <div class="badge-right">' + 
+                    (item.st_display_name ? '<span  class="badge-name">' + escape(item.st_display_name) + "</span>" : "") +
+                    (item.st_id64 ? '<span  class="badge-id">' + escape(item.st_id64) + '</span>' : "") + "</div></div>");
+                }},
+            create: function (st_id64, callback) {
+                if(st_id64.length != 17){
+                    alert("Please enter a valid Steam ID 64");
+                    return null;}
+                $.get("http://127.0.0.1:5000/pickup/steam_query?st_id64="+st_id64, function (data) {
+                    var ptf_display_avatar = data[st_id64]['avatar']
+                    var ptf_display_name = data[st_id64]['personaname']
+                    var _user = {
+                        'st_id64':st_id64,
+                        'st_display_name':ptf_display_name,
+                        'st_display_avatar':ptf_display_avatar}
+                    callback(_user);
+                });
+                }
+        });
+        
+
+    };
+    </script>
+
+    <main class="main-container">
+        <div class="listing-container"></div>
+        {% for id,server in ptf_servers.items() %}
+        <script type="text/javascript">
+            var listing_item = createListingItem({{ id }}, {{ server | tojson }})
+            $('.listing-container').append(`<div id="listing-{{id}}" class="edit-listing">` + listing_item)
+            $('#listing-{{id}}').find('.joins-container').append('<div class="listing-join listing-edit" id = {{id}}><div class="edit-icon">EDIT</div></div></div>')
+            $('#{{id}}').on('click', function (event) {
+                openEditContainer({{ id }})
+            });
+        </script>
+        {% endfor %}
+        <div class="edit-container">
+
+        </div>
+
+        <div>
+
+            
+
+        </div>
+    </main>
+    <footer>
+
+    </footer>
+</body>
+
+</html>

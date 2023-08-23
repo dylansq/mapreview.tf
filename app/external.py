@@ -483,11 +483,11 @@ def refresh_yt_stats():
         likerate_score = min(1,float(_vid.yt_stats_likes)/(days_old))
         viewrate_score = min(1,float(_vid.yt_stats_views)/(days_old))
         age_score = (1-min(1.0,days_old/2191))**4
-        likes_score = min(1,(float(_vid.yt_stats_likes)/100)**0.5)
-        views_score = min(1,(float(_vid.yt_stats_views)/2000))
+        likes_score = min(1,(float(_vid.yt_stats_likes)/20)**0.5)
+        views_score = min(1,(float(_vid.yt_stats_views)/100))
         ratio_score = min(1.0,10*float(_vid.yt_stats_likes)/float(_vid.yt_stats_views))
 
-        mrtf_rating_score_a1 = int(100*(age_score*2 + likes_score + views_score + ratio_score + chapter_score + likerate_score + vote_score)/8)
+        mrtf_rating_score_a1 = int(100*(age_score*2 + (likes_score + views_score)/2 + ratio_score + chapter_score + likerate_score + vote_score*2)/8)
 
         print(f'{_vid.yt_video_id}, {mrtf_rating_score_a1}, {age_score}, {likes_score}, {views_score}, {ratio_score}, {chapter_score}, {likerate_score}, {vote_score}, {float(_vid.yt_stats_views)},{float(_vid.yt_stats_likes)}, {days_old}')
         setattr(_vid,"mrtf_rating_score_a1",mrtf_rating_score_a1)

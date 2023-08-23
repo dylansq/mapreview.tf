@@ -9,7 +9,7 @@ from dateutil import parser as dtparser
 import pytz
 import urllib.parse
 import json
-from .views import get_chapters,get_yt_channel_image
+from .views import get_chapters,get_yt_channel_image, get_user_vote
 from . import db
 
 external = Blueprint("external", __name__)
@@ -459,7 +459,12 @@ def refresh_yt_stats():
             pass
 
 
+
         #update algorithm
+
+        _vt = get_user_vote(_vid.yt_video_id)
+        _vt['votes']['total']
+        vote_score = min(1,int(_vt['votes']['total'])/10)
         #print('chapters')
         print(_vid.yt_video_id)
         _gc = get_chapters(yt_video_id=_vid.yt_video_id)
@@ -476,14 +481,15 @@ def refresh_yt_stats():
             days_old = 1
 
         likerate_score = min(1,float(_vid.yt_stats_likes)/(days_old))
+        viewrate_score = min(1,float(_vid.yt_stats_views)/(days_old))
         age_score = (1-min(1.0,days_old/2191))**4
         likes_score = min(1,(float(_vid.yt_stats_likes)/100)**0.5)
         views_score = min(1,(float(_vid.yt_stats_views)/2000))
         ratio_score = min(1.0,10*float(_vid.yt_stats_likes)/float(_vid.yt_stats_views))
 
-        mrtf_rating_score_a1 = int(100*(age_score*2 + likes_score + views_score + ratio_score + chapter_score + likerate_score)/7)
+        mrtf_rating_score_a1 = int(100*(age_score*2 + likes_score + views_score + ratio_score + chapter_score + likerate_score + vote_score)/8)
 
-        print(f'{_vid.yt_video_id}, {mrtf_rating_score_a1}, {age_score}, {likes_score}, {views_score}, {ratio_score}, {chapter_score}, {likerate_score}')
+        print(f'{_vid.yt_video_id}, {mrtf_rating_score_a1}, {age_score}, {likes_score}, {views_score}, {ratio_score}, {chapter_score}, {likerate_score}, {vote_score}, {float(_vid.yt_stats_views)},{float(_vid.yt_stats_likes)}, {days_old}')
         setattr(_vid,"mrtf_rating_score_a1",mrtf_rating_score_a1)
 
         db.session.commit()

@@ -479,9 +479,11 @@ def refresh_yt_stats():
         age_score = (1-min(1.0,days_old/2191))**4
         likes_score = min(1,(float(_vid.yt_stats_likes)/100)**0.5)
         views_score = min(1,(float(_vid.yt_stats_views)/2000))
-        ratio_score = min(1.0,float(_vid.yt_stats_likes)/float(_vid.yt_stats_views))
+        ratio_score = min(1.0,10*float(_vid.yt_stats_likes)/float(_vid.yt_stats_views))
 
         mrtf_rating_score_a1 = int(100*(age_score*2 + likes_score + views_score + ratio_score + chapter_score + likerate_score)/7)
+
+        print(f'{_vid.yt_video_id}, {mrtf_rating_score_a1}, {age_score}, {likes_score}, {views_score}, {ratio_score}, {chapter_score}, {likerate_score}')
         setattr(_vid,"mrtf_rating_score_a1",mrtf_rating_score_a1)
 
         db.session.commit()

@@ -410,6 +410,45 @@ def twitch():
     return r.json()
     return render_template('twitch.html')
 
+@external.route('/refresh_mrtf_rating', methods=['POST'])
+def refresh_all_ratings():
+    _videos = ytVideos.query.all()
+    for _vid in _videos:
+        refresh_ratings(_vid)
+
+    return '',200
+
+def refresh_ratings(_vid):
+    #update algorithm
+    _vt = get_user_vote(_vid.yt_video_id)
+    _vt['votes']['total']
+    vote_score = min(1,int(_vt['votes']['total'])/10)
+    _gc = get_chapters(yt_video_id=_vid.yt_video_id)
+    chapter_count = len(_gc[0].json)
+    chapter_score = min(5.,float(chapter_count))/5 #linear scale up to 5 chapters
+    try:
+        days_old = (datetime.now(timezone.utc) - _vid.yt_published_date).days
+    except:
+        days_old = (datetime.now() - _vid.yt_published_date).days
+    
+    if days_old < 1:
+        days_old = 1
+
+    likerate_score = min(1,float(_vid.yt_stats_likes)/(days_old))
+    viewrate_score = min(1,float(_vid.yt_stats_views)/(days_old))
+    age_score = (1-min(1.0,days_old/2191))**4
+    likes_score = min(1,(float(_vid.yt_stats_likes)/20)**0.5)
+    views_score = min(1,(float(_vid.yt_stats_views)/100))
+    ratio_score = min(1.0,10*float(_vid.yt_stats_likes)/float(_vid.yt_stats_views))
+
+    mrtf_rating_score_a1 = int(100*(age_score*2 + (likes_score + views_score)/2 + ratio_score + chapter_score + likerate_score + vote_score*2)/8)
+
+    #print(f'{_vid.yt_video_id}, {mrtf_rating_score_a1}, {age_score}, {likes_score}, {views_score}, {ratio_score}, {chapter_score}, {likerate_score}, {vote_score}, {float(_vid.yt_stats_views)},{float(_vid.yt_stats_likes)}, {days_old}')
+    setattr(_vid,"mrtf_rating_score_a1",mrtf_rating_score_a1)
+
+    db.session.commit()
+    return '',200
+
 
 
 @external.route('/refresh_yt_stats', methods=['POST'])
@@ -459,38 +498,8 @@ def refresh_yt_stats():
             pass
 
 
+        refresh_ratings(_vid)
 
-        #update algorithm
-
-        _vt = get_user_vote(_vid.yt_video_id)
-        _vt['votes']['total']
-        vote_score = min(1,int(_vt['votes']['total'])/10)
-        #print('chapters')
-        print(_vid.yt_video_id)
-        _gc = get_chapters(yt_video_id=_vid.yt_video_id)
-        #print("_a :", _gc[0].json)
-        chapter_count = len(_gc[0].json)
-        
-        chapter_score = min(5.,float(chapter_count))/5 #linear scale up to 5 chapters
-        try:
-            days_old = (datetime.now(timezone.utc) - _vid.yt_published_date).days
-        except:
-            days_old = (datetime.now() - _vid.yt_published_date).days
-        
-        if days_old < 1:
-            days_old = 1
-
-        likerate_score = min(1,float(_vid.yt_stats_likes)/(days_old))
-        viewrate_score = min(1,float(_vid.yt_stats_views)/(days_old))
-        age_score = (1-min(1.0,days_old/2191))**4
-        likes_score = min(1,(float(_vid.yt_stats_likes)/20)**0.5)
-        views_score = min(1,(float(_vid.yt_stats_views)/100))
-        ratio_score = min(1.0,10*float(_vid.yt_stats_likes)/float(_vid.yt_stats_views))
-
-        mrtf_rating_score_a1 = int(100*(age_score*2 + (likes_score + views_score)/2 + ratio_score + chapter_score + likerate_score + vote_score*2)/8)
-
-        print(f'{_vid.yt_video_id}, {mrtf_rating_score_a1}, {age_score}, {likes_score}, {views_score}, {ratio_score}, {chapter_score}, {likerate_score}, {vote_score}, {float(_vid.yt_stats_views)},{float(_vid.yt_stats_likes)}, {days_old}')
-        setattr(_vid,"mrtf_rating_score_a1",mrtf_rating_score_a1)
 
         db.session.commit()
 

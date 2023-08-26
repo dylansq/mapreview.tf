@@ -17,7 +17,7 @@
 <th>yt_channel_title</th>
 <th>mrtf_rating_score_a1</th>
 
-{% for video in videos %}
+{% for video in videos|sort(attribute='mrtf_rating_score_a1',reverse=True) %}
 
 <tr>
     <td>{{ video.yt_video_id}}</td>

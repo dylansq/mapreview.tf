@@ -118,7 +118,7 @@ function getSearchParms(){
             param_reg_string += '(?=.*'+param+'-('+data.replace(/\+/g,'_').replace(/%7E/g,'|')+'))'
         }
         else{
-            param_reg_string += '(?=.*'+param+'-('+data.replace(/\+/g,'(\\s|\\+)').replace(/ /g,'(\\s|\\+)').replace(/%7E/g,'|')+'))'
+            param_reg_string += '(?=.*'+param+'-('+data.replace(/\+/g,'(\\s|\\+|\\_)').replace(/ /g,'(\\s|\\+)').replace(/%7E/g,'|')+'))'
         }
 
     });

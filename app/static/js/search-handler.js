@@ -115,10 +115,10 @@ function getSearchParms(){
         if(param=='age'){ 
             return;
         }else if( param == 'map'){
-            param_reg_string += '(?=.*'+param+'-('+data.replace('+','_').replace('%7E','|')+'))'
+            param_reg_string += '(?=.*'+param+'-('+data.replace(/\+/g,'_').replace(/%7E/g,'|')+'))'
         }
         else{
-            param_reg_string += '(?=.*'+param+'-('+data.replace('+','(\\s|\\+)').replace(' ','(\\s|\\+)').replace('%7E','|')+'))'
+            param_reg_string += '(?=.*'+param+'-('+data.replace(/\+/g,'(\\s|\\+)').replace(/ /g,'(\\s|\\+)').replace(/%7E/g,'|')+'))'
         }
 
     });

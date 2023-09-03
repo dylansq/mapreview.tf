@@ -66,7 +66,7 @@ function initItemBoxes(){
                 display_name = video['yt_channel_title']
                 filter_string += `creator-${video['yt_channel_title']},`
             }
-            if (video['st_presenter_name'] != video['mrtf_display_name'] && video['st_presenter_name'] != null) {
+            if (video['st_presenter_name'] != video['mrtf_display_name'] && video['st_presenter_name'] != null && video['st_presenter_name'].length > 0) {d
                 filter_string += `creator-${video['st_presenter_name']},`
             }
 

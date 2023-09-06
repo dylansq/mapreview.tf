@@ -29,6 +29,30 @@ $("#update_rich_presence").click(function(){
 
 });
 
+$("#confirm_hacker").click(function(e){
+    console.log($(this).attr('data-id'))
+    console.log({'st_id64':$(this).attr('data-id')})
+    $.post("/ht/confirm_hacker",{'st_id64':$(this).attr('data-id')}).done(function(res){
+        alert(res)
+        location.reload();
+      }).fail(function(err){
+          alert(err.responseText)
+          console.log(err.responseText)
+      });
+
+});
+
+$("#deny_hacker").click(function(e){
+    $.post("/ht/confirm_hacker",{'st_id64':$(this).attr('data-id')}).done(function(res){
+        alert(res)
+        location.reload();
+      }).fail(function(err){
+          alert(err.responseText)
+          console.log(err.responseText)
+      });
+});
+
+
 $("#ht_form_submit").click(function(event){
 event.preventDefault();
 console.log($('#ht_submit').serializeArray())

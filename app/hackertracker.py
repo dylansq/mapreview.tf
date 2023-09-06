@@ -26,6 +26,16 @@ hackertracker = Blueprint("hackertracker", __name__)
 #'bot' - Automatically controlled account using a script/program to cheat
 #'racist' - Racist
 #'annoying' - Non-cheater who was temporarily muted for any reason
+'''
+    -Ability to copy whole profile strings into the submission box
+    -ability for certain people deemed "admins" to remove people from the list
+    -whole profile strings, potentially with custom URLs
+    -Ability to mark people as racist
+    -There should be a public audit record for entries both being added and removed from the list.
+    -If you're the person who added someone to the list, you should have the ability to remove them
+    -move the input box (for new cheaters) to the top
+
+'''
 
 class htFormSchema(Schema):
     st_id64 = fields.Str(required=True,validate=[validate.Length(16,17)])
@@ -157,6 +167,45 @@ def submit_hacker(args):
     ht_update_steam(_hacker)
     #https://api.steampowered.com/ISteamUser/GetPlayerBans/v1?key={key}&steamids=76561199443667030&appid=440
     return '',200
+
+
+@hackertracker.route('/confirm_hacker', methods=['POST'])
+def confirm_hacker():
+    try:
+        session['st_id3']
+    except:
+        return "You must be logged in to submit a hacker", 401
+    
+    _submitter = db.session.query(htUsers).filter(htUsers.st_id3 == session['st_id3']).first()
+    _submitter_role = 'User'
+    if _submitter == None:
+        #user hasn't submitted anything yet, add to database as user
+        _submitter = htUsers()
+        setattr(_submitter,'st_id3',session['st_id3'])
+        setattr(_submitter,'st_username',session['display_name'])
+        setattr(_submitter,'ht_role',_submitter_role)
+        
+    else:
+        print(_submitter.ht_role)
+        _submitter_role = _submitter.ht_role
+
+    if _submitter_role == 'Admin' or _submitter_role == 'Mod':
+        
+        print(request.form['st_id64'])
+        st_id64 = request.form['st_id64']
+        try:
+            _hacker = db.session.query(mrtfHackerTracker).filter(mrtfHackerTracker.st_id64 == st_id64).first()
+            setattr(_hacker,'ht_provisional',0)
+            db.session.commit()
+
+        except:
+            return "Error confirming hacker", 500
+        
+        return "Successfully confirmed provisional hacker", 200
+    else:
+        return "You do not have permission to confirm hackers", 401
+
+
 
 
 @hackertracker.route('/cheaters', methods=['GET'])

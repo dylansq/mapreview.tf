@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.foundation.min.css" media="all">
 
 {% if session['display_name'] %}
-<div class="steam-oauth-displayname">Welcome {{ session['display_name'] }} </div><a href="/ext/steam_logout"><div class="steam-oauth-logout ">(logout)</div></a>
+<div class="steam-oauth-displayname">Welcome {{ session['display_name'] }} </div><a href="/ext/steam_logout"><div class="steam-oauth-logout">(logout)</div></a>
 {% else %}
 <img id="steam_openid_login" height="31" src = "https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png">
 <script>
@@ -20,6 +20,78 @@
 <button id="update_steamrep">Update SteamRep</button>
 <button id="update_all_steam">Update Steam</button>
 <button id="update_rich_presence">Update In-Game Status</button>
+<div>Submit Hacker:</div>
+<form id="ht_submit">
+    <label>Steam ID64: <input class="yt_form_option" name="st_id64" id="st_id64" placeholder="76561198082222131" onclick="toggle('.other-classes', this)"/></label>
+    <button id="check_id">Check ID</button>
+    <label>Gamemode: <select name="ht_gamemode" id="ht_gamemode">
+        <option value = "valvecomp" selected="selected">Valve Comp</option>
+        <option value = "casual">Casual</option>
+        <option value = "communitycomp">Community Comp</option>
+        <option value = "mvm">MvM</option>
+        <option value = "other">Other</option>
+    </select></label>
+    <label>Reason: <select name="ht_reason" id="ht_reason">
+        <option value = "cheater" selected="selected">Cheater</option>
+        <option value = "bot">Bot</option>
+        <option value = "racist">Racist</option>
+        <option value = "annoying">Annoying</option>
+    </select></label>
+    <label>Confidence: <input type="number" name="ht_confidence" id="ht_confidence" min="0" max="1" step="0.1" value="1.0" /></label>
+    <button id="ht_form_submit" disabled>Submit</button>
+</form>
+
+
+{% if provisionals != None %}
+<div>Provisional Table</div>
+<table id="provisional_table">
+    
+    <thead><tr>
+<th></th>
+<th></th>
+<th>Display Name</th>
+<th>Steam ID64</th>
+<th>Category</th>
+<th>Conf.</th>
+<th>Game Type</th>
+<th></th>
+<th>Updated</th>
+<th>VAC</th>
+<th>State</th>
+<th>Privacy</th>
+<th>Hours Played</th>
+<th>Last Played</th>
+<th>Game</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+{% for hacker in provisionals %}
+<tr>
+    <td><button id="confirm_hacker" data-id="{{hacker.st_id64}}">Confirm</button><button disabled id="deny_hacker" data-id="{{hacker.st_id64}}">Deny</button></td>
+    <td><a href="https://steamcommunity.com/profiles/{{hacker.st_id64}}"  target="_blank"><img height="20" src={{hacker.st_avatarmedium_url}}><img></a></td>
+    <td>{{hacker.st_personaname}}</td>
+    <td>{{hacker.st_id64}}</td>
+    <td>{{hacker.ht_reason}}</td>
+    <td>{{hacker.ht_confidence}}</td>
+    <td>{{hacker.ht_gamemode}}</td>
+    <td><a href="https://steamrep.com/profiles/{{hacker.st_id64}}">SteamRep</a></td>
+    <td>{{hacker.st_lastupdate_datetime}}</td>
+    <td>{{hacker.sr_vacban}}</td>
+    <td>{{hacker.st_personastate}}</td>
+    <td>{{hacker.st_communityvisibilitystate}}</td>
+    <td>{{hacker.st_hours_played_2weeks|int}}</td>
+    <td>{{hacker.st_lastlogoff}}</td>
+    <td>{{hacker.st_rich_presence_game}}</td>
+    <td>{{hacker.st_rich_presence_desc}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endif%}
+
+
+
 <table id="hacker_table">
     
     <thead><tr>
@@ -72,24 +144,6 @@
 </table>
 
 
-<form id="ht_submit">
-    <label>Steam ID64: <input class="yt_form_option" name="st_id64" id="st_id64" placeholder="76561198082222131" onclick="toggle('.other-classes', this)"/></label>
-    <button id="check_id">Check ID</button>
-    <label>Gamemode: <select name="ht_gamemode" id="ht_gamemode">
-        <option value = "valvecomp" selected="selected">Valve Comp</option>
-        <option value = "casual">Casual</option>
-        <option value = "communitycomp">Community Comp</option>
-        <option value = "mvm">MvM</option>
-        <option value = "other">Other</option>
-    </select></label>
-    <label>Reason: <select name="ht_reason" id="ht_reason">
-        <option value = "cheater" selected="selected">Cheater</option>
-        <option value = "bot">Bot</option>
-        <option value = "racist">Racist</option>
-        <option value = "annoying">Annoying</option>
-    </select></label>
-    <label>Confidence: <input type="number" name="ht_confidence" id="ht_confidence" min="0" max="1" step="0.1" value="1.0" /></label>
-    <button id="ht_form_submit" disabled>Submit</button>
-</form>
+
 
 <script type = "text/javascript", src="{{ url_for('static', filename='js/hacker_tracker.js')}}"></script>

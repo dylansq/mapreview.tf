@@ -48,6 +48,7 @@ class htFormSchema(Schema):
 
 @hackertracker.route('/', methods=['GET'])
 def hacker_tracker():
+    print('starting hacker tracker')
     _hackers = mrtfHackerTracker.query.filter(mrtfHackerTracker.ht_provisional != 1)
     #array for display
     sr_vac = ["","Banned"]

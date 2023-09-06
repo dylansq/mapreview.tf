@@ -61,7 +61,7 @@ def hacker_tracker():
         if session['st_id3']:
             _role = 'User'
             _user = db.session.query(htUsers).filter(htUsers.st_id3 == session['st_id3']).first()
-            print(_user)
+            print(f"Logged in as {_user.st_username} ({_user.ht_role})")
             if _user:
                 _role = _user.ht_role
             

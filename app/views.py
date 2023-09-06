@@ -703,12 +703,6 @@ def handle_error(err):
         return jsonify({"errors": messages}), err.code
     
 
-@views.route('/get_mrtf_hacker_tracker',methods=['GET'])
-def get_mrtf_hacker_tracker():
-    #query_filter.append(ytVideos.mrtf_language.in_(language))
-    return
-
-
 def tesssst():
     #steampai use
     # get playtime
@@ -720,13 +714,6 @@ def tesssst():
     st_id64_string = '76561198982713227' #comma separated list up to 100 values
     f'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={api_key}&steamids={st_id64_string}&appid=440'
     
-@views.route('/ht', methods=['GET'])
-def hacker_tracker():
-    _hackers  = mrtfHackerTracker.query.all()
-    #print([x[0] for x in list(_hackers)])
-    print(_hackers)
-    return render_template('./hacker_tracker.html',hackers =_hackers)
-
 
 @views.route('/cheaters', methods=['GET'])
 def show_cheaters():

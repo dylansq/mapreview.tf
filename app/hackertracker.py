@@ -55,7 +55,6 @@ def hacker_tracker():
     st_state = ['Offline','Online','Busy','Away','Snooze','Other','Other']
 
     #if user is logged in, check if they are a mod/admin
-    print('here')
     _provisionals = None
     try:
         if session['st_id3']:
@@ -67,8 +66,9 @@ def hacker_tracker():
             
             if _role == "Admin" or _role == "Mod":
                 _provisionals = list(db.session.query(mrtfHackerTracker).filter(mrtfHackerTracker.ht_provisional == 1))
-                print('provisionals: ',_provisionals)
+                print('provisionals: ',len(_provisionals))
     except:
+        print('ht_get failed..')
         pass
 
 
@@ -120,7 +120,6 @@ def submit_hacker(args):
         setattr(_submitter,'ht_role',_submitter_role)
         
     else:
-        print(_submitter.ht_role)
         _submitter_role = _submitter.ht_role
 
     _hacker = mrtfHackerTracker()
@@ -146,9 +145,8 @@ def submit_hacker(args):
         print('ipgetttingfailed')
 
     #validate objects
+    _count = None
     try:
-        print("check_existing_hackers: ",check_existing_hackers(_hacker.st_id64))
-        print("st_id64: ",_hacker.st_id64)
         _count = check_existing_hackers(_hacker.st_id64)[0].json['count']
     except KeyError:
         return f'Invalid Steam ID\nUse SteamID64 format\neg. "76561198082222131"' ,400
@@ -186,12 +184,9 @@ def confirm_hacker():
         setattr(_submitter,'ht_role',_submitter_role)
         
     else:
-        print(_submitter.ht_role)
         _submitter_role = _submitter.ht_role
 
     if _submitter_role == 'Admin' or _submitter_role == 'Mod':
-        
-        print(request.form['st_id64'])
         st_id64 = request.form['st_id64']
         try:
             _hacker = db.session.query(mrtfHackerTracker).filter(mrtfHackerTracker.st_id64 == st_id64).first()
@@ -239,31 +234,21 @@ def upload_voice_ban_dt(unmute_annoying=None):
         print("Bad Filename")
         return ''
     st_id3s = []
-    #print(f)
     for r in f:
-        #print(r)
         st_id3s.extend(re.findall(steamid3_regex,str(r)))   #.decode('UTF-8')
-    #print(f"request.file: {f}")
-    #print(st_id3s)
     return combine_mutes(st_id3s,unmute_annoying), 200
 
 @hackertracker.route('/mutes', methods=['GET'])
 def combine_mutes(existing_mutes,unmute_annoying=False):
-    print("unmuting is ",unmute_annoying)
     steamIDlen = 32
-
     steamid3_regex = r'(\[U:1:\d+\])'
     wgetjane_list_regex = r'\n(\d+)'
-
     players = []
-
-    
     ## new from db
     players = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot"]),mrtfHackerTracker.ht_confidence>= 0.9,mrtfHackerTracker.ht_provisional != 1))))
     
     players = [SteamID64To3(str(x[0].st_id64))[0] for x in players]
-    
-    #print(players)
+
     print(f"{len(players)} accounts found in database")
     print(f"{len(existing_mutes)} accounts sent from user")
     #new from db end
@@ -289,7 +274,6 @@ def combine_mutes(existing_mutes,unmute_annoying=False):
 
     print(f"{format(len(players), ',d')} muted players in total. Removed {dupe_number} duplicates.")
 
-    #print(players_as_string)
     return players_as_string
 
 
@@ -360,10 +344,8 @@ def ht_get_rich_presence(st_id64=None):
         _data["st_rich_presence_game"] = str(r.json()['in_game']['name'])
         _data["st_rich_presence_desc"] = str(r.json()['in_game']['rich_presence'])
         _data["st_rich_presence_datetime_updated"] = datetime.now(pytz.utc)
-        #print(r.json()['in_game']['name'])
-        #print(r.json()['in_game']['rich_presence'])
     except KeyError:
-        print("key eerror for: ", st_id64)
+        print("key error for: ", st_id64)
         _data["st_rich_presence_game"] = None
         _data["st_rich_presence_desc"] = None
         _data["st_rich_presence_datetime_updated"] = None
@@ -372,7 +354,6 @@ def ht_get_rich_presence(st_id64=None):
     except Exception as err:
         try:
             print(f"other error {err} for: {st_id64}")
-            print(r.content)
             r = requests.get(f'https://steamcommunity.com/miniprofile/{st_id3}/json')
             _data["st_rich_presence_game"] = str(r.json()['in_game']['name'])
             _data["st_rich_presence_desc"] = str(r.json()['in_game']['rich_presence'])
@@ -387,10 +368,8 @@ def ht_get_rich_presence(st_id64=None):
 
 
     for key, value in _data.items():
-        #print("setting {} to {} for {}".format(key,value,_hacker.st_id64))
         setattr(_hacker, key, value)
-    
-    #print(_hacker)
+
     db.session.commit()
 
     return '',200
@@ -420,7 +399,6 @@ def ht_get_recently_played(_st_id64=None):
             return jsonify({"st_hours_played_2weeks":0})
         
         tf2_hrs_2weeks = float(tf2_entry['playtime_2weeks'])/60
-        #print(r.json()['response']['games'][0])
         return jsonify({"st_hours_played_2weeks":tf2_hrs_2weeks})
     except:
         return jsonify({"st_hours_played_2weeks":-1.})
@@ -484,7 +462,6 @@ def ht_update_steam(_hacker):
     
     hoursplayed = ht_get_recently_played(_st_id64).json['st_hours_played_2weeks']
     _lastplayed = ht_get_last_played_tf2(_st_id64).json['st_last_played']
-    #print('lastplayed: ',lastplayed)
     try:
         _timecreated = datetime.utcfromtimestamp(int(_st["timecreated"]))
     except:
@@ -539,7 +516,6 @@ def steam_rep_query(st_id64=None):
             return "Invalid Steam ID"
     
     r = requests.get(f'https://steamrep.com/api/beta4/reputation/{st_id64}?extended=1&json=1')
-    print(r.text)
     return r.json()
 
 def ht_update_steamrep(_hacker):

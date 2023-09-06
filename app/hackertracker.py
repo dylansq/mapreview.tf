@@ -66,7 +66,7 @@ def hacker_tracker():
                 _role = _user.ht_role
             
             if _role == "Admin" or _role == "Mod":
-                _provisionals = db.session.query(mrtfHackerTracker).filter(mrtfHackerTracker.ht_provisional == 1)
+                _provisionals = list(db.session.query(mrtfHackerTracker).filter(mrtfHackerTracker.ht_provisional == 1))
                 print(_provisionals)
     except:
         pass

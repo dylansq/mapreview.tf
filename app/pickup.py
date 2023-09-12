@@ -30,6 +30,8 @@ from webargs.flaskparser import parser, abort, use_args
 #from webargs.fields import DelimitedList
 from marshmallow import Schema, EXCLUDE, pre_load
 
+from .external import steam_query
+
 #Initialize Blueprints
 pickup = Blueprint("pickup", __name__)
 
@@ -521,6 +523,13 @@ def update_users(ptf_server_id, ptf_role_dict):
             #create empty user entry
             _new_user = ptfUsers()
             setattr(_new_user,'st_id64',requested_user_id)
+
+            _st = steam_query(requested_user_id)
+            print('_st',_st[0][requested_user_id]['personaname'])
+            display_name = _st[0][requested_user_id]['personaname']
+            
+            setattr(_new_user,'st_display_name',display_name)
+
             setattr(_new_user,'ptf_server_id',ptf_server_id)
             db.session.add(_new_user)
             db.session.commit()

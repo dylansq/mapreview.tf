@@ -10,7 +10,6 @@ const ht_table = $('#hacker_table').DataTable({
             } else {
               return '';
             }
-          return data;
         } }
     ]
     });

@@ -259,6 +259,13 @@ class mrtfHackerTracker(db.Model):
     st_rich_presence_game= db.Column(db.String(64))
     st_rich_presence_desc= db.Column(db.String(64))
     st_rich_presence_datetime_updated= db.Column(db.DateTime(timezone=True))
+    #
+    #
+    ht_is_cheater=db.Column(db.Boolean())
+    ht_is_racist=db.Column(db.Boolean())
+    ht_is_bot=db.Column(db.Boolean())
+    ht_is_annoying=db.Column(db.Boolean())
+
 
 
 

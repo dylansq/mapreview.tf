@@ -1,7 +1,30 @@
-$('#hacker_table').DataTable({
+const ht_table = $('#hacker_table').DataTable({
     order: [[12, 'desc']],
-    lengthMenu: [[-1,50,25],['All',50,25]]
+    lengthMenu: [[-1,50,25],['All',50,25]],
+    columnDefs: [
+        { 
+            targets: [4,5,6,7],
+            render: function (data,type,row) {
+            if (data == "True") {
+              return '<input type="checkbox" checked onclick="return false;"/>';
+            } else {
+              return '';
+            }
+          return data;
+        } }
+    ]
     });
+
+ht_table.on('click', 'tbody tr', (e) => {
+    let classList = e.currentTarget.classList;
+    if (classList.contains('selected')) {
+        classList.remove('selected');
+    }
+    else {
+        ht_table.rows('.selected').nodes().each((row) => row.classList.remove('selected'));
+        classList.add('selected');
+    }
+});
 
 
 $("#update_steamrep").click(function(){
@@ -52,6 +75,18 @@ $("#deny_hacker").click(function(e){
       });
 });
 
+$(".remove_hacker").click(function(e){
+    console.log($(this).attr('data-id'))
+    console.log({'st_id64':$(this).attr('data-id')})
+    $.post("/ht/remove_hacker",{'st_id64':$(this).attr('data-id')}).done(function(res){
+        alert(res)
+        location.reload();
+      }).fail(function(err){
+          alert(err.responseText)
+          console.log(err.responseText)
+      });
+
+});
 
 $("#ht_form_submit").click(function(event){
 event.preventDefault();

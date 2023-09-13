@@ -30,7 +30,7 @@ hackertracker = Blueprint("hackertracker", __name__)
     -Ability to copy whole profile strings into the submission box
     -ability for certain people deemed "admins" to remove people from the list
     -whole profile strings, potentially with custom URLs
-    -Ability to mark people as racist
+    X-Ability to mark people as racist
     -There should be a public audit record for entries both being added and removed from the list.
     -If you're the person who added someone to the list, you should have the ability to remove them
     -move the input box (for new cheaters) to the top
@@ -42,6 +42,10 @@ class htFormSchema(Schema):
     ht_reason = fields.Str(validate=[validate.OneOf(['cheater','bot','racist','annoying'])])
     ht_confidence = fields.Float()
     ht_gamemode = fields.Str(validate=[validate.OneOf(['valvecomp','casual','communitycomp','mvm','other'])])
+    ht_is_cheater = fields.Int(allow_none=True)
+    ht_is_racist = fields.Int(allow_none=True)
+    ht_is_bot = fields.Int(allow_none=True)
+    ht_is_annoying = fields.Int(allow_none=True)
 
     class Meta:
         unknown = EXCLUDE
@@ -57,9 +61,10 @@ def hacker_tracker():
 
     #if user is logged in, check if they are a mod/admin
     _provisionals = None
+    _role = 'User'
     try:
         if session['st_id3']:
-            _role = 'User'
+            
             _user = db.session.query(htUsers).filter(htUsers.st_id3 == session['st_id3']).first()
             print(f"Logged in as {_user.st_username} ({_user.ht_role})")
             if _user:
@@ -74,7 +79,7 @@ def hacker_tracker():
 
 
 
-    return render_template('./hacker_tracker.html',hackers =_hackers, provisionals = _provisionals,sr_vac = sr_vac,st_privacy=st_privacy,st_state=st_state)
+    return render_template('./hacker_tracker.html',hackers =_hackers, provisionals = _provisionals,sr_vac = sr_vac,st_privacy=st_privacy,st_state=st_state,user_role = _role)
 
 
 @hackertracker.route('/check_existing_hackers', methods=['GET'])
@@ -200,6 +205,35 @@ def confirm_hacker():
         return "Successfully confirmed provisional hacker", 200
     else:
         return "You do not have permission to confirm hackers", 401
+    
+@hackertracker.route('/remove_hacker', methods=['POST'])
+def remove_hacker():
+    try:
+        session['st_id3']
+    except:
+        return "You must be logged in to remove a hacker", 401
+    
+    _submitter = db.session.query(htUsers).filter(htUsers.st_id3 == session['st_id3']).first()
+    _submitter_role = 'User'
+    if _submitter == None:
+        return "Error with your user account", 401
+        
+    else:
+        _submitter_role = _submitter.ht_role
+
+    if _submitter_role == 'Admin' or _submitter_role == 'Mod':
+        st_id64 = request.form['st_id64']
+        try:
+            _hacker = db.session.query(mrtfHackerTracker).filter(mrtfHackerTracker.st_id64 == st_id64).first()
+            db.session.delete(_hacker)
+            db.session.commit()
+
+        except:
+            return "Error confirming hacker", 500
+        
+        return f"Successfully removed {st_id64}", 200
+    else:
+        return "You do not have permission to remove hackers", 401
 
 
 
@@ -309,7 +343,8 @@ def ht_get_all_rich_presence(st_id64=None):
 
 @hackertracker.route('/playerlist.valvecomp_cheaters.json', methods=['GET'])
 def valvecomp_cheaters():
-    cheater_results = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(mrtfHackerTracker.ht_reason.in_(["cheater","bot","racist"]),mrtfHackerTracker.ht_confidence>= 0.99))))
+    
+    cheater_results = list(db.session.execute(db.session.query(mrtfHackerTracker).filter(and_(or_(mrtfHackerTracker.ht_is_cheater,mrtfHackerTracker.ht_is_racist,mrtfHackerTracker.ht_is_bot,mrtfHackerTracker.ht_reason.in_(["cheater","bot","racist"])),mrtfHackerTracker.ht_confidence>= 0.99))))
     
     players = [{'attributes':[p[0].ht_reason],'steamid':SteamID64To3(p[0].st_id64)[0]} for p in cheater_results]
 

@@ -51,7 +51,7 @@ $("#update_rich_presence").click(function(){
 
 });
 
-$("#confirm_hacker").click(function(e){
+$(".confirm_hacker").click(function(e){
     console.log($(this).attr('data-id'))
     console.log({'st_id64':$(this).attr('data-id')})
     $.post("/ht/confirm_hacker",{'st_id64':$(this).attr('data-id')}).done(function(res){
@@ -64,8 +64,8 @@ $("#confirm_hacker").click(function(e){
 
 });
 
-$("#deny_hacker").click(function(e){
-    $.post("/ht/confirm_hacker",{'st_id64':$(this).attr('data-id')}).done(function(res){
+$(".deny_hacker").click(function(e){
+    $.post("/ht/remove_hacker",{'st_id64':$(this).attr('data-id')}).done(function(res){
         alert(res)
         location.reload();
       }).fail(function(err){
@@ -93,7 +93,7 @@ console.log($('#ht_submit').serializeArray())
 var form_data = $('#ht_submit').serializeArray().reduce(function(obj, item) {obj[item.name] = item.value; return obj;}, {});
 $.post("/ht/submit_hacker",form_data).done(function(){
   alert("Account submitted successfully")
-  //location.reload();
+  location.reload();
 }).fail(function(err){
     alert(err.responseText)
     console.log(err.responseText)

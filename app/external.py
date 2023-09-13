@@ -364,9 +364,16 @@ def authorize():
 
 @external.route("/steam_logout")
 def steam_logout():
+    arg_dic = request.args.to_dict(flat=False)
+
     session.clear()
-    host = '://'.join(urllib.parse.urlparse(request.base_url)[:2])
-    return redirect(host)
+    try:
+        extension = arg_dic['ext'][0]
+        host = '://'.join(urllib.parse.urlparse(request.base_url)[:2])
+        return redirect(f"{host}/{extension}")
+    except:
+        host = '://'.join(urllib.parse.urlparse(request.base_url)[:2])
+        return redirect(host)
 
 #old?
 
@@ -442,7 +449,7 @@ def refresh_ratings(_vid):
     ratio_score = min(1.0,10*float(_vid.yt_stats_likes)/float(_vid.yt_stats_views))
 
     mrtf_rating_score_a1 = int(100*(age_score*2 + ratio_score + chapter_score + likerate_score + vote_score*2)/7)
-
+    # 2*age, ratio likes:views, includes chapters, rate likes/days, 2*in-site votes
     #print(f'{_vid.yt_video_id}, {mrtf_rating_score_a1}, {age_score}, {likes_score}, {views_score}, {ratio_score}, {chapter_score}, {likerate_score}, {vote_score}, {float(_vid.yt_stats_views)},{float(_vid.yt_stats_likes)}, {days_old}')
     setattr(_vid,"mrtf_rating_score_a1",mrtf_rating_score_a1)
 

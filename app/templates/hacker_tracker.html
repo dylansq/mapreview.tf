@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.foundation.min.css" media="all">
 
 {% if session['display_name'] %}
-<div class="steam-oauth-displayname">Welcome {{ session['display_name'] }} </div><a href="/ext/steam_logout"><div class="steam-oauth-logout">(logout)</div></a>
+<div class="steam-oauth-displayname">Welcome {{ session['display_name'] }} </div><a href="/ext/steam_logout?ext=ht"><div class="steam-oauth-logout">(logout)</div></a>
 {% else %}
 <img id="steam_openid_login" height="31" src = "https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png">
 <script>
@@ -22,6 +22,7 @@
 <button id="update_rich_presence">Update In-Game Status</button>
 <div>Submit Hacker:</div>
 <form id="ht_submit">
+    <div>
     <label>Steam ID64: <input class="yt_form_option" name="st_id64" id="st_id64" placeholder="76561198082222131" onclick="toggle('.other-classes', this)"/></label>
     <button id="check_id">Check ID</button>
     <label>Gamemode: <select name="ht_gamemode" id="ht_gamemode">
@@ -31,14 +32,16 @@
         <option value = "mvm">MvM</option>
         <option value = "other">Other</option>
     </select></label>
-    <label>Reason: <select name="ht_reason" id="ht_reason">
-        <option value = "cheater" selected="selected">Cheater</option>
-        <option value = "bot">Bot</option>
-        <option value = "racist">Racist</option>
-        <option value = "annoying">Annoying</option>
-    </select></label>
+</div>
+<div>
+    <label>Cheater: <input checked type="checkbox" name="ht_is_cheater" id="ht_is_cheater" value="1"/></label>
+    <label>Bot: <input type="checkbox" name="ht_is_bot" id="ht_is_bot" value="1"/></label>
+    <label>Racist: <input type="checkbox" name="ht_is_racist" id="ht_is_racist" value="1"/></label>
+    <label>Annoying: <input type="checkbox" name="ht_is_annoying" id="ht_is_annoying" value="1"/></label>
+
     <label>Confidence: <input type="number" name="ht_confidence" id="ht_confidence" min="0" max="1" step="0.1" value="1.0" /></label>
     <button id="ht_form_submit" disabled>Submit</button>
+</div>
 </form>
 
 
@@ -47,11 +50,14 @@
 <table id="provisional_table">
     
     <thead><tr>
-<th></th>
-<th></th>
-<th>Display Name</th>
+        <th></th>
+        <th></th>
+<th>Name</th>
 <th>Steam ID64</th>
-<th>Category</th>
+<th>Cheater</th>
+<th>Bot</th>
+<th>Racist</th>
+<th>Annoying</th>
 <th>Conf.</th>
 <th>Game Type</th>
 <th></th>
@@ -63,6 +69,7 @@
 <th>Last Played</th>
 <th>Game</th>
 <th>Description</th>
+<th></th>
 </tr></thead>
 <tbody>
 {% for hacker in provisionals %}
@@ -71,10 +78,13 @@
     <td><a href="https://steamcommunity.com/profiles/{{hacker.st_id64}}"  target="_blank"><img height="20" src={{hacker.st_avatarmedium_url}}><img></a></td>
     <td>{{hacker.st_personaname}}</td>
     <td>{{hacker.st_id64}}</td>
-    <td>{{hacker.ht_reason}}</td>
+    <td>{{hacker.ht_is_cheater}}</td>
+    <td>{{hacker.ht_is_bot}}</td>
+    <td>{{hacker.ht_is_racist}}</td>
+    <td>{{hacker.ht_is_annoying}}</td>
     <td>{{hacker.ht_confidence}}</td>
     <td>{{hacker.ht_gamemode}}</td>
-    <td><a href="https://steamrep.com/profiles/{{hacker.st_id64}}">SteamRep</a></td>
+    <td><a href="https://steamrep.com/profiles/{{hacker.st_id64}}"><img src="{{ url_for('static', filename='img/ht/sr_icon.png') }}"></a></td>
     <td>{{hacker.st_lastupdate_datetime}}</td>
     <td>{{hacker.sr_vacban}}</td>
     <td>{{hacker.st_personastate}}</td>
@@ -83,6 +93,7 @@
     <td>{{hacker.st_lastlogoff}}</td>
     <td>{{hacker.st_rich_presence_game}}</td>
     <td>{{hacker.st_rich_presence_desc}}</td>
+    
 </tr>
 {% endfor %}
 </tbody>
@@ -96,9 +107,13 @@
     
     <thead><tr>
 <th></th>
+<th></th>
 <th>Display Name</th>
 <th>Steam ID64</th>
-<th>Category</th>
+<th>Cheat.</th>
+<th>Bot</th>
+<th>Racist</th>
+<th>Annoy.</th>
 <th>Conf.</th>
 <th>Game Type</th>
 <th></th>
@@ -113,17 +128,24 @@
 <th>Last Played</th>
 <th>Game</th>
 <th>Description</th>
+<th></th>
 </tr></thead>
 <tbody>
 {% for hacker in hackers %}
 <tr>
+    <td>
+
+    </td>
     <td><a href="https://steamcommunity.com/profiles/{{hacker.st_id64}}"  target="_blank"><img height="20" src={{hacker.st_avatarmedium_url}}><img></a></td>
     <td>{{hacker.st_personaname}}</td>
     <td>{{hacker.st_id64}}</td>
-    <td>{{hacker.ht_reason}}</td>
+    <td>{{hacker.ht_is_cheater}}</td>
+    <td>{{hacker.ht_is_bot}}</td>
+    <td>{{hacker.ht_is_racist}}</td>
+    <td>{{hacker.ht_is_annoying}}</td>
     <td>{{hacker.ht_confidence}}</td>
     <td>{{hacker.ht_gamemode}}</td>
-    <td><a href="https://steamrep.com/profiles/{{hacker.st_id64}}">SteamRep</a></td>
+    <td><a href="https://steamrep.com/profiles/{{hacker.st_id64}}"><img src="{{ url_for('static', filename='img/ht/sr_icon.png') }}"></a></td>
     
 
     <td>{{hacker.st_lastupdate_datetime}}</td>
@@ -138,6 +160,11 @@
     <td>{{hacker.st_lastlogoff}}</td>
     <td>{{hacker.st_rich_presence_game}}</td>
     <td>{{hacker.st_rich_presence_desc}}</td>
+    <td>
+        {% if user_role == "Admin" or user_role == "Mod" %}
+        <button class="remove_hacker" data-id="{{hacker.st_id64}}">Remove</button>
+        {% endif %}
+    </td>
 </tr>
 {% endfor %}
 </tbody>

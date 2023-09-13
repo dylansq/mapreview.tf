@@ -74,7 +74,7 @@
 <tbody>
 {% for hacker in provisionals %}
 <tr>
-    <td><button id="confirm_hacker" data-id="{{hacker.st_id64}}">Confirm</button><button disabled id="deny_hacker" data-id="{{hacker.st_id64}}">Deny</button></td>
+    <td><button class="confirm_hacker" data-id="{{hacker.st_id64}}">Confirm</button><button class="deny_hacker" data-id="{{hacker.st_id64}}">Deny</button></td>
     <td><a href="https://steamcommunity.com/profiles/{{hacker.st_id64}}"  target="_blank"><img height="20" src={{hacker.st_avatarmedium_url}}><img></a></td>
     <td>{{hacker.st_personaname}}</td>
     <td>{{hacker.st_id64}}</td>

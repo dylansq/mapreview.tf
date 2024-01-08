@@ -59,7 +59,9 @@ async def on_voice_state_update(member, before, after):
         pc = ptf_channel_dict[pce['from']]
         pc.remove(member)
 
-    print(pc.get_counts())
+    #Set update flag if the last person left the server
+    if pc.get_counts() == 0:
+        pc.needs_update = True
     return  
 
 
@@ -93,6 +95,30 @@ async def ptf_timed_log(async_session):
                         
 
         await asyncio.sleep(300)
+
+
+    
+async def ptf_timed_update(async_session):
+    while True:
+        for ptf_channel in ptf_channel_dict.values():
+            if ptf_channel.needs_update:
+                async with async_session() as session:
+                    try:
+                        async with session.begin():
+                            stmt = sa.select(ptfChannels).where(ptfChannels.ptf_channel_id == ptf_channel.ptf_channel_id)
+                            result = await session.execute(stmt)
+                            a1 = result.scalars().one()
+                            for k,v in ptf_channel.count_data().items():
+                                setattr(a1,k,v)
+                            await session.flush()
+                            ptf_channel.needs_update = False
+                    except SQLAlchemyError as e:
+                        error = str(e.__cause__)
+                        await session.rollback()
+                        raise RuntimeError(error) from e
+                    finally:
+                        await session.close()
+        await asyncio.sleep(30)
 
 '''Helper Functions for Discord API'''
 def get_ptf_channel_event(before,after):
@@ -159,6 +185,7 @@ class PugChannel:
         self.playing = []
         self.waiting = []
         self.spectating = []
+        self.needs_update = False #flag for if the PugChannel has no more players, but hasn't been updated in the database.
         return
     
     def user_count(self):
@@ -173,6 +200,13 @@ class PugChannel:
                     'ptf_spectating':len(self.spectating)
                     }
         return log_data
+    
+    def count_data(self):
+        count_data = {'ptf_playing':len(self.playing),
+                    'ptf_waiting':len(self.waiting),
+                    'ptf_spectating':len(self.spectating)
+                    }
+        return count_data
 
     def remove(self, player_id):
         '''Removes a player from all lists if they are in the list'''
@@ -182,6 +216,8 @@ class PugChannel:
             self.waiting.remove(player_id)
         if player_id in self.spectating:
             self.spectating.remove(player_id)
+
+        self.needs_update = True
         return None
 
     def add(self, player_id, after):
@@ -194,6 +230,8 @@ class PugChannel:
             self.spectating.append(player_id)
         else:
             return
+        
+        self.needs_update = True
         return
     
     def update(self, player_id, after):
@@ -201,6 +239,8 @@ class PugChannel:
             Statuses: remove, playing, waiting, specatating'''
         self.remove(player_id)
         self.add(player_id,after)
+        self.needs_update = True
+        return
        
     def get_channel_type(self,channel):
         '''Determine which status a dsc_channel_id should be associated with'''
@@ -251,10 +291,40 @@ class ptfLogs(Base):
     def __init__(self, **kwargs):
         super(ptfLogs, self).__init__(**kwargs)
 
+class ptfChannels(Base):
+    '''SQL Table ptfChannels'''
+    __tablename__ = 'ptf_channels'
+    ptf_channel_id= sa.Column(sa.SmallInteger, primary_key=True)
+    ptf_server_id= sa.Column(sa.SmallInteger)
+    ptf_server_name= sa.Column(sa.String(64))
+    ptf_channel_name= sa.Column(sa.String(64))
+    dsc_server_id= sa.Column(sa.Integer)
+    dsc_channel_id= sa.Column(sa.Integer)
+    dsc_tc_announcements= sa.Column(sa.Integer)
+    dsc_tc_connect_info= sa.Column(sa.Integer)
+    dsc_vc_spectator= sa.Column(sa.Integer)
+    dsc_vc_pick_next= sa.Column(sa.Integer)
+    dsc_vc_waiting= sa.Column(sa.Integer)
+    dsc_vc_captains= sa.Column(sa.Integer)
+    dsc_vc_misc= sa.Column(sa.Integer)
+    dsc_vc_red_a= sa.Column(sa.Integer)
+    dsc_vc_blu_a= sa.Column(sa.Integer)
+    dsc_vc_red_b= sa.Column(sa.Integer)
+    dsc_vc_blu_b= sa.Column(sa.Integer)
+    dsc_vc_red_c= sa.Column(sa.Integer)
+    dsc_vc_blu_c= sa.Column(sa.Integer)
+    ptf_playing= sa.Column(sa.SmallInteger)
+    ptf_waiting= sa.Column(sa.SmallInteger)
+    ptf_spectating= sa.Column(sa.SmallInteger)
+
+    def __init__(self, **kwargs):
+        super(ptfChannels, self).__init__(**kwargs)
+
 '''Main Program'''
 
 '''Import Config File'''
-with open("..\\app.cfg", "r") as stream:
+
+with open("mapreview.tf/ptf_bot.cfg", "r") as stream:
     config = yaml.safe_load(stream)
 
 '''Database'''
@@ -307,11 +377,26 @@ async def insert_log(log, async_session: sessionmaker):
     return
 
 
+async def update_ptf_channel(ptf_channel_id, data, async_session: sessionmaker):
+    async with async_session() as session:
+        try:
+            async with session.begin():
+                session.query(ptfChannels).filter(ptfChannels.ptf_channel_id == ptf_channel_id).update(data)
+                await session.flush()
+                await session.refresh(stmt)
+        except SQLAlchemyError as e:
+            error = str(e.__cause__)
+            await session.rollback()
+            raise RuntimeError(error) from e
+        finally:
+            await session.close()
+    return
 
 
 '''Main Event Loop'''
 loop = asyncio.get_event_loop() 
 loop.create_task(ptf_timed_log(async_session))
+loop.create_task(ptf_timed_update(async_session))
 while True:
     try:
         loop.run_until_complete(client.start(config['DISCORD_BOT_TOEKN']))  # bot login with token

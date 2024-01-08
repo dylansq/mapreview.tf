@@ -254,7 +254,7 @@ class ptfLogs(Base):
 '''Main Program'''
 
 '''Import Config File'''
-with open("app\discord\ptf_bot.cfg", "r") as stream:
+with open("..\\app.cfg", "r") as stream:
     config = yaml.safe_load(stream)
 
 '''Database'''

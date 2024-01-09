@@ -185,7 +185,7 @@ class PugChannel:
         self.playing = []
         self.waiting = []
         self.spectating = []
-        self.needs_update = False #flag for if the PugChannel has no more players, but hasn't been updated in the database.
+        self.needs_update = True #flag for if the PugChannel has no more players, but hasn't been updated in the database.
         return
     
     def user_count(self):

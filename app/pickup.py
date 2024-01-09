@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, flash, url_for, jsonify,redirect, current_app, send_from_directory
 from flask_cors import CORS
-from .models import ptfServers
-from .models import ptfUsers
+from .models import ptfServers, ptfUsers, ptfChannels
 from . import db
 import json
 from urllib.parse import urlencode
@@ -223,13 +222,32 @@ def update_listings():
         
         query_filter.extend(or_(*_qf)) if len(_qf) > 1 else query_filter.extend(_qf)
 
-
+    channels = db.session.query(ptfChannels)
+    channels_dict = {}
+    for _ch in list(channels):
+        try:
+            channels_dict[_ch.ptf_server_id].append(_ch.__dict__)
+        except:
+            channels_dict[_ch.ptf_server_id] = [_ch.__dict__]
     listings = db.session.query(ptfServers).filter(and_(*query_filter))
     counts = get_yt_video_counts(listings.filter(ptfServers.ptf_server_status.in_([1,2,3,4,5,6,7])))#remove 8,9, unknown and dead
     results = {}
     for _li in list(listings):
         ptf_server_id = _li.ptf_server_id
         _li = _li.__dict__
+        _li_playing = 0
+        _li_waiting = 0
+        _li_spectating = 0
+        if ptf_server_id in channels_dict.keys():
+            for _ch in channels_dict[ptf_server_id]:
+                _li_playing += _ch['ptf_playing']
+                _li_waiting += _ch['ptf_waiting']
+                _li_spectating += _ch['ptf_spectating']
+                
+        #add active playing/waiting/spectating counts:
+        _li['ptf_playing'] = _li_playing
+        _li['ptf_waiting'] = _li_playing
+        _li['ptf_spectating'] = _li_spectating
 
         del _li['_sa_instance_state']#remove sa object from dictionary to jsonify easier
         results[ptf_server_id] = _li

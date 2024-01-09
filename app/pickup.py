@@ -240,10 +240,13 @@ def update_listings():
         _li_spectating = 0
         if ptf_server_id in channels_dict.keys():
             for _ch in channels_dict[ptf_server_id]:
-                _li_playing += _ch['ptf_playing']
-                _li_waiting += _ch['ptf_waiting']
-                _li_spectating += _ch['ptf_spectating']
-                
+                try:
+                    _li_playing += _ch['ptf_playing']
+                    _li_waiting += _ch['ptf_waiting']
+                    _li_spectating += _ch['ptf_spectating']
+                except:
+                    pass
+
         #add active playing/waiting/spectating counts:
         _li['ptf_playing'] = _li_playing
         _li['ptf_waiting'] = _li_playing

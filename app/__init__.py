@@ -54,6 +54,7 @@ def create_app(config_file = '../app.cfg'):
     from .models import ptfUsers
     from .models import htEvidence
     from .models import htUsers
+    from .models import ptfChannels
 
 
     return app

@@ -307,6 +307,64 @@ class mrtfVotes(db.Model):
     def __init__(self, **kwargs):
         super(mrtfVotes, self).__init__(**kwargs)
 
+class mrtfTextResources(db.Model):
+    mrtf_text_id= db.Column(db.String(32), unique= True,primary_key=True)
+    mrtf_text_url= db.Column(db.String(2083))
+    mrtf_source= db.Column(db.String(32))
+    mrtf_is_markdown=db.Column(db.Boolean())
+    st_creator_name= db.Column(db.String(32))
+    st_creator_id= db.Column(db.String(32))
+    mrtf_created_datetime= db.Column(db.DateTime(timezone=True))
+    mrtf_updated_datetime= db.Column(db.DateTime(timezone=True))
+    mrtf_upload_datetime= db.Column(db.DateTime(timezone=True))
+    mrtf_upload_ip= db.Column(db.String(64))
+    mrtf_upload_steam_id= db.Column(db.String(64))
+    mrtf_display_name= db.Column(db.String(200))
+    mrtf_display_id= db.Column(db.String(200))
+    mrtf_language= db.Column(db.String(64))
+    tf_map_full= db.Column(db.String(32))
+    tf_version_full= db.Column(db.String(64))
+    tf_match_format= db.Column(db.String(32)) 
+    tf_class_all=db.Column(db.Boolean())
+    tf_class_none=db.Column(db.Boolean())
+    tf_class_scout=db.Column(db.Boolean())
+    tf_class_soldier=db.Column(db.Boolean())
+    tf_class_demo=db.Column(db.Boolean())
+    tf_class_medic=db.Column(db.Boolean())
+    tf_class_engineer=db.Column(db.Boolean())
+    tf_class_pyro=db.Column(db.Boolean())
+    tf_class_heavy=db.Column(db.Boolean())
+    tf_class_sniper=db.Column(db.Boolean())
+    tf_class_spy=db.Column(db.Boolean())
+    tf_role_combo=db.Column(db.Boolean())
+    tf_role_flank=db.Column(db.Boolean())
+    tf_role_offclass=db.Column(db.Boolean())
+    tf_skilllevel_0=db.Column(db.Boolean())
+    tf_skilllevel_1=db.Column(db.Boolean())
+    tf_skilllevel_2=db.Column(db.Boolean())
+    tf_skilllevel_3=db.Column(db.Boolean())
+    tf_gamemode_ultiduo=db.Column(db.Boolean())
+    tf_gamemode_ultitrio=db.Column(db.Boolean())
+    tf_gamemode_fours=db.Column(db.Boolean())
+    tf_gamemode_sixes=db.Column(db.Boolean())
+    tf_gamemode_prolander=db.Column(db.Boolean())
+    tf_gamemode_highlander=db.Column(db.Boolean())
+    tf_gamemode_bball=db.Column(db.Boolean())
+    tf_gamemode_passtime=db.Column(db.Boolean())
+    tf_gamemode_mvm=db.Column(db.Boolean())
+    mrtf_stats_clicks= db.Column(db.Integer)
+    mrtf_rating_score_a1= db.Column(db.Integer)
+    mrtf_rating_score_a2= db.Column(db.Integer)
+    mrtf_rating_score_a3= db.Column(db.Integer)
+
+
+
+
+    def __init__(self, **kwargs):
+        super(mrtfTextResources, self).__init__(**kwargs)
+
+
+
 
 
 class ptfServers(db.Model):
@@ -383,3 +441,31 @@ class ptfUsers(db.Model):
 
     def __init__(self, **kwargs):
         super(ptfUsers, self).__init__(**kwargs)
+
+
+class ptfChannels(db.Model):
+    ptf_channel_id= db.Column(db.SmallInteger, unique= True,primary_key=True)
+    ptf_server_id= db.Column(db.SmallInteger)
+    ptf_server_name= db.Column(db.String(64))
+    ptf_channel_name= db.Column(db.String(64))
+    dsc_server_id= db.Column(db.Integer)
+    dsc_channel_id= db.Column(db.Integer)
+    dsc_tc_announcements= db.Column(db.Integer)
+    dsc_tc_connect_info= db.Column(db.Integer)
+    dsc_vc_spectator= db.Column(db.Integer)
+    dsc_vc_pick_next= db.Column(db.Integer)
+    dsc_vc_waiting= db.Column(db.Integer)
+    dsc_vc_captains= db.Column(db.Integer)
+    dsc_vc_misc= db.Column(db.Integer)
+    dsc_vc_red_a= db.Column(db.Integer)
+    dsc_vc_blu_a= db.Column(db.Integer)
+    dsc_vc_red_b= db.Column(db.Integer)
+    dsc_vc_blu_b= db.Column(db.Integer)
+    dsc_vc_red_c= db.Column(db.Integer)
+    dsc_vc_blu_c= db.Column(db.Integer)
+    ptf_playing= db.Column(db.SmallInteger)
+    ptf_waiting= db.Column(db.SmallInteger)
+    ptf_spectating= db.Column(db.SmallInteger)
+
+    def __init__(self, **kwargs):
+        super(ptfChannels, self).__init__(**kwargs)

@@ -234,6 +234,7 @@ class TF2PickupServer:
         self.ptf_server_name = ptf['ptf_server_name']
         self.ptf_server_id = ptf['ptf_server_id']
         self.ptf_server_status = ptf['ptf_server_status']
+        self.ptf_channel_id = ptf['ptf_channel_id']
         self.tfp_api_url = f"https://api.{ptf['ptf_server_name']}"
         #https://api.tf2pickup.eu/games?limit=1
         #https://api.tf2pickup.eu/queue

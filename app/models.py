@@ -385,6 +385,7 @@ class ptfServers(db.Model):
     ptf_datetime_modified= db.Column(db.DateTime(timezone=True))
     ptf_modified_ip= db.Column(db.String(64))
     ptf_modified_steamid64= db.Column(db.String(64))
+    ptf_server_description=db.Column(db.Varchar(1024))
     tf_skilllevel_0=db.Column(db.Boolean)
     tf_skilllevel_1=db.Column(db.Boolean)
     tf_skilllevel_2=db.Column(db.Boolean)
@@ -420,6 +421,7 @@ class ptfServers(db.Model):
     ptf_rating_score_c=db.Column(db.Integer)
     ptf_rating_score_d=db.Column(db.Integer)
     ptf_rating_score_e=db.Column(db.Integer)
+
 
     def __init__(self, **kwargs):
         super(ptfServers, self).__init__(**kwargs)

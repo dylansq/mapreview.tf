@@ -385,7 +385,7 @@ class ptfServers(db.Model):
     ptf_datetime_modified= db.Column(db.DateTime(timezone=True))
     ptf_modified_ip= db.Column(db.String(64))
     ptf_modified_steamid64= db.Column(db.String(64))
-    ptf_server_description=db.Column(db.Varchar(1024))
+    ptf_server_description=db.Column(db.String(1024))
     tf_skilllevel_0=db.Column(db.Boolean)
     tf_skilllevel_1=db.Column(db.Boolean)
     tf_skilllevel_2=db.Column(db.Boolean)

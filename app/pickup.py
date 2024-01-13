@@ -235,32 +235,41 @@ def update_listings():
     for _li in list(listings):
         ptf_server_id = _li.ptf_server_id
         _li = _li.__dict__
-        _li_playing = 0
-        _li_waiting = 0
-        _li_spectating = 0
-        if ptf_server_id in channels_dict.keys():
-            for _ch in channels_dict[ptf_server_id]:
+        #if the server isn't tracked, return -1
+        _li_playing = -1
+        _li_waiting = -1
+        _li_spectating = -1
+        if str(ptf_server_id) in channels_dict.keys():
+            _li_playing = 0
+            _li_waiting = 0
+            _li_spectating = 0
+            for _ch in channels_dict[str(ptf_server_id)]:
                 try:
-                    _li_playing += _ch['ptf_playing']
-                    _li_waiting += _ch['ptf_waiting']
-                    _li_spectating += _ch['ptf_spectating']
+                    _li_playing += int(_ch['ptf_playing'])
+                    _li_waiting += int(_ch['ptf_waiting'])
+                    _li_spectating += int(_ch['ptf_spectating'])
                 except:
                     pass
 
         #add active playing/waiting/spectating counts:
         _li['ptf_playing'] = _li_playing
-        _li['ptf_waiting'] = _li_playing
+        _li['ptf_waiting'] = _li_waiting
         _li['ptf_spectating'] = _li_spectating
 
-        del _li['_sa_instance_state']#remove sa object from dictionary to jsonify easier
+        #remove sa object from dictionary to jsonify easier
+        del _li['_sa_instance_state']
+
+        #remove sensitive data
+        del _li['ptf_upload_ip']
+        del _li['ptf_upload_steamid64']
+        del _li['ptf_datetime_modified']
+        del _li['ptf_modified_ip']
+        del _li['ptf_modified_steamid64']
+
         results[ptf_server_id] = _li
-    
-    #results = sorted(list(results.values()), key=lambda d: d['mrtf_rating_score_a1'],reverse=True)
 
     response = jsonify({'results':results,'counts':counts})
-    response.headers.add('Access-Control-Allow-Origin', '*')
-
-
+    response.headers.add('Access-Control-Allow-Origin', '*') #allow cross origin in headder
     return response #json.dumps({'results':results,'counts':counts}, default=str), 200
 
 #depreciated

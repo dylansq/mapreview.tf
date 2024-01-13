@@ -54,7 +54,6 @@ async def on_voice_state_update(member, before, after):
     #User joined a new channel
     if pce['to'] is not None:
         pc = ptf_channel_dict[pce['to']]
-        print('joined')
         pc.update(member,after)
 
     #User left the server - remove from previous PC
@@ -234,7 +233,7 @@ class TF2PickupServer:
         self.ptf_server_name = ptf['ptf_server_name']
         self.ptf_server_id = ptf['ptf_server_id']
         self.ptf_server_status = ptf['ptf_server_status']
-        self.ptf_channel_id = ptf['ptf_channel_id']
+        #self.ptf_channel_id = ptf['ptf_channel_id']
         self.tfp_api_url = f"https://api.{ptf['ptf_server_name']}"
         #https://api.tf2pickup.eu/games?limit=1
         #https://api.tf2pickup.eu/queue
@@ -261,7 +260,7 @@ class TF2PickupServer:
     def log_data(self):
         log_data = {'ptf_log_datetime': datetime.datetime.now(),
                     'ptf_server_id':self.ptf_server_id,
-                    'ptf_channel_id':self.ptf_channel_id,
+                    #'ptf_channel_id':self.ptf_channel_id,
                     'ptf_playing':len(self.playing),
                     'ptf_waiting':len(self.waiting),
                     'ptf_spectating':len(self.spectating)
@@ -547,8 +546,9 @@ try:
     print(f'Loaded {len(ptf_channel_dict)} Discord PUG Channels')
 except:
     print("ERROR: Cannot access discord channel database")
+
+#get TF2Pickup.org instances from ptf_servers table and create TF2PickupServer objects, servers listed as dead will not be grabbed
 try:
-    #get TF2Pickup.org instances from ptf_servers table and create TF2PickupServer objects, servers listed as dead will not be grabbed
     ex = session.execute("Select * from ptf_servers where ptf_server_name like '%tf2pickup%' and ptf_server_status != 9;")
     k = ex.keys()
     s = ex.all()
@@ -577,7 +577,7 @@ try:
 
     print(f'Loaded {len(tf2pickup_dict)} TF2Pickup.org Instances')
 
-    
+
     session.close()
 except:
     print("ERROR: Cannot access TF2Pickup database")

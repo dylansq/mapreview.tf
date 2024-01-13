@@ -3,6 +3,8 @@ from discord.ext import commands
 
 import datetime
 import asyncio
+import aiohttp
+import urllib
 import time
 
 import yaml
@@ -52,6 +54,7 @@ async def on_voice_state_update(member, before, after):
     #User joined a new channel
     if pce['to'] is not None:
         pc = ptf_channel_dict[pce['to']]
+        print('joined')
         pc.update(member,after)
 
     #User left the server - remove from previous PC
@@ -73,8 +76,12 @@ async def test(ctx):
 
 
 '''Non-Discord async Functions'''
-async def ptf_timed_log(async_session):
+async def ptf_timed_log(async_session,seconds):
+    '''Records playing, waiting, and spectating in each channel/server every (default) 5 minutes'''
     while True:
+        ptf_channel_log_count = 0
+        tfp_server_log_count = 0
+        failed_log_count = 0
         for ptf_channel in ptf_channel_dict.values():
             if ptf_channel.user_count() > 0:
                 log = ptf_channel.log_data()
@@ -86,20 +93,47 @@ async def ptf_timed_log(async_session):
                             session.add(stmt)
                             await session.flush()
                             await session.refresh(stmt)
+                            ptf_channel_log_count +=1
                     except SQLAlchemyError as e:
                         error = str(e.__cause__)
                         await session.rollback()
+                        failed_log_count +=1
                         raise RuntimeError(error) from e
                     finally:
                         await session.close()
+        
+        for tfp_server in tf2pickup_dict.values():
+            if tfp_server.user_count() > 0:
+                log = tfp_server.log_data()
+                #insert_log(log, async_session)
+                stmt = ptfLogs(**log)
+                async with async_session() as session:
+                    try:
+                        async with session.begin():
+                            session.add(stmt)
+                            await session.flush()
+                            await session.refresh(stmt)
+                            tfp_server_log_count += 1
+                    except SQLAlchemyError as e:
+                        error = str(e.__cause__)
+                        await session.rollback()
+                        failed_log_count +=1
+                        raise RuntimeError(error) from e
                         
-
-        await asyncio.sleep(300)
+                    finally:
+                        await session.close()
+        
+        if ptf_channel_log_count + tfp_server_log_count + failed_log_count > 0:
+            print(f'{datetime.datetime.now()}: Logged {ptf_channel_log_count} Discord Servers and {tfp_server_log_count} TF2Pickup.org Servers  ({failed_log_count} Failed)')
+        await asyncio.sleep(seconds)
 
 
     
-async def ptf_timed_update(async_session):
+async def ptf_timed_update(async_session,seconds):
+    '''Updates servers in ptf_channel_dict and tfp_channel_dict and pushes updates to ptfChannels table every (default 60 seconds)
+        Servers without an update flag are skipped'''
     while True:
+        '''ptf_channel_dict'''
         for ptf_channel in ptf_channel_dict.values():
             if ptf_channel.needs_update:
                 async with async_session() as session:
@@ -118,7 +152,35 @@ async def ptf_timed_update(async_session):
                         raise RuntimeError(error) from e
                     finally:
                         await session.close()
-        await asyncio.sleep(30)
+
+        '''tf2pickup_dict'''
+        for tfp_server in tf2pickup_dict.values():
+            if tfp_server.needs_update:
+                queue = await tfp_server.get_queue()
+                match = await tfp_server.get_latest_match()
+                #if len(queue) > 0 or len(match) > 0:
+                #    print(f'queued: {len(queue)} playing:{len(match)}')
+                async with async_session() as session:
+                        try:
+                            async with session.begin():
+                                stmt = sa.select(ptfChannels).where(ptfChannels.ptf_server_id == str(tfp_server.ptf_server_id))
+                                result = await session.execute(stmt)
+                                a1 = result.scalars().first()
+                                counts = tfp_server.count_data()
+                                for k,v in counts.items():
+                                    setattr(a1,k,v)
+                                await session.flush()
+                                
+                        except SQLAlchemyError as e:
+                            error = str(e.__cause__)
+                            await session.rollback()
+                            raise RuntimeError(error) from e
+                        finally:
+                            await session.close()
+            
+
+
+        await asyncio.sleep(seconds)
 
 '''Helper Functions for Discord API'''
 def get_ptf_channel_event(before,after):
@@ -164,6 +226,126 @@ class DiscordServer:
     '''DiscordServer object '''
     def __init__(self,dsc_server_id, dsc):
         return
+
+class TF2PickupServer:
+    '''TF2Pickup object conatins information for a discrete tf2pickup.org instance'''
+    def __init__(self,ptf):
+        '''Initialized with a ptf_servers entry'''
+        self.ptf_server_name = ptf['ptf_server_name']
+        self.ptf_server_id = ptf['ptf_server_id']
+        self.ptf_server_status = ptf['ptf_server_status']
+        self.tfp_api_url = f"https://api.{ptf['ptf_server_name']}"
+        #https://api.tf2pickup.eu/games?limit=1
+        #https://api.tf2pickup.eu/queue
+
+        self.match_dict = {} #{'tfp_match_id':{'state':'}}
+        #states = launching, started, ended
+
+        self.playing = []
+        self.waiting = []
+        self.spectating = []
+        self.needs_update = True #
+        return
+    
+    def count_data(self):
+        count_data = {'ptf_playing':len(self.playing),
+                    'ptf_waiting':len(self.waiting),
+                    'ptf_spectating':len(self.spectating)
+                    }
+        return count_data
+    
+    def user_count(self):
+        return int(len(self.playing) + len(self.waiting) + len(self.spectating))
+
+    def log_data(self):
+        log_data = {'ptf_log_datetime': datetime.datetime.now(),
+                    'ptf_server_id':self.ptf_server_id,
+                    'ptf_channel_id':self.ptf_channel_id,
+                    'ptf_playing':len(self.playing),
+                    'ptf_waiting':len(self.waiting),
+                    'ptf_spectating':len(self.spectating)
+                    }
+        return log_data
+    
+    async def get_latest_match(self) -> list:        
+        url = urllib.parse.urljoin(self.tfp_api_url, 'games?limit=1')
+        async with aiohttp.ClientSession() as session:
+            tasks = []
+            task = asyncio.create_task(self.get_json(session, url))
+            tasks.append(task)
+            
+            response = await asyncio.gather(*tasks, return_exceptions=True)
+            #self.waiting = []
+            #Check all 'slots' to see if a player is in the slot
+            try:
+                tfp_match_id = response[0]['results'][0]['id']
+                tfp_match_state = response[0]['results'][0]['state']
+
+                '''
+                Cases - Match is in self.match_dict
+                            -state has not changed
+                                -players could change
+                            -state has changed
+
+                    - Match is not in self.match_dict
+                
+                '''
+
+                players = [] #keep track of players in this match, could have more matches
+                for s in response[0]['results'][0]['slots']:
+                    if 'player' in s.keys():
+                        players.append(s['player']['steamId'])
+                
+                
+                if tfp_match_id not in self.match_dict.keys() and tfp_match_state not in  ['ended','interrupted']:
+                    #there is a new game that is currently playing
+                    print(f'{tfp_match_id}: match playing - adding to dict')
+                    self.match_dict[tfp_match_id] = {'state':tfp_match_state,'slots':players} #create dict entry if none exists
+                    self.playing.extend(players) #add to server playing list
+                elif tfp_match_state not in ['ended','interrupted']:
+                    #there is an old game that is currently playing
+                    self.playing = [x for x in players if x not in self.playing] #add all players that were in the match if not already added
+                elif tfp_match_id in self.match_dict.keys() and tfp_match_state in  ['ended','interrupted']:
+                    #there is an old game that has ended
+                    self.playing = [x for x in self.playing if x not in players] #remove all players that were in the match
+                    del self.match_dict[tfp_match_id]
+                return self.playing
+            except:
+                pass
+            return self.playing
+
+    
+    def get_match(self,tfp_match_id):
+        match_url = f'https://{self.tfp_api_url}/games/{tfp_match_id}'
+        return
+    
+
+
+    async def get_json(self, client: aiohttp.ClientSession, url: str) -> dict:
+        async with client.request('GET', url) as response:
+            response.raise_for_status()
+            j = await response.json()
+            return j
+
+    async def get_queue(self, **kwargs) -> list:
+        url = urllib.parse.urljoin(self.tfp_api_url, 'queue')
+        async with aiohttp.ClientSession(**kwargs) as session:
+            tasks = []
+            task = asyncio.create_task(self.get_json(session, url))
+            tasks.append(task)
+            
+            response = await asyncio.gather(*tasks, return_exceptions=True)
+            self.waiting = []
+            #Check all 'slots' to see if a player is in the slot
+            try:
+                for s in response[0]['slots']:
+                    if 'player' in s.keys():
+                        self.waiting.append(s['player']['steamId'])
+                return self.waiting
+            except:
+                pass
+            return self.waiting
+
 
 class PugChannel:
     '''PugChannel object contains all information for a self-contained discord channel
@@ -298,6 +480,7 @@ class ptfChannels(Base):
     ptf_server_id= sa.Column(sa.SmallInteger)
     ptf_server_name= sa.Column(sa.String(64))
     ptf_channel_name= sa.Column(sa.String(64))
+    ptf_channel_type= sa.Column(sa.SmallInteger)
     dsc_server_id= sa.Column(sa.Integer)
     dsc_channel_id= sa.Column(sa.Integer)
     dsc_tc_announcements= sa.Column(sa.Integer)
@@ -333,9 +516,17 @@ with open("mapreview.tf/ptf_bot.cfg", "r") as stream:
 ptf_channel_dict = {}
 ptf_channel_lookup = {}
 ptf_users = []
+
+ptf_non_discord_server_ids = []
+
+tf2pickup_dict = {}
+
+
+
+engine = create_engine(config['SQLALCHEMY_DATABASE_URI'])
+session = Session(engine)
 try:
-    engine = create_engine(config['SQLALCHEMY_DATABASE_URI'])
-    session = Session(engine)
+    
     ex = session.execute("SELECT * FROM ptf_channels")
     k = ex.keys()
     s = ex.all()
@@ -344,17 +535,54 @@ try:
     for c in s:
         kv = dict(zip(k,c)) #create dictionary from sql database keys and row values, PugChannel requires this input for init
         #kv['ptf_channel_id'] #unique key for a PugChannel
-
+        if(kv['ptf_channel_type'] != 1):
+            #skip non-discord servers
+            ptf_non_discord_server_ids.append(kv['ptf_server_id'])
+            continue
         ptf_channel_dict[kv['ptf_channel_id']] =  PugChannel(kv)
         for l,v in kv.items():
             if 'dsc' in l and v is not None:
                 ptf_channel_lookup[v] = kv['ptf_channel_id']
-
-    session.close()
+    print(f'Loaded {len(ptf_channel_dict)} Discord PUG Channels')
 except:
     print("ERROR: Cannot access discord channel database")
+try:
+    #get TF2Pickup.org instances from ptf_servers table and create TF2PickupServer objects, servers listed as dead will not be grabbed
+    ex = session.execute("Select * from ptf_servers where ptf_server_name like '%tf2pickup%' and ptf_server_status != 9;")
+    k = ex.keys()
+    s = ex.all()
+    print(ptf_non_discord_server_ids)
+    for c in s:
+        kv = dict(zip(k,c))
+        if str(kv['ptf_server_id']) not in ptf_non_discord_server_ids:
+            #add server to ptf_channels to track playercounts
+            print(f"adding {kv['ptf_server_name']} to ptf_channels")
+            session.add(ptfChannels(**{
+                'ptf_server_id':kv['ptf_server_id'],
+                'ptf_server_name':kv['ptf_server_name'],
+                'ptf_channel_name':kv['ptf_server_name'],
+                'ptf_channel_type':2,
+                'ptf_playing':0,
+                'ptf_waiting':0,
+                'ptf_spectating':0
+                }))
+            
+        session.commit()
+        tf2pickup_dict[kv['ptf_server_id']] = TF2PickupServer(kv)
 
-print(ptf_channel_dict)
+    #add instances to ptf_channels to track player numbers if they aren't already there
+        
+
+
+    print(f'Loaded {len(tf2pickup_dict)} TF2Pickup.org Instances')
+
+    
+    session.close()
+except:
+    print("ERROR: Cannot access TF2Pickup database")
+
+session.close()
+
 
 '''Async Database Connection'''
 engine = create_async_engine(config['SQLALCHEMY_ASYNC_DATABASE_URI'])
@@ -395,8 +623,9 @@ async def update_ptf_channel(ptf_channel_id, data, async_session: sessionmaker):
 
 '''Main Event Loop'''
 loop = asyncio.get_event_loop() 
-loop.create_task(ptf_timed_log(async_session))
-loop.create_task(ptf_timed_update(async_session))
+loop.create_task(ptf_timed_log(async_session,300))
+loop.create_task(ptf_timed_update(async_session,60))
+
 while True:
     try:
         loop.run_until_complete(client.start(config['DISCORD_BOT_TOEKN']))  # bot login with token

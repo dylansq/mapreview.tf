@@ -431,6 +431,7 @@ class ptfUsers(db.Model):
     ptf_users_key=db.Column(db.Integer, unique= True,primary_key=True)
     st_id64=db.Column(db.String(32))
     st_display_name=db.Column(db.String(64))
+    st_avatar_url= db.Column(db.String(128))
     ptf_discord_tag=db.Column(db.String(64))
     ptf_server_id=db.Column(db.Integer)
     ptf_server_name=db.Column(db.String(64))

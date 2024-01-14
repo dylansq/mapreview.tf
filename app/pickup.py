@@ -231,6 +231,8 @@ def update_listings():
             channels_dict[_ch.ptf_server_id] = [_ch.__dict__]
     listings = db.session.query(ptfServers).filter(and_(*query_filter))
     counts = get_yt_video_counts(listings.filter(ptfServers.ptf_server_status.in_([1,2,3,4,5,6,7])))#remove 8,9, unknown and dead
+
+
     results = {}
     for _li in list(listings):
         ptf_server_id = _li.ptf_server_id
@@ -266,7 +268,35 @@ def update_listings():
         del _li['ptf_modified_ip']
         del _li['ptf_modified_steamid64']
 
+        _li['ptf_owners'] = []
+        _li['ptf_admins'] = []
+        _li['ptf_moderators'] = []
+
         results[ptf_server_id] = _li
+
+    
+    for user in db.session.query(ptfUsers).all():
+        user = user.__dict__
+        ptf_server_id = user['ptf_server_id']
+        if ptf_server_id in results.keys():
+            #get owner/admin/mod - only add user to one category
+            if user['ptf_server_role_owner']:
+                roles = 'ptf_owners'
+            elif user['ptf_server_role_admin']:
+                roles = 'ptf_admins'
+            elif user['ptf_server_role_moderator']:
+                roles = 'ptf_moderators'
+            else:
+                #skip non owner/admin/mod roles
+                continue
+            
+            
+            user_role = {'st_display_name':user['st_display_name'],
+                         'st_id64':user['st_id64'],
+                         'st_display_avatar': user['st_avatar_url']}
+            
+            results[ptf_server_id][roles].append(user_role)
+
 
     response = jsonify({'results':results,'counts':counts})
     response.headers.add('Access-Control-Allow-Origin', '*') #allow cross origin in headder
@@ -557,9 +587,10 @@ def update_users(ptf_server_id, ptf_role_dict):
             _st = steam_query(requested_user_id)
             print('_st',_st[0][requested_user_id]['personaname'])
             display_name = _st[0][requested_user_id]['personaname']
+            st_avatar_url = _st[0][requested_user_id]['avatar']
             
             setattr(_new_user,'st_display_name',display_name)
-
+            setattr(_new_user,'st_avatar_url',st_avatar_url)
             setattr(_new_user,'ptf_server_id',ptf_server_id)
             db.session.add(_new_user)
             db.session.commit()

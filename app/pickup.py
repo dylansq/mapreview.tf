@@ -242,11 +242,11 @@ def update_listings():
         _li_playing = -1
         _li_waiting = -1
         _li_spectating = -1
-        if str(ptf_server_id) in channels_dict.keys():
+        if int(ptf_server_id) in channels_dict.keys():
             _li_playing = 0
             _li_waiting = 0
             _li_spectating = 0
-            for _ch in channels_dict[str(ptf_server_id)]:
+            for _ch in channels_dict[int(ptf_server_id)]:
                 try:
                     _li_playing += int(_ch['ptf_playing'])
                     _li_waiting += int(_ch['ptf_waiting'])

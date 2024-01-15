@@ -537,7 +537,7 @@ try:
         #kv['ptf_channel_id'] #unique key for a PugChannel
         if(kv['ptf_channel_type'] != 1):
             #skip non-discord servers
-            ptf_non_discord_server_ids.append(kv['ptf_server_id'])
+            ptf_non_discord_server_ids.append(int(kv['ptf_server_id']))
             continue
         ptf_channel_dict[kv['ptf_channel_id']] =  PugChannel(kv)
         for l,v in kv.items():
@@ -552,10 +552,9 @@ try:
     ex = session.execute("Select * from ptf_servers where ptf_server_name like '%tf2pickup%' and ptf_server_status != 9;")
     k = ex.keys()
     s = ex.all()
-    print(ptf_non_discord_server_ids)
     for c in s:
         kv = dict(zip(k,c))
-        if str(kv['ptf_server_id']) not in ptf_non_discord_server_ids:
+        if int(kv['ptf_server_id']) not in ptf_non_discord_server_ids:
             #add server to ptf_channels to track playercounts
             print(f"adding {kv['ptf_server_name']} to ptf_channels")
             session.add(ptfChannels(**{

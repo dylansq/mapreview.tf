@@ -234,6 +234,7 @@ def update_listings():
 
 
     results = {}
+    print(channels_dict.keys())
     for _li in list(listings):
         ptf_server_id = _li.ptf_server_id
         _li = _li.__dict__

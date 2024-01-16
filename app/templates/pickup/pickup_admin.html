@@ -27,8 +27,9 @@
 
     <script type="text/javascript">
         function openEditContainer(ptf_server_id) {
-            var servers = {{ ptf_servers| tojson}}
-            var users = {{ ptf_users| tojson}}
+            var servers = {{ ptf_servers| tojson
+        }}
+        var users = {{ ptf_users| tojson}}
 
         owner_list = []
         owner_values = []
@@ -36,19 +37,20 @@
         admin_values = []
         mod_list = []
         mod_values = []
-        $.each(users[ptf_server_id],function(i,user){
-            if(user.ptf_server_role_owner){owner_list.push({'st_id64':user.st_id64,'st_display_name':user.st_display_name,'st_display_avatar':user.st_display_avatar});owner_values.push(user.st_id64)}
-            if(user.ptf_server_role_admin){admin_list.push({'st_id64':user.st_id64,'st_display_name':user.st_display_name,'st_display_avatar':user.st_display_avatar});admin_values.push(user.st_id64)}
-            if(user.ptf_server_role_moderator){mod_list.push({'st_id64':user.st_id64,'st_display_name':user.st_display_name,'st_display_avatar':user.st_display_avatar});mod_values.push(user.st_id64)}
+        $.each(users[ptf_server_id], function (i, user) {
+            if (user.ptf_server_role_owner) { owner_list.push({ 'st_id64': user.st_id64, 'st_display_name': user.st_display_name, 'st_display_avatar': user.st_display_avatar }); owner_values.push(user.st_id64) }
+            if (user.ptf_server_role_admin) { admin_list.push({ 'st_id64': user.st_id64, 'st_display_name': user.st_display_name, 'st_display_avatar': user.st_display_avatar }); admin_values.push(user.st_id64) }
+            if (user.ptf_server_role_moderator) { mod_list.push({ 'st_id64': user.st_id64, 'st_display_name': user.st_display_name, 'st_display_avatar': user.st_display_avatar }); mod_values.push(user.st_id64) }
         })
 
 
 
         $('.edit-container').empty();
-        $('.edit-container').appendTo('#listing-'+ptf_server_id);
+        $('.edit-container').appendTo('#listing-' + ptf_server_id);
         $('.edit-container').append(`
         <form id="ptf_form">
             <div class="edit-row"><div class="edit-item"><label>Server Name: <input name="ptf_server_name" id="ptf_server_name"></label><input type="hidden" name="ptf_server_id" id="ptf_server_id"></div></div>
+            <div class="edit-item"><label>Status<input name="ptf_status" id="ptf_status"></label></div></div>
             <div class="edit-row">
                 <div class="edit-item"><label>Region<input name="ptf_region" id="ptf_region"></label></div>
                 <div class="edit-item"><label>Skill Level<input name="ptf_skill" id="ptf_skill"></label></div></div>
@@ -68,20 +70,20 @@
             </form>
             <button id="ptf_submit">Submit</button>
             `);
-            
-            $("#ptf_submit").on("click",function(event){
-                event.preventDefault();
-                
-                var form_data = $('#ptf_form').serializeArray().reduce(function(obj, item) {obj[item.name] = item.value; return obj;}, {});
-                console.log(form_data)
-                $.post("/pickup/update_server",form_data).done(function(){
-                    alert("Account submitted successfully")
-                    //location.reload();
-                    }).fail(function(err){
-                        alert(err.responseText)
-                    });
-                return false
+
+        $("#ptf_submit").on("click", function (event) {
+            event.preventDefault();
+
+            var form_data = $('#ptf_form').serializeArray().reduce(function (obj, item) { obj[item.name] = item.value; return obj; }, {});
+            console.log(form_data)
+            $.post("/pickup/update_server", form_data).done(function () {
+                alert("Account submitted successfully")
+                //location.reload();
+            }).fail(function (err) {
+                alert(err.responseText)
             });
+            return false
+        });
         const region_options = [
             { label: "North America", region2: "NA", ptf_field: "ptf_region_na", value: true },
             { label: "South America", region2: "SA", ptf_field: "ptf_region_sa", value: true },
@@ -94,7 +96,7 @@
             { label: "NC/AM", region2: "SA", ptf_field: "tf_skilllevel_1", sort: 2, value: true },
             { label: "IM/Main", region2: "EU", ptf_field: "tf_skilllevel_2", sort: 3, value: true },
             { label: "Adv+", region2: "AS", ptf_field: "tf_skilllevel_3", sort: 4, value: true }]
-        const gamemode_options =  [
+        const gamemode_options = [
             { label: "ultiduo", ptf_field: "tf_gamemode_ultiduo", sort: 1, value: true },
             { label: "ultitrio", ptf_field: "tf_gamemode_ultitrio", sort: 1, value: true },
             { label: "fours", ptf_field: "tf_gamemode_fours", sort: 1, value: true },
@@ -107,9 +109,13 @@
             { label: "experimental", ptf_field: "tf_gamemode_experimental", sort: 1, value: true },
             { label: "mge", ptf_field: "tf_gamemode_mge", sort: 1, value: true },
             { label: "mvm", ptf_field: "tf_gamemode_mvm", sort: 1, value: true }]
-        
+        const status_options = [
+            { label: "Active", ptf_field: "ptf_status", sort: 1, value: 1 },
+            { label: "Inactive", ptf_field: "ptf_status", sort: 2, value: 2 },
+            { label: "Unknown", ptf_field: "ptf_status", sort: 3, value: 3 },
+            { label: "Dead", ptf_field: "ptf_status", sort: 4, value: 9 }]
         //Get selected options
-        
+        var status_selected = []
         var region_selected = []
         var gamemode_selected = []
         var gametype_selected = []
@@ -118,10 +124,10 @@
         $.each([[region_options, region_selected], [skill_options, skill_selected], [gamemode_options, gamemode_selected], [gametype_options, gametype_selected]], function (i, values) {
             var ptf_options = values[0]
             var ptf_selected = values[1]
-            $.each(ptf_options, function (j,option) {
+            $.each(ptf_options, function (j, option) {
                 if (servers[ptf_server_id][option.ptf_field]) {
-                     ptf_selected.push(option.ptf_field)
-                    }
+                    ptf_selected.push(option.ptf_field)
+                }
                 //$(idtag).selectize()[0].selectize.setValue(arr)
             });
         });
@@ -136,6 +142,15 @@
 
 
         //Selectize Initialize
+        $('#ptf_status').selectize({
+            plugins: ["remove_button"],
+            delimiter: ',',
+            persist: false,
+            valueField: "ptf_field",
+            labelField: "label",
+            options: status_options,
+            items: status_selected
+        });
         $('#ptf_region').selectize({
             plugins: ["remove_button"],
             delimiter: ',',
@@ -188,28 +203,31 @@
             render: {
                 item: function (item, escape) {
                     return (
-                    '<div class="badge-container">' +
+                        '<div class="badge-container">' +
                         '<div class="badge-left">' +
-                    (item.st_display_avatar ? '<img height="32" class="badge-avatar" src='+ escape(item.st_display_avatar) +'></img>' : "") +
-                        '</div> <div class="badge-right">' + 
-                    (item.st_display_name ? '<span  class="badge-name">' + escape(item.st_display_name) + "</span>" : "") +
-                    (item.st_id64 ? '<span  class="badge-id">' + escape(item.st_id64) + '</span>' : "") + "</div></div>");
-                }},
+                        (item.st_display_avatar ? '<img height="32" class="badge-avatar" src=' + escape(item.st_display_avatar) + '></img>' : "") +
+                        '</div> <div class="badge-right">' +
+                        (item.st_display_name ? '<span  class="badge-name">' + escape(item.st_display_name) + "</span>" : "") +
+                        (item.st_id64 ? '<span  class="badge-id">' + escape(item.st_id64) + '</span>' : "") + "</div></div>");
+                }
+            },
             create: function (st_id64, callback) {
-                if(st_id64.length != 17){
+                if (st_id64.length != 17) {
                     alert("Please enter a valid Steam ID 64");
-                    return null;}
-                $.get("http://127.0.0.1:5000/pickup/steam_query?st_id64="+st_id64, function (data) {
+                    return null;
+                }
+                $.get("https://mapreview.tf/pickup/steam_query?st_id64=" + st_id64, function (data) {
                     var ptf_display_avatar = data[st_id64]['avatar']
                     var ptf_display_name = data[st_id64]['personaname']
                     var _user = {
-                        'st_id64':st_id64,
-                        'st_display_name':ptf_display_name,
-                        'st_display_avatar':ptf_display_avatar}
+                        'st_id64': st_id64,
+                        'st_display_name': ptf_display_name,
+                        'st_display_avatar': ptf_display_avatar
+                    }
                     callback(_user);
                 });
-                }
-            
+            }
+
         });
         $('#ptf_role_admin').selectize({
             plugins: ["remove_button"],
@@ -222,27 +240,30 @@
             render: {
                 item: function (item, escape) {
                     return (
-                    '<div class="badge-container">' +
+                        '<div class="badge-container">' +
                         '<div class="badge-left">' +
-                    (item.st_display_avatar ? '<img height="32" class="badge-avatar" src='+ escape(item.st_display_avatar) +'></img>' : "") +
-                        '</div> <div class="badge-right">' + 
-                    (item.st_display_name ? '<span  class="badge-name">' + escape(item.st_display_name) + "</span>" : "") +
-                    (item.st_id64 ? '<span  class="badge-id">' + escape(item.st_id64) + '</span>' : "") + "</div></div>");
-                }},
+                        (item.st_display_avatar ? '<img height="32" class="badge-avatar" src=' + escape(item.st_display_avatar) + '></img>' : "") +
+                        '</div> <div class="badge-right">' +
+                        (item.st_display_name ? '<span  class="badge-name">' + escape(item.st_display_name) + "</span>" : "") +
+                        (item.st_id64 ? '<span  class="badge-id">' + escape(item.st_id64) + '</span>' : "") + "</div></div>");
+                }
+            },
             create: function (st_id64, callback) {
-                if(st_id64.length != 17){
+                if (st_id64.length != 17) {
                     alert("Please enter a valid Steam ID 64");
-                    return null;}
-                $.get("http://127.0.0.1:5000/pickup/steam_query?st_id64="+st_id64, function (data) {
+                    return null;
+                }
+                $.get("https://mapreview.tf/pickup/steam_query?st_id64=" + st_id64, function (data) {
                     var ptf_display_avatar = data[st_id64]['avatar']
                     var ptf_display_name = data[st_id64]['personaname']
                     var _user = {
-                        'st_id64':st_id64,
-                        'st_display_name':ptf_display_name,
-                        'st_display_avatar':ptf_display_avatar}
+                        'st_id64': st_id64,
+                        'st_display_name': ptf_display_name,
+                        'st_display_avatar': ptf_display_avatar
+                    }
                     callback(_user);
                 });
-                }
+            }
         });
         $('#ptf_role_moderator').selectize({
             plugins: ["remove_button"],
@@ -255,27 +276,30 @@
             render: {
                 item: function (item, escape) {
                     return (
-                    '<div class="badge-container">' +
+                        '<div class="badge-container">' +
                         '<div class="badge-left">' +
-                    (item.st_display_avatar ? '<img height="32" class="badge-avatar" src='+ escape(item.st_display_avatar) +'></img>' : "") +
-                        '</div> <div class="badge-right">' + 
-                    (item.st_display_name ? '<span  class="badge-name">' + escape(item.st_display_name) + "</span>" : "") +
-                    (item.st_id64 ? '<span  class="badge-id">' + escape(item.st_id64) + '</span>' : "") + "</div></div>");
-                }},
+                        (item.st_display_avatar ? '<img height="32" class="badge-avatar" src=' + escape(item.st_display_avatar) + '></img>' : "") +
+                        '</div> <div class="badge-right">' +
+                        (item.st_display_name ? '<span  class="badge-name">' + escape(item.st_display_name) + "</span>" : "") +
+                        (item.st_id64 ? '<span  class="badge-id">' + escape(item.st_id64) + '</span>' : "") + "</div></div>");
+                }
+            },
             create: function (st_id64, callback) {
-                if(st_id64.length != 17){
+                if (st_id64.length != 17) {
                     alert("Please enter a valid Steam ID 64");
-                    return null;}
-                $.get("http://127.0.0.1:5000/pickup/steam_query?st_id64="+st_id64, function (data) {
+                    return null;
+                }
+                $.get("http://127.0.0.1:5000/pickup/steam_query?st_id64=" + st_id64, function (data) {
                     var ptf_display_avatar = data[st_id64]['avatar']
                     var ptf_display_name = data[st_id64]['personaname']
                     var _user = {
-                        'st_id64':st_id64,
-                        'st_display_name':ptf_display_name,
-                        'st_display_avatar':ptf_display_avatar}
+                        'st_id64': st_id64,
+                        'st_display_name': ptf_display_name,
+                        'st_display_avatar': ptf_display_avatar
+                    }
                     callback(_user);
                 });
-                }
+            }
         });
         
 
@@ -286,7 +310,7 @@
         <div class="listing-container"></div>
         {% for id,server in ptf_servers.items() %}
         <script type="text/javascript">
-            var listing_item = createListingItem({{ id }}, {{ server | tojson }})
+            var listing_item = createListingItem({{ id }}, { { server | tojson } })
             $('.listing-container').append(`<div id="listing-{{id}}" class="edit-listing">` + listing_item)
             $('#listing-{{id}}').find('.joins-container').append('<div class="listing-join listing-edit" id = {{id}}><div class="edit-icon">EDIT</div></div></div>')
             $('#{{id}}').on('click', function (event) {
@@ -300,7 +324,7 @@
 
         <div>
 
-            
+
 
         </div>
     </main>

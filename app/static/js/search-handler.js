@@ -30,6 +30,7 @@ function filterListings(){
                 var param = fv[0]
                 var value = String(fv[1])
                 if(param == 'age'){return;}
+                if(param == 'id'){return;}
                 if(value in filter_counts[param]){
                     filter_counts[param][value] += 1
                 }else{
@@ -78,6 +79,7 @@ function initFilterCounts(){
                 var param = fv[0]
                 var value = String(fv[1])
                 if(param == 'age'){return;}
+                if(param == 'id'){return;}
                 try{
                     filter_counts[param][value] = 0
                 }catch{

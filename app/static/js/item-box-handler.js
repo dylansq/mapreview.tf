@@ -21,13 +21,12 @@ function initItemBoxes(){
     const urlParams = new URLSearchParams(window.location.search);
     var queryString = window.location.search;
 
+    //Remove previous container contents
+    $('#item-boxes-container').empty();
+
     //GET request to API with current query string
     $.get("/tf_map_select_get", function (data) {
         data = JSON.parse(data)
-        //Remove previous container contents
-        $('#item-boxes-container').empty();
-
-        //$('#item-boxes-container').append(`<div class="grid-sizer"></div><div class="gutter-sizer"></div>`)
 
         //Iterate over each listing
         $.each(data.results, function (key, video) {
@@ -49,6 +48,7 @@ function initItemBoxes(){
             var resource_type_flag_string = ``
             resource_type_flag_string += `<span class="resource-type-flag" id="${video['tf_resource_type'].replace(' ', "_").toLowerCase()}">${video['tf_resource_type']}</span>`
             filter_string += `type-${video['tf_resource_type'].replace(' ', "+")},`
+            filter_string += `id-${video['yt_video_id']},`
 
             //Map
             var tf_map_flag_string = ``
@@ -115,7 +115,7 @@ function initItemBoxes(){
             }
 
             //Item Box
-            var item_box = `<div class='item-box' id=${video['yt_video_id']} data-filters="${filter_string}">
+            var item_box = `<div class='item-box' id=${video['yt_video_id']} data-sort=${video['mrtf_rating_score_a1']} data-filters="${filter_string}">
                                 ${yt_video_new_flag}
                                 <div class="item-wrap">
                                     <div class="item-box-img">${resource_type_flag_string}
@@ -142,7 +142,10 @@ function initItemBoxes(){
         "isotopeArgs": {
             transitionDuration: 0,
             fitWidth: true,
-            layoutMode: 'masonry'},
+            layoutMode: 'masonry',
+            getSortData: {rating: '[data-sort]'},
+            sortAscending: false,
+            sortBy : 'rating'},
         "width": 316,
         "height": 228,
         "itemsSelector": ".item-box"

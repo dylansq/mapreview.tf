@@ -99,6 +99,15 @@ $(function(){
     }
 });
 
+$("#filter-toggle").click(function(){
+    console.log($(this))
+    $('#filter-group-main').slideToggle();
+    $('#filter-group-more').hide();
+    $('#checkbox_show_morefilters').removeClass("checked");
+    
+});
+
+
 $("#checkbox_show_clips").click(function(){
     $( this ).toggleClass("checked")
     if($( this ).hasClass("checked")){
@@ -111,9 +120,9 @@ $("#checkbox_show_clips").click(function(){
 $("#checkbox_show_morefilters").click(function(){
     $( this ).toggleClass("checked")
     if($( this ).hasClass("checked")){
-        $("#more_filters").show();
+        $("#filter-group-more").show();
     }else{
-        $("#more_filters").hide();
+        $("#filter-group-more").hide();
     }
 });
 

@@ -46,10 +46,10 @@ class ytFormSchema(Schema):
     yt_channel_id= fields.Str()
     yt_published_date= fields.Str()
     yt_video_title= fields.Str()
-    yt_stats_comments= fields.Int(default=0)
-    yt_stats_favorites= fields.Int(default=0)
-    yt_stats_likes= fields.Int(default=0)
-    yt_stats_views= fields.Int(default=0)
+    yt_stats_comments= fields.Int(load_default =0)
+    yt_stats_favorites= fields.Int(load_default =0)
+    yt_stats_likes= fields.Int(load_default =0)
+    yt_stats_views= fields.Int(load_default =0)
     yt_channel_image= fields.URL()
     yt_channel_title= fields.Str()
     yt_stats_lastupdated= fields.Str()
@@ -109,6 +109,17 @@ def submit_video():
     #tf_version_full_list = sorted([("cp_sunshine","cp_sunshine_rc9",1,False),("cp_sunshine","cp_sunshine",3,True),("cp_sunshine","cp_sunshine_rc10",2,False)],key=lambda x: x[2],reverse = True)
     title_text = "TF2 Map Review - Submit Video"
     return render_template("./submit_video.html",tf_versions=tf_versions,tf_version_full_list=tf_version_full_list,title_text=title_text)
+
+@forms.route('/text', methods=['POST','GET'])
+def submit_text():
+    #tf_version_full	version_order	version_iscurrent	tf_map_full	map_name
+    #tf_versions
+    tf_version_full_list = db.session.query(tfVersions).order_by(tfVersions.tf_version_release_date.desc())
+    tf_versions = db.session.execute(db.select(tfVersions.tf_map_full,tfVersions.tf_map_name).distinct().order_by(tfVersions.tf_map_name))
+    #tf_version_full_list = list(Versions.query.all().order_by(Versions.version_order.desc()))
+    #tf_version_full_list = sorted([("cp_sunshine","cp_sunshine_rc9",1,False),("cp_sunshine","cp_sunshine",3,True),("cp_sunshine","cp_sunshine_rc10",2,False)],key=lambda x: x[2],reverse = True)
+    title_text = "TF2 Map Review - Submit Text"
+    return render_template("./submit_text.html",tf_versions=tf_versions,tf_version_full_list=tf_version_full_list,title_text=title_text)
 
 @forms.route('/clip', methods=['POST','GET'])
 def submit_clip():

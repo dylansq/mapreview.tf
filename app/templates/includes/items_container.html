@@ -1,9 +1,12 @@
 <div class="item-container">
     <div class="container-side"></div>
-    <div id='item-boxes-container' class="item-boxes-container">
+    <div class="container-middle">
+        {%include 'includes/search_container.html'%}
+        <div id='item-boxes-container' class="item-boxes-container">
+            
+            <!--Load in selected items here -->
 
-        <!--Load in selected items here -->
-
+        </div>
     </div>
     <div class="container-side rotate-180"></div>
 
@@ -13,41 +16,51 @@
         <div id="iframe-holder"></div>
     </div>
     <div class="caption-container">
-    <div class="left-container">
-    <div class="top-container">
-        <div class="chapter-container" id="chapter-container"></div>
+        <div class="left-container">
+            <div class="top-container">
+                <div class="chapter-container" id="chapter-container"></div>
 
-        
-    </div>
 
-    <div class="bottom-container">
-        <div class="logo-container">
-            <div id="ff-logo" class="item-box-logo ff-logo"><a id="ff-logo-link" href=""><img id="ff-logo-img"
-                        class="item-box-logo" src=""></img></a></div>
+            </div>
+
+            <div class="bottom-container">
+                <div class="logo-container">
+                    <div id="ff-logo" class="item-box-logo ff-logo"><a id="ff-logo-link" href=""><img id="ff-logo-img"
+                                class="item-box-logo" src=""></img></a></div>
+                </div>
+                <div class="title-container">
+
+
+                    <div style="display: flex; flex-direction: row">
+                        <div id="ff-creator" class="item-box-creator">Creator</div>
+                        <div class="tag-container">
+                            <div class="tag-container-display"></div>
+                            <div class="tag-opener">+</div>
+                            <div class="tag-submit-dialogue"></div>
+                        </div>
+                    </div>
+                    <div id="ff-title" class="item-box-title">Title is Ipsum Lorum</div><br><br><br>
+                </div>
+
+            </div>
+            <div class="bottom-container">
+
+            </div>
         </div>
-        <div class="title-container">
+        <div class="right-container">
+            <div class="views-container">
+                <div id="ff-views" class="item-box-views">Title is Ipsum Lorum</div><span class="item-box-views"> •
+                </span>
+                <div id="ff-age" class="item-box-views">Title is Ipsum Lorum</div>
+            </div>
+            <div class="frag-container"><span class="frag-button frag-up" data-frag="up"> + </span> 
+                <span class="frag-label">Frags</span> <span class="frag-button frag-down" data-frag="down"> - </span>
+            </div>
 
-
-            <div style="display: flex; flex-direction: row"><div id="ff-creator" class="item-box-creator">Creator</div>
-            <div class="tag-container"><div class="tag-container-display"></div><div class="tag-opener">+</div>
-            <div class="tag-submit-dialogue"></div>
-            </div></div>
-            <div id="ff-title" class="item-box-title">Title is Ipsum Lorum</div><br><br><br>
         </div>
-
-    </div>
-    <div class="bottom-container">
-
-    </div>
-    </div>
-    <div class="right-container">
-        <div class="views-container">
-            <div id="ff-views" class="item-box-views">Title is Ipsum Lorum</div><span class="item-box-views"> •
-            </span>
-            <div id="ff-age" class="item-box-views">Title is Ipsum Lorum</div>
-        </div>
-        <div class="frag-container"><span class="frag-button frag-up" data-frag="up"> + </span> <span class="frag-label">Frags</span> <span class="frag-button frag-down" data-frag="down"> - </span></div>
-        
     </div>
 </div>
-</div>
+
+
+
+

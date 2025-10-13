@@ -1,8 +1,13 @@
 .navbar-container {
     display: flex;
+    flex-flow: row wrap;
     position: relative;
+    align-items: center;
+    justify-content: center;
     padding: .2em 0;
     font-size: 2.5em;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
     font-family: 'TF2-Professor';
     background: #34302d;
     color: #fff;
@@ -12,6 +17,14 @@
     z-index: 5;
     border-bottom: 2px solid #6b6a65;
 }
+
+
+@media screen and (max-width: 600px) {
+    .navbar-container {
+       font-size: 8vw;;
+    }
+  }
+
 
 .navbar-item {
     padding-left: 10px;
@@ -44,6 +57,7 @@
     background-color: #ef9849;
     text-align: center;
     padding: .3em 0;
+    z-index:4;
 }
 
 .alert-container:hover {

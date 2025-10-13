@@ -31,8 +31,8 @@
             var newItemW = Math.floor(containerWidth) / floorColumnCount;
             var newItemH = (newItemW / this.o.width) * this.o.height;
             $items.css({
-                    width: Math.min(480,Math.floor(newItemW)),
-                    height: Math.min(345,Math.floor(newItemH))
+                    width: Math.min(615,Math.floor(newItemW)),
+                    height: Math.min(442,Math.floor(newItemH))
                 });
       	}
     };

@@ -9,17 +9,54 @@
 
 }
 
-.container-side {
-  width: min(100px, 10%);
-  height: auto;
-  min-height: 475px;
-  background-size: contain;
-  background-repeat: repeat-y;
-  background-color: #34302d;
-  position: relative;
-  background-image: url("../img/brick-wall028-tall.png");
-}
+@media screen and (max-width: 600px) {
+  .container-middle{
+      display:block;
+      max-width: 2000px;
+      width: auto;
+  }
+    .container-side {
+      display: none;
+    }
+    .item-boxes-container {
+      background-color: #d2cdc8;
+      padding: 20px;
+      z-index: 5;
+      max-width: 2000px;
+      width: 100vw;
+    }
 
+
+  }
+
+@media screen and (min-width: 600px) {
+    .container-middle{
+    display:block;
+    max-width: 2000px;
+    width: auto;
+  }
+  .container-side {
+    width: min(80px, 10vw);
+    min-width: 50px;
+    height: auto;
+    min-height: 475px;
+    background-size: contain;
+    background-repeat: repeat-y;
+    background-color: #34302d;
+    position: relative;
+    background-image: url("../img/brick-wall028-tall.png");
+  }
+  .item-boxes-container {
+    background-color: #d2cdc8;
+    padding: 10px;
+    box-shadow: 0 10px 10px 5px rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    z-index: 5;
+    max-width: 1980px;
+    width: 85vw;
+  }
+
+
+}
 
 
 .rotate-180 {
@@ -105,15 +142,6 @@
   position: absolute;
 
   z-index: 6
-}
-
-.item-boxes-container {
-  background-color: #d2cdc8;
-  padding: 10px;
-  box-shadow: 0 10px 10px 5px rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  z-index: 5;
-  max-width: 2000px;
-  width: 80%;
 }
 
 

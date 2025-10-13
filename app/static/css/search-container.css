@@ -1,16 +1,33 @@
+.filter-container{
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    
+    z-index: 7;
+    position: sticky;
+    top:0px;
+}
 .filter-menu-container {
     display: flex;
     flex-wrap: wrap;
     margin: auto;
     align-items: center;
     justify-content: center;
-    padding: 5px 5px;
-    position: sticky;
-    top:0px;
-    background-color:#ebe6d6;
+    padding-top:5px;
+    padding-bottom:5px;
+    width: 100%;
+    background-color:#d2cdc8;
     z-index: 7;
     border-bottom: 2px solid #6b6a65;
 }
+
+.filter-menu-row{
+    border-bottom: 0px solid #6b6a65;
+}
+
 .filter-menu-group {
     display: flex;
     align-items: center;
@@ -25,6 +42,20 @@
     z-index: 10;
 }
 
+.filter-menu-header {
+    font-family: 'TF2-Professor';
+    font-size: 1.5em;
+    width:100%;
+    padding: 0.2em 0;
+    background-color:#d2cdc8;
+    color: #34302d;
+    border-bottom: 2px solid #6b6a65;
+    cursor: pointer;
+    z-index: 10;
+}
+.filter-menu-header:hover {
+    background-color: #c0bcb7;
+}
 
 .filter-menu-checkbox{
     background-image: url("../img/check_none.png");

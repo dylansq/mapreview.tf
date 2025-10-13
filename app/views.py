@@ -64,6 +64,10 @@ def browse_home():
     alert_text = "Sign-in through STEAM to vote on Resources!"
     return render_template("./browse.html", format_sixes = True, tf_maps=tf_maps,tf_versions=tf_versions,yt_creators = yt_creators,relevant_roles=relevant_roles,relevant_classes=relevant_classes,resource_types=resource_types,mrtf_languages=mrtf_languages,meta_dic=meta_dic,title_text=title_text,alert_login=alert_text)
 
+@views.route('/alert_close', methods=['POST'])
+def alert_close():
+    session['alert_login_cookie'] = True
+    return '', 200
 
 @views.route('/sixes', methods=['GET'])
 def browse_sixes():
